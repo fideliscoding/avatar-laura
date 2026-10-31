@@ -1,0 +1,24 @@
+{
+  "name": "avatar-laura",
+  "private": true,
+  "version": "0.1.0",
+  "description": "My Town, My World (Minha Cidade, Meu Mundo) - jogo infantil de valores do dia a dia, feito com Phaser 3 + Vite + TypeScript.",
+  "type": "module",
+  "engines": { "node": ">=20.19.0" },
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc --noEmit && vite build",
+    "preview": "vite preview",
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit",
+    "check:emojis": "node scripts/check-emojis.mjs"
+  },
+  "dependencies": {
+    "phaser": "3.90.0"
+  },
+  "devDependencies": {
+    "typescript": "5.9.3",
+    "vite": "7.3.7",
+    "vitest": "4.1.12"
+  }
+}
