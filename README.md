@@ -39,7 +39,23 @@ npm test           # testes de lógica
 npm run build      # gera a pasta dist/
 npm run preview    # serve o dist/ para conferir
 npm run check:emojis
+npx playwright install --with-deps chromium  # uma vez, instala o navegador de teste
+npm run test:e2e   # build + vite preview + testes de navegador
 ```
+
+## Validação do port (etapa 01)
+
+O teste de navegador escolhe Cacheado, recarrega o visual, conversa com Pedrinho,
+cava a areia, confere os conselhos A/C e devolve o carrinho. Verifica 15 moedas no
+`localStorage` (`mtmw:progresso:v1`) e repete a história sem pagar novamente.
+Também cobre toque no chão, arrasto, brinquedos, falas e celular nas duas orientações.
+As capturas em `docs/screenshots/phaser/` são atualizadas pelos testes.
+O e2e usa o renderer Canvas para funcionar sem GPU; a captura do criador e
+a comparação visual no servidor de desenvolvimento também foram feitas em WebGL.
+
+O CI executa build, Vitest, verificação de emojis e Playwright nos PRs. O workflow
+de deploy continua sem e2e. Posições, raios e velocidades ficam em
+`src/config/parque.ts`. O favicon vetorial lilás foi mantido após revisão em tamanho pequeno.
 
 ## Publicar
 

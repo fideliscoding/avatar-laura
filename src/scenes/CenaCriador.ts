@@ -12,16 +12,22 @@ export class CenaCriador extends Phaser.Scene {
   constructor() { super('Criador') }
 
   create(): void {
+    this.cards = [];
+    this.pulo = 0;
+    this.add.rectangle(640, 360, 1280, 720, 0xd9c7f7);
     const fundo = this.add.image(640, 360, 'parque').setDisplaySize(1320, 760).setAlpha(0.55);
     if (this.renderer.type === Phaser.WEBGL) fundo.postFX?.addBlur(1, 2, 2, 1.2);
     const tinta = this.add.graphics();
     tinta.fillStyle(0xbea0f0, 0.45); tinta.fillRect(0, 0, 1280, 720);
-    tinta.fillStyle(0xffffff, 0.35); tinta.fillCircle(486, 396, 330);
+    // Halo suave, sem a borda circular que não existe no protótipo.
+    for (let raio = 600; raio >= 20; raio -= 20) {
+      tinta.fillStyle(0xffffff, 0.012); tinta.fillCircle(486, 396, raio);
+    }
 
     this.add.text(60, 34, 'My Town, My World', { fontFamily: FONTE, fontSize: '54px', fontStyle: '700', color: '#ffffff' })
       .setShadow(0, 4, '#7a4fc9', 0, false, true);
     const sub = this.add.text(82, 112, 'Crie o seu visual', { fontFamily: FONTE, fontSize: '26px', fontStyle: '600', color: CORES.textoRoxo });
-    const pill = this.add.graphics(); pill.fillStyle(0xffffff, 0.75); pill.fillRoundedRect(64, 106, sub.width + 36, 42, 21); pill.setDepth(-1);
+    const pill = this.add.graphics(); pill.fillStyle(0xffffff, 0.75); pill.fillRoundedRect(64, 106, sub.width + 36, 42, 21); pill.setDepth(0);
     sub.setDepth(1);
 
     const sombra = this.add.ellipse(400, 638, 300, 56, 0x7850c8, 0.35);
