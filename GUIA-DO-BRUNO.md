@@ -71,7 +71,8 @@ Para cada etapa: abra o arquivo do prompt no GitHub (pasta `prompts/`), copie **
 | 1 | `prompts/01-scaffold-e-port-do-prototipo.md` | Jogo revisado, fiel ao protótipo, com teste automático | Nada |
 | 2 | `prompts/02-deploy-pages.md` | Publicação automática conferida, link no README | Passo 3 feito |
 | 3 | `prompts/03-supabase-contas-progresso.md` | Login do responsável, progresso salvo na nuvem | Passo 6 feito |
-| 4 | `prompts/04-multiplayer-realtime.md` | Brincar com amigos aprovados, frases prontas | Etapa 3 publicada |
+| 3A | `prompts/03a-mobile-first-e-motion.md` | Jogo mobile first, câmera e movimentos dos avatares | Etapa 3 publicada |
+| 4 | `prompts/04-multiplayer-realtime.md` | Brincar com amigos aprovados, frases prontas | Etapas 3 e 3A publicadas |
 | 5 | `prompts/05-novos-lugares-missoes.md` | Mapa da cidade, padaria, pet shop, novas missões | Etapa 4 publicada (ou pode vir antes da 4, se preferir) |
 
 Uma etapa por vez. Só comece a próxima depois de aprovar e conferir a anterior no site.
