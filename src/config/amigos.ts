@@ -1,0 +1,17 @@
+export const TEXTOS_AMIGOS = {
+  titulo: 'Amigos', areaAdulto: 'Área do responsável',
+  explicacao: 'Compartilhe o código somente com amigos que você conhece. Cada pedido precisa da sua aprovação.',
+  criar: 'Criar sala', entrar: 'Pedir para entrar', codigo: 'Código de 6 letras',
+  codigoInvalido: 'Use o código de seis letras compartilhado pelo responsável.',
+  aguardando: 'Aguardando a aprovação do responsável.', reconectando: 'Reconectando...',
+  conectado: 'Sala conectada', fechada: 'A sala foi encerrada. Você pode continuar brincando sozinho.',
+  semConta: 'Entre com a conta do responsável para brincar com amigos. Você pode continuar sozinho.',
+  falha: 'Não foi possível abrir a sala. Confira o código e a conexão e tente novamente.',
+  cheia: 'A sala já tem seis jogadores aprovados.', aprovar: 'Aprovar',
+  pedidos: 'Pedidos para o responsável', semPedidos: 'Nenhum pedido aguardando aprovação.',
+  sair: 'Sair da sala', encerrar: 'Encerrar sala', fechar: 'Voltar ao parque',
+  frases: 'Frases', gestos: 'Gestos', aceno: 'Acenar', pulo: 'Pular', coracao: 'Coração',
+  fraseTitulo: 'O que vamos dizer?', gestoTitulo: 'Escolha um gesto',
+  codigoSala: 'Código da sala', sozinho: 'Brincando sozinho', conectando: 'Conectando...',
+  confirmarBotao: 'Confirmar', ver: 'Ver', dono: 'Responsável pela sala', aprovados: 'Jogadores aprovados', confirmar: 'Aprovar este amigo conhecido?',
+} as const;

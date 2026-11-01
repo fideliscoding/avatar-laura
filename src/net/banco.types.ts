@@ -174,16 +174,152 @@ export type Database = {
           },
         ]
       }
+      room_members: {
+        Row: {
+          aprovado: boolean
+          entrou_em: string
+          room_id: string
+          user_id: string
+        }
+        Insert: {
+          aprovado?: boolean
+          entrou_em?: string
+          room_id: string
+          user_id: string
+        }
+        Update: {
+          aprovado?: boolean
+          entrou_em?: string
+          room_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "room_members_room_id_fkey"
+            columns: ["room_id"]
+            isOneToOne: false
+            referencedRelation: "rooms"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "room_members_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      rooms: {
+        Row: {
+          ativa: boolean
+          codigo: string
+          criado_em: string
+          dono_id: string
+          id: string
+          versao: number
+        }
+        Insert: {
+          ativa?: boolean
+          codigo: string
+          criado_em?: string
+          dono_id: string
+          id?: string
+          versao?: number
+        }
+        Update: {
+          ativa?: boolean
+          codigo?: string
+          criado_em?: string
+          dono_id?: string
+          id?: string
+          versao?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "rooms_dono_id_fkey"
+            columns: ["dono_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
       apelido_valido: { Args: { p_apelido: string }; Returns: boolean }
+      aprovar_membro: {
+        Args: { p_sala: string; p_usuario: string }
+        Returns: undefined
+      }
       concluir_missao: {
         Args: { p_escolhas?: Json; p_mission_id: string }
         Returns: number
       }
+      consultar_sala: {
+        Args: { p_sala: string }
+        Returns: {
+          ativa: boolean
+          codigo: string
+          criado_em: string
+          dono_id: string
+          id: string
+          versao: number
+        }
+        SetofOptions: {
+          from: "*"
+          to: "rooms"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
+      criar_sala: {
+        Args: never
+        Returns: {
+          ativa: boolean
+          codigo: string
+          criado_em: string
+          dono_id: string
+          id: string
+          versao: number
+        }
+        SetofOptions: {
+          from: "*"
+          to: "rooms"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
+      entrar_na_sala: {
+        Args: { p_codigo: string }
+        Returns: {
+          ativa: boolean
+          codigo: string
+          criado_em: string
+          dono_id: string
+          id: string
+          versao: number
+        }
+        SetofOptions: {
+          from: "*"
+          to: "rooms"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
+      listar_membros_sala: {
+        Args: { p_sala: string }
+        Returns: {
+          apelido: string
+          aprovado: boolean
+          cabelo: string
+          user_id: string
+        }[]
+      }
+      sair_da_sala: { Args: { p_sala: string }; Returns: undefined }
     }
     Enums: {
       [_ in never]: never
