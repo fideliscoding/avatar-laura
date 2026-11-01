@@ -10,7 +10,7 @@ Tarefa: permitir que a Laura veja e brinque com amigos aprovados no mesmo parque
 
 Faça:
 
-1. Migração `supabase/migrations/0003_salas_multiplayer.sql`:
+1. Migração `supabase/migrations/0005_salas_multiplayer.sql`:
    - `rooms` (id, codigo de 6 letras maiúsculas único, dono_id, criado_em, ativa).
    - `room_members` (room_id, user_id, aprovado boolean, entrou_em). Dono da sala aprova membros.
    - RLS: só o dono cria/edita a sala; usuário pode pedir para entrar (aprovado = false); só membros aprovados leem a lista de membros.

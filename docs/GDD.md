@@ -151,3 +151,16 @@ e se adapta à abertura do teclado. A interface não é reduzida junto com o cen
 Essa articulação procedural não cria novas vistas de lado nem folhas desenhadas
 quadro a quadro. Essas artes continuam listadas em `docs/ARTE.md`; o jogo já possui
 movimento independente dos membros enquanto elas não existem.
+
+## Amigos aprovados (etapa 04)
+
+O parque admite até seis contas numa sala privada. O responsável cria e compartilha
+um código, analisa os pedidos e confirma cada aprovação. Quem aguarda não vê o
+elenco nem participa do Realtime. O painel Amigos se ajusta ao viewport e tem
+rolagem interna; o mundo conserva 1280x720 e os controles permanecem em pixels.
+
+Avatares remotos interpolam o movimento, usam a mesma articulação e reproduzem
+os brinquedos. A câmera pode acompanhar um amigo pelo botão Ver. Há sete frases
+fixas e três gestos: aceno, pulo e coração. Nenhum texto de mensagem é recebido
+ou renderizado; apenas identificadores permitidos. Missões e moedas continuam
+individuais. Ao desconectar, há retentativa e aviso; ao sair, o avatar desaparece.
