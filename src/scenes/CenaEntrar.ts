@@ -27,7 +27,7 @@ export class CenaEntrar extends Phaser.Scene {
     this.formulario = this.add.dom(640, 330).createFromHTML(`
       <form aria-label="${T.titulo}" style="width:440px;display:grid;gap:12px;font:20px Fredoka,sans-serif;color:#5a2fa8">
         <label>${T.email}<input name="email" type="email" autocomplete="email" maxlength="254" required style="box-sizing:border-box;display:block;width:100%;padding:10px;border:2px solid #b58cf5;border-radius:12px;font:20px Fredoka,sans-serif"></label>
-        <label>${T.senha}<input name="senha" type="password" autocomplete="current-password" minlength="8" maxlength="128" required style="box-sizing:border-box;display:block;width:100%;padding:10px;border:2px solid #b58cf5;border-radius:12px;font:20px Fredoka,sans-serif"></label>
+        <label>${T.senha}<input name="senha" type="password" autocomplete="current-password" minlength="1" maxlength="128" required style="box-sizing:border-box;display:block;width:100%;padding:10px;border:2px solid #b58cf5;border-radius:12px;font:20px Fredoka,sans-serif"></label>
         <label data-apelido hidden>${T.apelido}<input name="apelido" type="text" autocomplete="off" maxlength="20" style="box-sizing:border-box;display:block;width:100%;padding:10px;border:2px solid #b58cf5;border-radius:12px;font:20px Fredoka,sans-serif"></label>
         <button type="submit" hidden>Entrar</button>
       </form>`);
@@ -56,6 +56,7 @@ export class CenaEntrar extends Phaser.Scene {
       this.cadastro = !this.cadastro;
       (this.formulario.node.querySelector('[data-apelido]') as HTMLElement).hidden = !this.cadastro;
       this.campo('senha').autocomplete = this.cadastro ? 'new-password' : 'current-password';
+      this.campo('senha').minLength = this.cadastro ? 8 : 1;
       this.aviso.setText(''); this.montarBotoes();
     }, { tamanho: 24 });
   }
@@ -66,7 +67,7 @@ export class CenaEntrar extends Phaser.Scene {
     if (this.ocupado || !supabase) return;
     const email = this.campo('email'), senha = this.campo('senha').value;
     if (!email.value || !email.checkValidity()) { this.aviso.setText(T.emailInvalido); return }
-    if (senha.length < 8) { this.aviso.setText(T.senhaCurta); return }
+    if (!senha || (this.cadastro && senha.length < 8)) { this.aviso.setText(this.cadastro ? T.senhaCurta : T.falha); return }
     const apelido = validarApelido(this.campo('apelido').value);
     if (this.cadastro && !apelido) { this.aviso.setText(T.apelidoInvalido); return }
     this.ocupado = true; this.aviso.setText(T.trabalhando);
@@ -85,6 +86,7 @@ export class CenaEntrar extends Phaser.Scene {
         this.cadastro = false;
         (this.formulario.node.querySelector('[data-apelido]') as HTMLElement).hidden = true;
         this.campo('senha').autocomplete = 'current-password';
+        this.campo('senha').minLength = 1;
         this.aviso.setText(T.confirme);
         this.montarBotoes();
       }
