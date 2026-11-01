@@ -5,7 +5,7 @@
   "description": "My Town, My World (Minha Cidade, Meu Mundo) - jogo infantil de valores do dia a dia, feito com Phaser 3 + Vite + TypeScript.",
   "type": "module",
   "engines": {
-    "node": ">=20.19.0"
+    "node": ">=22.12.0"
   },
   "scripts": {
     "dev": "vite",

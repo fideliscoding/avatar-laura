@@ -27,14 +27,14 @@ Este código é a portabilidade do protótipo aprovado (`prototype/my-town-my-wo
 |---|---|
 | Motor do jogo | Phaser 3.90.0 |
 | Build | Vite 7.3.7 + TypeScript 5.9.3 |
-| Testes | Vitest 4.1.12 |
+| Testes | Vitest 4.1.12 e Playwright 1.64.1 |
 | Mapas (próximas etapas) | Tiled (arquivos .tmj em `public/assets/mapas/`) |
-| Contas, banco e multiplayer (etapas 03 e 04) | Supabase (Auth, Postgres com RLS, Realtime) |
+| Contas, banco e multiplayer (etapas 03 e 04) | Supabase JS 2.118.0 (Auth, Postgres com RLS, Realtime) |
 | Hospedagem | GitHub Pages via GitHub Actions |
 
 ## Como rodar no computador
 
-Precisa do [Node.js 22](https://nodejs.org/) (funciona a partir do 20.19).
+Precisa do [Node.js 22](https://nodejs.org/) (a partir do 22.12; o SDK Supabase atual exige Node 22).
 
 ```bash
 npm install
