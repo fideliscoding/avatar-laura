@@ -86,9 +86,9 @@ como `background-position: 50% 8%` no protótipo. Capturas atualizadas em
 
 ## Articulação e enquadramento mobile (etapa 03A)
 
-Nenhuma imagem foi baixada ou substituída. `src/ui/AvatarAnimado.ts` divide os PNGs
-em recortes de cabeça, tronco, braços e pernas, com pivôs normalizados, e anima
-cada parte independentemente. As texturas originais continuam centralizadas em
+Nenhuma imagem foi baixada ou substituída. `src/ui/AvatarAnimado.ts` articula os membros dos PNGs com pivôs normalizados.
+Para Laura e amigos, cabeça, cabelo e tronco ficam unidos, conforme a correção
+explicada abaixo; os NPCs usam os recortes anteriores. As texturas originais continuam centralizadas em
 `src/config/assets.ts`. A âncora e o marcador de interação conservam os pés e a
 profundidade por y. Marta usa um recorte próprio do braço levantado.
 
@@ -110,3 +110,30 @@ de apelido e balão de frase. O coração é um contorno preenchido desenhado co
 `Graphics` e animado por tween; aceno e pulo usam o rig atual. Não há imagens
 novas nem dependências de arte externas. Capturas em
 [screenshots/multiplayer](screenshots/multiplayer/README.md).
+
+## Correção das juntas e do cabelo dos avatares
+
+A Laura local e os amigos agora usam regiões próprias para cada um dos seis PNGs,
+definidas em `src/game/recortesAvatar.ts`. Cabeça, cabelo, tronco e saia ficam juntos;
+não há corte horizontal atravessando o cabelo. Os braços são separados pela pele
+nas regiões delimitadas, com margem para o contorno, e desenhados à frente do
+corpo. As pernas começam abaixo da saia, com sobreposição nas juntas e pivôs
+adaptados a cada cabelo. A pose frontal sentada usa ângulos pequenos e opostos,
+em vez de girar as duas pernas para o mesmo lado. O aceno aponta para fora do corpo.
+Balanço e gangorra apoiam o avatar na base da saia (origem y 0,79), em vez
+de prender o assento na altura do tronco. Essa origem também é transmitida aos amigos.
+
+As cinco texturas transparentes por cabelo são preparadas uma única vez em
+CanvasTexture e reutilizadas por avatares locais/remotos, tanto no renderizador
+Canvas quanto no WebGL. Os PNGs aprovados continuam intactos. O coquinho esquerdo, que já vinha cortado
+na borda do PNG, recebe uma extensão atrás da camada principal, reaproveitando
+o coquinho direito espelhado da mesma imagem. Uma margem transparente de 16 px
+acomoda o contorno sem deslocar o rosto, a âncora ou as peças do corpo.
+A seleção de pele foi calibrada para essas imagens e precisa de revisão se novas
+artes ou tons forem adicionados. Bia, Pedrinho e Marta conservam os recortes anteriores.
+
+Comparação dos seis cabelos: [aceno e pose frontal](screenshots/correcao-recortes.png).
+A primeira linha mostra aceno; a segunda mostra a pose usada nos brinquedos.
+Também foram conferidos [WebGL](screenshots/correcao-recortes-webgl.png) e o
+[balanço no celular](screenshots/correcao-balanco-mobile.png).
+Essas transformações ainda não equivalem a poses sentadas desenhadas de lado.

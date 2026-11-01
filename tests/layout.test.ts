@@ -26,8 +26,8 @@ describe('articulação de avatares', () => {
     expect(passo).not.toEqual(movimentoAvatar('andar', 0));
   });
   it('distingue pernas sentadas, aceno, comemoração e respiração', () => {
-    expect(movimentoAvatar('sentar',0).pernaE).toBeLessThan(-40);
-    expect(movimentoAvatar('escorregar',0).pernaD).toBeLessThan(-40);
+    expect(movimentoAvatar('sentar',0).pernaE).toBe(14);
+    expect(movimentoAvatar('escorregar',0).pernaD).toBe(-14);
     expect(movimentoAvatar('acenar',0.2).bracoE).not.toBe(movimentoAvatar('parada',0.2).bracoE);
     expect(movimentoAvatar('dancar',0.5).pernaE).not.toBe(0);
     expect(movimentoAvatar('parada',0.5).cabeca).not.toBe(0);

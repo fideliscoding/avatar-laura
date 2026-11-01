@@ -143,8 +143,8 @@ e se adapta à abertura do teclado. A interface não é reduzida junto com o cen
 - **Conta:** campos com fonte de 16 px e altura mínima de 44 px. Com teclado ou
   pouca altura, o formulário permite rolagem interna e mantém as ações acessíveis,
   sem apagar os valores preenchidos.
-- **Avatares:** braços, pernas e cabeça são articulados com recortes dos PNGs
-  aprovados: passos alternados, respiração, aceno, dança e pernas dobradas nos
+- **Avatares:** braços e pernas são articulados com regiões dos PNGs
+  aprovados: passos alternados, respiração, aceno, dança e pernas com movimentos suaves nos
   brinquedos. Os seis cabelos usam a mesma lógica. Bia caminha com passos, Dona
   Marta move o braço no aceno e Pedrinho comemora brevemente ao receber o carrinho.
 
@@ -164,3 +164,8 @@ os brinquedos. A câmera pode acompanhar um amigo pelo botão Ver. Há sete fras
 fixas e três gestos: aceno, pulo e coração. Nenhum texto de mensagem é recebido
 ou renderizado; apenas identificadores permitidos. Missões e moedas continuam
 individuais. Ao desconectar, há retentativa e aviso; ao sair, o avatar desaparece.
+
+A composição dos seis cabelos mantém cabeça, cabelo e tronco na mesma camada
+para preservar a silhueta. Os braços têm máscaras próprias e as pernas se
+sobrepõem à base da saia, com pose frontal simétrica. A implementação é a mesma
+para o avatar local e os amigos; a câmera e o estado dos brinquedos permanecem iguais.

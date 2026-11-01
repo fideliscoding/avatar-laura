@@ -135,3 +135,7 @@ cair, o aviso **Reconectando...** aparece e o jogo tenta retomá-la.
 A migração `0005_salas_multiplayer.sql` já foi aplicada ao projeto configurado.
 Detalhes de autorização e testes em [docs/SUPABASE.md](docs/SUPABASE.md) e
 [capturas do multiplayer](docs/screenshots/multiplayer/README.md).
+
+A composição dos avatares preserva o cabelo inteiro e cobre as juntas das pernas,
+inclusive nos brinquedos e no multiplayer. Detalhes e comparação dos seis cabelos
+em [docs/ARTE.md](docs/ARTE.md#correção-das-juntas-e-do-cabelo-dos-avatares).
