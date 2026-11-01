@@ -8,6 +8,7 @@ import { layoutParque } from '../game/layout';
 import { amigos, type EventoSocial } from '../net/sala';
 import { obterFrase } from '../game/frases';
 import { interpolar, type Aceno, type EstadoCompartilhado } from '../game/regrasSala';
+import { ORIGEM_ASSENTO } from '../game/recortesAvatar';
 import { AvatarAnimado } from '../ui/AvatarAnimado';
 import type { CenaInterface } from './CenaInterface';
 import { Dialogo } from '../ui/Dialogo';
@@ -416,7 +417,7 @@ export class CenaParque extends Phaser.Scene {
     } else if (L.estado === 'balanco') {
       const th = Math.sin(L.t * ANIMACOES.balanco.velocidade) * Math.min(1, L.t / ANIMACOES.balanco.entrada) * ANIMACOES.balanco.angulo, r = Phaser.Math.DegToRad(th); this.balanco.th = th;
       L.x = this.balanco.px - Math.sin(r) * BAL.corrente; L.y = this.balanco.py + Math.cos(r) * BAL.corrente;
-      this.desenhar(L, L.x, L.y, { oy: 0.64, rot: th, z: 430, sx: 0.95, sy: 0.95 });
+      this.desenhar(L, L.x, L.y, { oy: ORIGEM_ASSENTO, rot: th, z: 430, sx: 0.95, sy: 0.95 });
     } else if (L.estado === 'escorregador') {
       L.slideT += dt; const dur = ANIMACOES.escorregador.duracao; let u = (L.slideT % (dur + ANIMACOES.escorregador.pausa)) / dur; if (u > 1) u = 1;
       const v = u < 0.5 ? u * 0.9 : 0.45 + (u - 0.5) * 1.1; const [x, y] = this.pontoEscorregador(Math.min(1, v)); const desce = v > 0.47;
@@ -427,7 +428,7 @@ export class CenaParque extends Phaser.Scene {
       const a = Math.sin(L.t * ANIMACOES.gangorra.velocidade) * ANIMACOES.gangorra.angulo, r = Phaser.Math.DegToRad(a); this.gangorra.tabua.setAngle(a);
       const lx = GANG.w * ANIMACOES.gangorra.ponta, ly = -6;
       L.x = this.gangorra.pvx + lx * Math.cos(r) - ly * Math.sin(r); L.y = this.gangorra.pvy + lx * Math.sin(r) + ly * Math.cos(r); L.lado = 1;
-      this.desenhar(L, L.x, L.y, { oy: 0.58, rot: a * 0.5, sx: 0.9, sy: 0.9, z: GANG.b + 2 });
+      this.desenhar(L, L.x, L.y, { oy: ORIGEM_ASSENTO, rot: a * 0.5, sx: 0.9, sy: 0.9, z: GANG.b + 2 });
     } else if (L.estado === 'carrossel') {
       const a = L.t * ANIMACOES.carrossel.velocidade, P = PROPS.carrossel; L.x = P.cx + Math.cos(a) * ANIMACOES.carrossel.raioX; L.y = P.b - ANIMACOES.carrossel.altura + Math.sin(a) * ANIMACOES.carrossel.raioY; L.lado = Math.sin(a) > 0 ? -1 : 1;
       this.desenhar(L, L.x, L.y, { sx: ANIMACOES.carrossel.escala, sy: ANIMACOES.carrossel.escala, z: Math.sin(a) > 0 ? P.b + 5 : P.b - 5, by: -Math.abs(Math.sin(a * 2)) * 3 });
