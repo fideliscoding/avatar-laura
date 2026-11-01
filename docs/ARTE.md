@@ -102,3 +102,11 @@ permanecem na lista de assets que faltam. Somente as transformações e os recor
 são novos, portanto não há PNG novo a registrar.
 
 Capturas e gravação de movimento em [screenshots/mobile](screenshots/mobile/README.md).
+
+## Multiplayer (etapa 04)
+
+Os amigos reutilizam `AvatarAnimado` e os seis cabelos existentes, com etiqueta
+de apelido e balão de frase. O coração é um contorno preenchido desenhado com
+`Graphics` e animado por tween; aceno e pulo usam o rig atual. Não há imagens
+novas nem dependências de arte externas. Capturas em
+[screenshots/multiplayer](screenshots/multiplayer/README.md).

@@ -10,7 +10,7 @@ Plano gratuito do Supabase é suficiente. O schema e suas correções estão em 
 
 ## 2. Rodar o SQL
 
-**SQL Editor > New query**, cole todo o conteúdo de `supabase/migrations/0001_init.sql` e clique em **Run**. Depois aplique `0002_contas_e_recompensa_segura.sql`, `0003_fixa_search_path.sql` e `0004_valida_escolhas_pedrinho.sql`, em consultas separadas. Deve aparecer "Success". Em **Table Editor** você verá `profiles`, `avatars`, `missions`, `progress`.
+**SQL Editor > New query**, cole todo o conteúdo de `supabase/migrations/0001_init.sql` e clique em **Run**. Depois aplique `0002_contas_e_recompensa_segura.sql`, `0003_fixa_search_path.sql`, `0004_valida_escolhas_pedrinho.sql` e `0005_salas_multiplayer.sql`, em consultas separadas. Deve aparecer "Success". Em **Table Editor** você verá `profiles`, `avatars`, `missions`, `progress`, `rooms`, `room_members`.
 
 ## 3. Configurar Auth
 
@@ -49,20 +49,14 @@ const { data: moedas, error } = await supabase.rpc('concluir_missao', { p_missio
 
 Todas as tabelas têm `enable row level security`. Sem política, nada é acessível. As políticas usam `(select auth.uid())` (forma recomendada pelo Supabase para desempenho). Teste no SQL Editor com usuários diferentes antes de publicar.
 
-## 7. Plano de Realtime (etapa 04)
+## 7. Realtime (etapa 04)
 
-Usar **Realtime Channels** (Broadcast + Presence), não replicação de tabela, para posição dos jogadores: é mais leve e não grava no banco.
-
-- Canal por sala: `sala:parque:<codigoDaSala>`. A sala é criada pelo responsável e compartilhada por código de convite (6 letras) com amigos aprovados.
-- **Presence** (`channel.track`): `{ user_id, apelido, cabelo, x, y, estado }` para saber quem está na sala e desenhar os avatares.
-- **Broadcast** eventos:
-  - `mover` `{ x, y }` no máximo 10 vezes por segundo (throttle), interpolado no cliente.
-  - `brinquedo` `{ tipo }` quando entra num brinquedo.
-  - `frase` `{ id }` só com IDs de uma **lista fixa de frases prontas** (o cliente rejeita qualquer ID desconhecido). Sem texto livre.
-  - `aceno` `{ tipo }` (aceno, pulo, coração desenhado).
-- Autorização: canais privados (`config: { private: true }`) com políticas em `realtime.messages` permitindo só membros da sala (tabela `room_members`, criada na migração da etapa 04).
-- Limites do plano gratuito: até 200 conexões simultâneas e 2 milhões de mensagens por mês, suficiente para família e amigos.
-- Missões continuam individuais; o multiplayer é para brincar junto.
+Implementado com **Broadcast + Presence** em canais privados e aprovação pelo
+responsável. O controle usa `sala:<id>` e os eventos de cada jogador usam
+`sala:<id>:<versao>:<user_id>` para vincular autoria e renovar a autorização.
+Posições não são gravadas no banco; missões e moedas continuam individuais.
+Detalhes de políticas, eventos, reconexão e evidências estão em
+[Multiplayer implementado](#multiplayer-implementado-etapa-04).
 
 ## 8. Rodar localmente (opcional)
 
@@ -71,9 +65,9 @@ Com a CLI (`npx supabase@2.122.0`) e Docker: `npx supabase start`, depois `npx s
 ## 9. Implementação da etapa 03
 
 Projeto identificado: `Avatar Laura`, URL base `https://ilveddmkikbpskbnjedn.supabase.co`.
-Não acrescente `/rest/v1/` à configuração. As quatro migrações foram aplicadas pelo
+Não acrescente `/rest/v1/` à configuração. As cinco migrações foram aplicadas pelo
 conector Supabase nesta revisão; não reaplique arquivos já registrados no projeto.
-Para outro projeto vazio, aplique os quatro arquivos na ordem.
+Para outro projeto vazio, aplique os cinco arquivos na ordem.
 
 - `0002`: validação de apelido no servidor, grants explícitos, atualização de perfil
   limitada à coluna `apelido` e bloqueio de linha antes de pagar a missão. Isso
@@ -134,3 +128,60 @@ serializa pagamentos e não é executável por `anon` ou `PUBLIC`. Referência:
 O Auth também reporta proteção contra senhas vazadas desabilitada; avalie a
 opção no painel conforme o plano disponível, sem alterar o plano automaticamente:
 [documentação de senhas](https://supabase.com/docs/guides/auth/password-security#password-strength-and-leaked-password-protection).
+
+## Multiplayer implementado (etapa 04)
+
+A migração **0005_salas_multiplayer.sql** foi aplicada ao projeto Avatar Laura.
+O número 0003 citado originalmente no prompt já pertencia a uma correção aplicada;
+nenhuma migração anterior foi alterada. Em projetos vazios, aplique 0001 a 0005.
+Os tipos de `src/net/banco.types.ts` foram regenerados do banco real.
+
+`rooms` e `room_members` têm RLS. O dono cria/encerra e aprova; pedir entrada
+sempre cria membro pendente. Pendentes só consultam o próprio pedido e a sala,
+sem acesso ao elenco. As escritas passam por RPCs autenticadas com `search_path`
+vazio. Bloqueios de linha serializam aprovação e limitam a seis aprovados,
+incluindo o dono; há no máximo doze pedidos pendentes. Nomes e cabelos do elenco
+vêm do servidor, sem aceitar identidade enviada por outro jogador.
+
+Todos os canais usam `private: true`. O canal `sala:<id>` recebe apenas controle
+do servidor. Cada autor publica Presence e eventos no tópico privado
+`sala:<id>:<versao>:<user_id>`. As políticas de `realtime.messages` conferem sala
+ativa, aprovação, versão e identidade do autor para escrita. Essa divisão impede
+que um membro envie mensagens fingindo ser outro. A versão muda quando muda a
+aprovação ou sai um membro: conexões antigas deixam de receber o tráfego novo,
+mesmo com a autorização de Realtime em cache. Não há coordenadas gravadas no banco.
+
+Presence publica a pose inicial e mudanças de cabelo. Broadcast transmite
+`mover` a cada 100 ms somente se mudou, além de `brinquedo`, `frase` e `aceno`.
+Estados e limites são validados, posições interpoladas e frases desconhecidas
+ignoradas. O elenco é consultado a cada dois segundos; o SDK reconecta o socket.
+O cliente só envia pelo canal já inscrito, evitando fallback HTTP acidental.
+O painel Realtime permite desabilitar **Allow public access** como proteção
+adicional; essa configuração global não foi alterada, e o aplicativo usa canais
+privados em todas as inscrições.
+
+### Evidências de validação
+
+Três contas temporárias distintas foram usadas em Chromium, incluindo celular
+390x844. Duas aprovadas se viram andando e no balanço; a câmera acompanhou o
+amigo. Frase chegou em 148 ms e aceno em 72 ms nesta execução local contra o
+projeto real, sem promessa de latência para outras redes. IDs de frase inválidos
+foram ignorados. Fechar um navegador removeu o avatar no outro. Uma interrupção
+de rede mostrou Reconectando e, ao restaurar, retomou sala e movimento.
+
+A terceira conta permaneceu pendente: inscrição privada retornou CHANNEL_ERROR
+e recebeu zero eventos. Uma tentativa HTTP de publicar no tópico de outro autor
+retornou `ok`/202, mas **não foi entregue** ao jogador aprovado. O Realtime aceita
+a requisição e descarta silenciosamente o envio sem autorização; o teste confere
+recebimento, não apenas o status HTTP. As contas e salas de teste foram removidas.
+
+Vitest cobre frases/gestos, estados malformados, limite de sala, throttle,
+interpolação, isolamento de pendente, retomada de sessão e respostas após troca
+de conta. Uma simulação SQL local também valida capacidade, políticas e tópicos.
+As capturas estão em [screenshots/multiplayer](screenshots/multiplayer/README.md).
+
+Os advisors continuam apontando as RPCs autenticadas `SECURITY DEFINER` como
+superfície de API a revisar (aviso 0029 citado acima), incluindo as seis RPCs de
+sala. Elas conferem usuário/permissão e não permitem execução por anon/PUBLIC.
+Permanece o aviso anterior de proteção contra senhas vazadas desabilitada.
+Não foram detectados novos avisos de RLS ausente ou `search_path` mutável.

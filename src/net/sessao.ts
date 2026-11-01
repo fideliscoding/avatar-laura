@@ -1,6 +1,7 @@
 import type { Database } from './banco.types';
 import type { SupabaseClient, User } from '@supabase/supabase-js';
 import { carregar, persistir, progresso, usarProgresso, type Armazenamento } from '../game/estado';
+import { amigos } from './sala';
 import { supabase } from './supabase';
 import { FilaSincronizacao, IDS_CABELOS, mesclar, type DadosNuvem, type NovaOperacao, type Operacao, type PortaNuvem } from './sincronizar';
 
@@ -55,6 +56,7 @@ export function criarPorta(cliente: SupabaseClient<Database>, usuario: string): 
 }
 
 function limpar(): void {
+  amigos.esquecer();
   geracao++; fila?.parar(); fila = null;
   if (repeticao) clearInterval(repeticao);
   repeticao = null;

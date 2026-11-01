@@ -7,8 +7,8 @@ Cada etapa tem um prompt pronto em `prompts/`. Faça uma etapa por vez: cole o p
 | 01 | `01-scaffold-e-port-do-prototipo.md` | Projeto Phaser + Vite + TS, protótipo portado, testes | Feito neste pacote (o prompt serve para revisar e completar) |
 | 02 | `02-deploy-pages.md` | Site publicado no GitHub Pages a cada push | Publicado e validado |
 | 03 | `03-supabase-contas-progresso.md` | Login do responsável, perfil, avatar e progresso salvos na nuvem | Publicado; responsável confirmou o funcionamento |
-| 03A | `03a-mobile-first-e-motion.md` | Jogo mobile first, câmera, controles por toque e avatares articulados | Implementado neste PR, antes do multiplayer |
-| 04 | `04-multiplayer-realtime.md` | Ver amigos aprovados no parque, frases prontas, acenos | A fazer |
+| 03A | `03a-mobile-first-e-motion.md` | Jogo mobile first, câmera, controles por toque e avatares articulados | Publicado; responsável confirmou a conclusão |
+| 04 | `04-multiplayer-realtime.md` | Ver amigos aprovados no parque, frases prontas, acenos | Implementado neste PR |
 | 05 | `05-novos-lugares-missoes.md` | Mapa da cidade (Tiled), 2 lugares novos, 3 missões novas, sistema de missões por dados | A fazer |
 
 ## Depois da etapa 05 (ideias, em ordem sugerida)

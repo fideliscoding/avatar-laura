@@ -118,3 +118,20 @@ Sem chat livre: toda comunicação é por frases prontas. Sem coleta de dados pe
 ## Créditos
 
 Fonte Fredoka (SIL Open Font License 1.1). Artes geradas para este projeto.
+
+## Brincar com amigos
+
+Com contas diferentes, abra **Amigos > Área do responsável** no parque. O adulto
+cria uma sala e compartilha o código de seis letras apenas com os responsáveis
+conhecidos. Na outra conta, informe o código e peça entrada. O dono precisa tocar
+em **Aprovar** e depois **Confirmar**. A sala comporta seis jogadores, incluindo o dono.
+
+Depois da aprovação, os avatares aparecem com cabelo, apelido e movimentos nos
+brinquedos. **Frases** e **Gestos** oferecem somente opções prontas; **Ver** acompanha
+um amigo com a câmera. Sair remove o próprio jogador; encerrar a sala desconecta
+todos. Sem conta, o parque continua disponível individualmente. Se a conexão
+cair, o aviso **Reconectando...** aparece e o jogo tenta retomá-la.
+
+A migração `0005_salas_multiplayer.sql` já foi aplicada ao projeto configurado.
+Detalhes de autorização e testes em [docs/SUPABASE.md](docs/SUPABASE.md) e
+[capturas do multiplayer](docs/screenshots/multiplayer/README.md).
