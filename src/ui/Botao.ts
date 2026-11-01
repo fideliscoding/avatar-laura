@@ -9,12 +9,12 @@ export class Botao extends Phaser.GameObjects.Container {
   private rotulo: Phaser.GameObjects.Text;
   private bw = 0; private bh = 0;
 
-  constructor(cena: Phaser.Scene, x: number, y: number, texto: string, aoClicar: () => void, opts: { estilo?: EstiloBotao; tamanho?: number } = {}) {
+  constructor(cena: Phaser.Scene, x: number, y: number, texto: string, aoClicar: () => void, opts: { estilo?: EstiloBotao; tamanho?: number; largura?: number; altura?: number } = {}) {
     super(cena, x, y);
     const tam = opts.tamanho ?? 26;
     const estilo = opts.estilo ?? 'roxo';
     this.rotulo = cena.add.text(0, 0, texto, { fontFamily: FONTE, fontSize: `${tam}px`, fontStyle: '700', color: '#ffffff' }).setOrigin(0.5);
-    this.bw = this.rotulo.width + tam * 1.6; this.bh = tam * 2.1;
+    this.bw = Math.max(this.rotulo.width + tam * 1.6, opts.largura ?? 44); this.bh = Math.max(44, opts.altura ?? 0, tam * 2.1);
     this.fundo = cena.add.graphics();
     this.desenhar(estilo, false);
     this.add([this.fundo, this.rotulo]);

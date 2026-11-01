@@ -1,60 +1,75 @@
 import Phaser from 'phaser';
 import { CORES, FONTE } from '../config/assets';
-import { Botao, EstiloBotao } from './Botao';
-
+import { Botao, type EstiloBotao } from './Botao';
 export interface OpcaoDialogo { texto: string; acao?: () => void; estilo?: EstiloBotao }
 
-/** Caixa de dialogo com rosto redondo, nome, fala e botoes de resposta (frases prontas, sem chat livre). */
+/** Diálogo independente da câmera: opções empilhadas no celular e rosto em close. */
 export class Dialogo extends Phaser.GameObjects.Container {
   aberto = false;
-  private caixa: Phaser.GameObjects.Graphics;
-  private rosto: Phaser.GameObjects.Image;
-  private nome: Phaser.GameObjects.Text;
-  private fala: Phaser.GameObjects.Text;
-  private botoes: Botao[] = [];
-  private bloqueio: Phaser.GameObjects.Zone;
+  private dados?: { nome: string; rosto: string | null; texto: string; opcoes: OpcaoDialogo[] };
+  private mascara?: Phaser.GameObjects.Graphics;
 
-  constructor(cena: Phaser.Scene) {
-    super(cena, 640, 88);
-    this.bloqueio = cena.add.zone(0, -88, 1280, 720).setOrigin(0.5, 0).setInteractive();
-    this.bloqueio.on('pointerdown', (_p: unknown, _x: unknown, _y: unknown, ev: Phaser.Types.Input.EventData) => ev.stopPropagation());
-    this.caixa = cena.add.graphics();
-    const g = this.caixa;
-    g.fillStyle(0x3c1478, 0.25); g.fillRoundedRect(-410, 12, 820, 200, 30);
-    g.fillStyle(CORES.branco, 0.96); g.fillRoundedRect(-410, 0, 820, 200, 30);
-    g.lineStyle(5, CORES.lilas, 1); g.strokeRoundedRect(-410, 0, 820, 200, 30);
-    g.fillStyle(0xefe5ff, 1); g.fillCircle(-326, 80, 62); g.lineStyle(4, 0xd6c2fa, 1); g.strokeCircle(-326, 80, 62);
-    this.rosto = cena.add.image(-326, 80, '__DEFAULT');
-    const mascara = cena.make.graphics({}, false); mascara.fillStyle(0xffffff); mascara.fillCircle(640 - 326, 88 + 80, 60);
-    this.rosto.setMask(mascara.createGeometryMask());
-    this.nome = cena.add.text(-240, 20, '', { fontFamily: FONTE, fontSize: '20px', fontStyle: '700', color: '#8b55e6' });
-    this.fala = cena.add.text(-240, 48, '', { fontFamily: FONTE, fontSize: '26px', fontStyle: '600', color: CORES.textoEscuro, wordWrap: { width: 620 }, lineSpacing: 2 });
-    this.add([this.bloqueio, this.caixa, this.rosto, this.nome, this.fala]);
-    this.setDepth(6000).setVisible(false);
-    cena.add.existing(this);
+  constructor(cena: Phaser.Scene) { super(cena); cena.add.existing(this); this.setDepth(6000).setVisible(false) }
+
+  abrir(nome: string, rosto: string | null, texto: string, opcoes: OpcaoDialogo[]): void {
+    this.dados = { nome, rosto, texto, opcoes }; this.aberto = true;
+    this.reorganizar(); this.setVisible(true);
   }
 
-  abrir(nome: string, rostoKey: string | null, texto: string, opcoes: OpcaoDialogo[]): void {
-    this.aberto = true;
-    this.nome.setText(nome); this.fala.setText(texto);
-    if (rostoKey) {
-      this.rosto.setTexture(rostoKey).setVisible(true);
-      const src = this.scene.textures.get(rostoKey).getSourceImage();
-      const s = 186 / src.width; // rosto em close: 150% da largura do circulo
-      // background-position: 50% 8% do protótipo: 8% do excedente vertical.
-      this.rosto.setScale(s).setOrigin(0.5, 0).setY(80 - 62 - (src.height * s - 124) * 0.08);
-    } else this.rosto.setVisible(false);
-    this.botoes.forEach((b) => b.destroy()); this.botoes = [];
-    const yb = Math.max(150, 48 + this.fala.height + 34);
-    let x = -240;
-    for (const o of opcoes) {
-      const b = new Botao(this.scene, 0, yb, o.texto, () => { this.fechar(); o.acao?.() }, { estilo: o.estilo, tamanho: 18 });
-      b.setX(x + b.largura / 2); x += b.largura + 12;
-      this.add(b); this.botoes.push(b);
+  reorganizar(): void {
+    if (!this.dados || !this.aberto) return;
+    this.removeAll(true); this.mascara?.destroy();
+    const { nome, rosto, texto, opcoes } = this.dados;
+    const w = this.scene.scale.width, h = this.scene.scale.height;
+    const estreito = w < 700 && h >= w, largura = Math.min(860, w - 24), margem = 18;
+    const topo = h < 500 ? 8 : Math.min(145, h * 0.17);
+    this.setPosition(w / 2, topo);
+    const bloqueio = this.scene.add.zone(-w / 2, -topo, w, h).setOrigin(0).setInteractive();
+    bloqueio.on('pointerdown', (_p: unknown, _x: unknown, _y: unknown, ev: Phaser.Types.Input.EventData) => ev.stopPropagation());
+    this.add(bloqueio);
+    const caixa = this.scene.add.graphics(); this.add(caixa);
+    const raio = estreito ? 32 : h < 500 ? 40 : 54, cx = -largura / 2 + margem + raio, cy = margem + raio;
+    caixa.fillStyle(0xefe5ff); caixa.fillCircle(cx, cy, raio);
+    const xTexto = estreito ? -largura / 2 + margem : cx + raio + 24;
+    const nomeTexto = this.scene.add.text(estreito ? cx + raio + 12 : xTexto, margem, nome, { fontFamily: FONTE, fontSize: estreito ? '18px' : '20px', fontStyle: '700', color: '#8b55e6' });
+    const fala = this.scene.add.text(xTexto, estreito ? margem + raio * 2 + 12 : 46, texto, { fontFamily: FONTE, fontSize: estreito ? '19px' : h < 500 ? '20px' : '24px', color: CORES.textoEscuro, wordWrap: { width: estreito ? largura - margem * 2 : largura - (xTexto + largura / 2) - margem }, lineSpacing: 3 });
+    let y = fala.y + fala.height + 22;
+    const botoes: Botao[] = [];
+    if (estreito) {
+      opcoes.forEach(opcao => {
+        const botao = new Botao(this.scene, 0, y + 24, opcao.texto, () => { this.fechar(); opcao.acao?.() }, { estilo: opcao.estilo, tamanho: largura < 330 ? 15 : 17, largura: largura - margem * 2, altura: 48 });
+        botoes.push(botao); y += 60;
+      });
+    } else {
+      const inicio = h < 500 ? -largura / 2 + margem : xTexto;
+      let x = inicio;
+      for (const opcao of opcoes) {
+        const botao = new Botao(this.scene, 0, y + 24, opcao.texto, () => { this.fechar(); opcao.acao?.() }, { estilo: opcao.estilo, tamanho: 17 });
+        if (x + botao.largura > largura / 2 - margem) { x = inicio; y += 58 }
+        botao.setPosition(x + botao.largura / 2, y + 24); x += botao.largura + 10; botoes.push(botao);
+      }
+      y += 58;
     }
-    this.setVisible(true).setAlpha(0).setY(128);
-    this.scene.tweens.add({ targets: this, y: 88, alpha: 1, duration: 300, ease: 'Quad.out' });
+    const altura = Math.max(y + 12, raio * 2 + margem * 2);
+    caixa.clear(); caixa.fillStyle(0xffffff, 0.98); caixa.fillRoundedRect(-largura / 2, 0, largura, altura, 22);
+    caixa.lineStyle(4, CORES.lilas); caixa.strokeRoundedRect(-largura / 2, 0, largura, altura, 22);
+    caixa.fillStyle(0xefe5ff); caixa.fillCircle(cx, cy, raio);
+    this.add([nomeTexto, fala]);
+    if (rosto) {
+      const imagem = this.scene.add.image(cx, cy - raio, rosto).setOrigin(0.5, 0);
+      const src = this.scene.textures.get(rosto).getSourceImage(), escala = raio * 3 / src.width;
+      imagem.setScale(escala).setY(cy - raio - (src.height * escala - raio * 2) * 0.08);
+      this.mascara = this.scene.make.graphics({}, false); this.mascara.fillStyle(0xffffff); this.mascara.fillCircle(w / 2 + cx, topo + cy, raio);
+      imagem.setMask(this.mascara.createGeometryMask()); this.add(imagem);
+    }
+    this.add(botoes);
+    if (altura + topo > h - 8) {
+      // Em paisagem curta, o painel cabe sem reduzir a fonte nem os alvos de toque.
+      this.setY(Math.max(6, h - altura - 8));
+      if (this.mascara) { this.mascara.clear(); this.mascara.fillStyle(0xffffff); this.mascara.fillCircle(w / 2 + cx, this.y + cy, raio) }
+      bloqueio.setY(-this.y);
+    }
   }
-
   fechar(): void { this.aberto = false; this.setVisible(false) }
+  destroy(fromScene?: boolean): void { this.mascara?.destroy(); super.destroy(fromScene) }
 }

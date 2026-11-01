@@ -3,13 +3,14 @@ import { PROPS, BAL, GANG, PEDRO, AREIA, CURVA_ESC, VEL_LAURA, VEL_BIA, MOVIMENT
 import { CABELOS, CORES, FONTE } from '../config/assets';
 import { persistir, progresso, recompensarMissao } from '../game/estado';
 import { aceitarAjuda, cavarAreia, escolher, EstadoMissao, novaMissao, Opcao, TEXTOS } from '../game/missaoPedrinho';
-import { TEXTOS_CONTAS } from '../config/contas';
-import { sessao, registrar, observarSessao, sairDaConta } from '../net/sessao';
-import { Botao } from '../ui/Botao';
+import { sessao, registrar } from '../net/sessao';
+import { layoutParque } from '../game/layout';
+import { AvatarAnimado } from '../ui/AvatarAnimado';
+import type { CenaInterface } from './CenaInterface';
 import { Dialogo } from '../ui/Dialogo';
 
 type Brinquedo = 'balanco' | 'escorregador' | 'gangorra' | 'carrossel';
-type Alvo = Brinquedo | 'pedro' | 'areia' | 'vovo' | 'sorvete';
+export type Alvo = Brinquedo | 'pedro' | 'areia' | 'vovo' | 'sorvete';
 type EstadoLaura = 'parada' | Brinquedo | 'danca';
 
 interface Personagem { img: Phaser.GameObjects.Image; x: number; y: number; h: number; w: number; lado: 1 | -1; fala?: Phaser.GameObjects.Container }
@@ -20,6 +21,7 @@ export class CenaParque extends Phaser.Scene {
   private pedro!: Personagem & { feliz: boolean };
   private vovo!: Personagem;
   private vovoT = 0;
+  private pedroCelebraAte = 0;
   private props: Record<string, Phaser.GameObjects.Image> = {};
   private balanco!: { pivo: Phaser.GameObjects.Container; px: number; py: number; th: number };
   private gangorra!: { tabua: Phaser.GameObjects.Image; pvx: number; pvy: number; h: number };
@@ -28,13 +30,11 @@ export class CenaParque extends Phaser.Scene {
   private balao!: Phaser.GameObjects.Container;
   private dica!: Phaser.GameObjects.Arc;
   private dicaTween?: Phaser.Tweens.Tween;
-  private textoMissao!: Phaser.GameObjects.Text;
-  private caixaMissao!: Phaser.GameObjects.Graphics;
-  private textoMoedas!: Phaser.GameObjects.Text;
-  private hudMoedas!: Phaser.GameObjects.Container;
+  private interface?: CenaInterface;
+  objetivoAtual = TEXTOS.objetivoInicial as string;
+  private animadores!: { laura: AvatarAnimado; bia: AvatarAnimado; pedro: AvatarAnimado; marta: AvatarAnimado };
   private dialogo!: Dialogo;
   private escolhas: Opcao[] = [];
-  private eventoMoedas?: Phaser.Time.TimerEvent;
   private missao: EstadoMissao = novaMissao();
   private confete!: Phaser.GameObjects.Particles.ParticleEmitter;
   private poeira!: Phaser.GameObjects.Particles.ParticleEmitter;
@@ -43,11 +43,12 @@ export class CenaParque extends Phaser.Scene {
   constructor() { super('Parque') }
 
   create(): void {
-    this.vovoT = 0; this.escolhas = [];
+    this.vovoT = 0; this.escolhas = []; this.interface = undefined;
+    this.objetivoAtual = progresso.missoesConcluidas.includes('pedrinho-carrinho') ? TEXTOS.objetivoConcluida : TEXTOS.objetivoInicial;
     this.missao = progresso.missoesConcluidas.includes('pedrinho-carrinho') ? { etapa: 'concluida', tentativasErradas: 0 } : novaMissao();
     this.add.image(0, 0, 'parque').setOrigin(0).setDisplaySize(1280, 720).setDepth(-10);
     const fundoClick = this.add.zone(0, 0, 1280, 720).setOrigin(0).setDepth(-9).setInteractive();
-    fundoClick.on('pointerdown', (p: Phaser.Input.Pointer) => this.irPara(null, p.x, p.y));
+    fundoClick.on('pointerdown', (p: Phaser.Input.Pointer) => { const ponto = this.mundo(p); this.irPara(null, ponto.x, ponto.y) });
 
     for (const [nome, p] of Object.entries(PROPS)) {
       const img = this.add.image(p.cx, p.b, p.key).setOrigin(0.5, 1);
@@ -114,8 +115,11 @@ export class CenaParque extends Phaser.Scene {
       balanco: { x: px, y: py + BAL.corrente + 52 }, ...PARADAS, gangorra: { x: GANG.cx - GANG.w * 0.36, y: GANG.b + 8 },
     };
 
-    this.criarHud();
-    this.dialogo = new Dialogo(this);
+    this.animadores = { laura: new AvatarAnimado(this.L.img), bia: new AvatarAnimado(this.bia.img), pedro: new AvatarAnimado(this.pedro.img), marta: new AvatarAnimado(this.vovo.img, true) };
+    this.configurarCamera();
+    this.scale.on('resize', this.configurarCamera, this);
+    this.scene.launch('Interface', { parque: this });
+    this.events.once('shutdown', () => { this.scale.off('resize', this.configurarCamera, this); this.scene.stop('Interface') });
     this.confete = this.add.particles(0, 0, 'confete', {
       emitting: false, lifespan: 3600, speedX: { min: -480, max: 480 }, speedY: { min: -840, max: -240 }, gravityY: 1150,
       rotate: { start: 0, end: 720, random: true }, scaleY: { min: 0.5, max: 1 }, tint: [...CORES.confete], alpha: { start: 1, end: 0.6 },
@@ -154,81 +158,26 @@ export class CenaParque extends Phaser.Scene {
 
   private posicionarFala(p: Personagem): void { if (p.fala?.active) p.fala.setPosition(p.x, p.y - p.h - 12 - 20) }
 
-  private criarHud(): void {
-    new Botao(this, 0, 44, 'Trocar cabelo', () => { this.pararBrinquedo(); persistir(); this.scene.start('Criador') }, { tamanho: 18 }).setDepth(5000).setX(18 + 82);
-    this.caixaMissao = this.add.graphics().setDepth(5000);
-    this.textoMissao = this.add.text(214, 27, '', { fontFamily: FONTE, fontSize: '20px', fontStyle: '600', color: CORES.textoRoxo, wordWrap: { width: 490 } }).setDepth(5001);
-    this.definirObjetivo(this.missao.etapa === 'concluida' ? TEXTOS.pedroDepois : TEXTOS.objetivoInicial);
+  conectarInterface(interfaceJogo: CenaInterface): void { this.interface = interfaceJogo; this.dialogo = interfaceJogo.dialogo }
 
-    const g = this.add.graphics();
-    const moeda = this.add.graphics();
-    moeda.fillStyle(0xb87800); moeda.fillCircle(0, 2, 19); moeda.fillStyle(0xf6b81c); moeda.fillCircle(0, 0, 19);
-    moeda.fillStyle(0xffe27a); moeda.fillCircle(0, 0, 16); moeda.fillStyle(0xffd23f); moeda.fillCircle(0, 0, 13);
-    const estrela: Phaser.Math.Vector2[] = [];
-    for (let i = 0; i < 10; i++) { const r = i % 2 ? 4 : 9.5, a = -Math.PI / 2 + i * Math.PI / 5; estrela.push(new Phaser.Math.Vector2(Math.cos(a) * r, Math.sin(a) * r)) }
-    moeda.fillStyle(0xe39a06); moeda.fillPoints(estrela, true);
-    this.textoMoedas = this.add.text(34, 0, String(progresso.moedas), { fontFamily: FONTE, fontSize: '30px', fontStyle: '700', color: CORES.textoRoxo }).setOrigin(0, 0.5);
-    this.hudMoedas = this.add.container(0, 44, [g, moeda, this.textoMoedas]).setDepth(5000);
-    this.redesenharMoedas();
-    if (sessao.usuario) {
-      const apelido = this.add.text(805, 25, sessao.apelido, { fontFamily: FONTE, fontSize: '20px', color: CORES.textoRoxo, backgroundColor: '#ffffff', padding: { x: 10, y: 6 }, wordWrap: { width: 140 } }).setDepth(5000);
-      const aviso = this.add.text(640, 690, '', { fontFamily: FONTE, fontSize: '20px', color: CORES.textoRoxo, backgroundColor: '#ffffff', padding: { x: 10, y: 6 } }).setOrigin(0.5).setDepth(5000);
-      let saldoAnterior = progresso.moedas;
-      const atualizar = (): void => {
-        apelido.setText(sessao.apelido);
-        aviso.setText(sessao.pendente ? TEXTOS_CONTAS.semInternet : '').setVisible(sessao.pendente);
-        if (saldoAnterior !== progresso.moedas) {
-          const diferenca = progresso.moedas - saldoAnterior;
-          if (diferenca > 0) this.ganharMoedas(diferenca);
-          else { this.eventoMoedas?.remove(); this.textoMoedas.setText(String(progresso.moedas)); this.redesenharMoedas() }
-          saldoAnterior = progresso.moedas;
-        }
-      };
-      const remover = observarSessao(atualizar);
-      this.events.once('shutdown', remover);
-      atualizar();
-      new Botao(this, 1040, 44, TEXTOS_CONTAS.sair, () => {
-        void sairDaConta().then(() => this.scene.start('Entrar')).catch(() => { aviso.setText(TEXTOS_CONTAS.falhaSair).setVisible(true) });
-      }, { tamanho: 18 }).setDepth(5000);
-    }
+  private configurarCamera(): void {
+    const l = layoutParque(this.scale.width, this.scale.height, !!sessao.usuario);
+    this.cameras.main.setViewport(0, l.cabecalho, l.largura, l.alturaMundo)
+      .setBounds(0, 0, 1280, 720).setZoom(l.zoom)
+      .startFollow(this.L.img, true, 0.16, 0.16, 0, 86);
   }
-
-  private redesenharMoedas(): void {
-    const g = this.hudMoedas.getAt(0) as Phaser.GameObjects.Graphics;
-    const w = 34 + this.textoMoedas.width + 44;
-    g.clear(); g.fillStyle(0x461e8c, 0.2); g.fillRoundedRect(-30, -24, w, 56, 28);
-    g.fillStyle(0xffffff, 0.9); g.fillRoundedRect(-30, -28, w, 56, 28); g.lineStyle(4, CORES.lilas); g.strokeRoundedRect(-30, -28, w, 56, 28);
-    this.hudMoedas.setX(1280 - 22 - w + 30);
-  }
-
-  private definirObjetivo(t: string): void {
-    this.textoMissao.setText(t);
-    const g = this.caixaMissao; g.clear();
-    g.fillStyle(0xffffff, 0.9); g.fillRoundedRect(196, 16, this.textoMissao.width + 36, this.textoMissao.height + 22, 22);
-    g.lineStyle(4, CORES.lilas); g.strokeRoundedRect(196, 16, this.textoMissao.width + 36, this.textoMissao.height + 22, 22);
-  }
-
-  private ganharMoedas(n: number): void {
-    if (n <= 0) return;
-    this.eventoMoedas?.remove();
-    let k = 0;
-    const moedasIniciais = progresso.moedas - n;
-    this.eventoMoedas = this.time.addEvent({ delay: 70, repeat: n - 1, callback: () => {
-      k++; this.textoMoedas.setText(String(moedasIniciais + k)); this.redesenharMoedas();
-      this.tweens.add({ targets: this.hudMoedas, scale: 1.25, duration: 120, yoyo: true });
-      if (k === n) persistir();
-    } });
-  }
+  private mundo(p: Phaser.Input.Pointer): Phaser.Math.Vector2 { return p.positionToCamera(this.cameras.main) as Phaser.Math.Vector2 }
+  private definirObjetivo(texto: string): void { this.objetivoAtual = texto; this.interface?.definirObjetivo(texto) }
 
   // ---------- movimento e entrada
   private configurarArrasto(): void {
     const L = this.L;
     let dx = 0, dy = 0;
     L.img.on('dragstart', (p: Phaser.Input.Pointer) => {
-      if (L.estado === 'danca' || this.dialogo.aberto) return;
-      this.pararBrinquedo(); L.arrastando = true; L.andando = false; L.aoChegar = null; dx = L.x - p.x; dy = L.y - p.y;
+      if (L.estado === 'danca' || this.dialogo?.aberto) return;
+      this.pararBrinquedo(); L.arrastando = true; L.andando = false; L.aoChegar = null; const ponto = this.mundo(p); dx = L.x - ponto.x; dy = L.y - ponto.y;
     });
-    L.img.on('drag', (p: Phaser.Input.Pointer) => { if (!L.arrastando) return; L.x = Phaser.Math.Clamp(p.x + dx, 40, 1240); L.y = Phaser.Math.Clamp(p.y + dy, 150, 715) });
+    L.img.on('drag', (p: Phaser.Input.Pointer) => { if (!L.arrastando) return; const ponto = this.mundo(p); L.x = Phaser.Math.Clamp(ponto.x + dx, 40, 1240); L.y = Phaser.Math.Clamp(ponto.y + dy, 150, 715) });
     L.img.on('dragend', () => {
       if (!L.arrastando) return; L.arrastando = false;
       let melhor: Brinquedo | null = null, md = MOVIMENTO.raioArrasto;
@@ -247,7 +196,7 @@ export class CenaParque extends Phaser.Scene {
   }
 
   irPara(alvo: Alvo | null, x = 0, y = 0): void {
-    if (this.L.estado === 'danca' || this.dialogo.aberto || this.L.arrastando) return;
+    if (this.L.estado === 'danca' || this.dialogo?.aberto || this.L.arrastando) return;
     if (!alvo) {
       const anel = this.add.ellipse(x, y, 40, 16).setStrokeStyle(3, 0xffffff, 0.9).setDepth(y);
       this.tweens.add({ targets: anel, scale: 1.6, alpha: 0, duration: 500, onComplete: () => anel.destroy() });
@@ -338,7 +287,6 @@ export class CenaParque extends Phaser.Scene {
         } else {
           const recompensa = recompensarMissao(progresso, 'pedrinho-carrinho', r.moedas);
           Object.assign(progresso, recompensa.progresso);
-          this.ganharMoedas(recompensa.moedas);
         }
         persistir();
         this.L.estado = 'danca'; this.L.t = 0;
@@ -352,6 +300,7 @@ export class CenaParque extends Phaser.Scene {
   }
 
   private deixarPedroFeliz(agora: boolean): void {
+    this.pedroCelebraAte = agora ? this.time.now + 3000 : 0;
     this.pedro.feliz = true; this.pedro.img.setTexture('pedro-feliz'); this.pedro.w = this.pedro.h * 0.9; this.ajustar(this.pedro);
     this.balao.setVisible(false);
     if (!agora) this.carrinho.setVisible(false);
@@ -389,8 +338,8 @@ export class CenaParque extends Phaser.Scene {
         if (d < 4) { L.andando = false; const cb = L.aoChegar; L.aoChegar = null; cb?.() }
         else { const m = Math.min(d, VEL_LAURA * dt); L.x += dx / d * m; L.y += dy / d * m; if (Math.abs(dx) > 3) L.lado = dx > 0 ? 1 : -1 }
       }
-      // vista de lado so existe para cabelo liso (limitacao conhecida)
-      const tex = L.andando && progresso.cabelo === 0 ? 'laura-lado-liso' : frente;
+      // Os seis cabelos usam a mesma articulação; a direção é dada pelo espelhamento.
+      const tex = frente;
       if (L.img.texture.key !== tex) L.img.setTexture(tex);
       if (L.arrastando) this.desenhar(L, L.x, L.y, { by: -14, rot: Math.sin(T * 10) * 5, sx: 1.04, sy: 1.04, z: 5000 });
       else if (L.andando) { const ph = T * 11; this.desenhar(L, L.x, L.y, { by: -Math.abs(Math.sin(ph)) * 7, sy: 1 - 0.035 * Math.abs(Math.cos(ph)), sx: 1 + 0.025 * Math.abs(Math.cos(ph)), rot: Math.sin(ph) * 2.5 }) }
@@ -441,16 +390,21 @@ export class CenaParque extends Phaser.Scene {
 
     // Dona Marta (aceno simples: limitacao conhecida)
     const antes = this.vovoT; this.vovoT += dt;
-    const w = (this.vovoT % 5) < 1.6 ? Math.sin(this.vovoT * 9) * 2.2 : 0;
     const vs = PROPS.vovo.w / this.props.vovo.width;
-    this.props.vovo.setAngle(w).setScale(vs, vs * (1 + Math.sin(T * 1.6) * 0.008));
+    this.props.vovo.setAngle(0).setScale(vs, vs * (1 + Math.sin(T * 1.6) * 0.008));
     if (Math.floor(this.vovoT / 10) !== Math.floor(antes / 10)) this.falar(this.vovo, FALAS_PARQUE.aceno, 1800);
     this.posicionarFala(this.vovo);
 
     // Pedrinho
     const P = this.pedro; P.lado = 1;
-    this.desenhar(P, P.x, P.y, { by: P.feliz ? -Math.abs(Math.sin(T * 6)) * 10 : Math.sin(T * 1.5) * 1.5 });
+    const celebrando = P.feliz && time < this.pedroCelebraAte;
+    this.desenhar(P, P.x, P.y, { by: celebrando ? -Math.abs(Math.sin(T * 6)) * 10 : Math.sin(T * 1.5) * 1.5 });
     this.posicionarFala(P);
     this.balao.setPosition(P.x, P.y - P.h - 35 + Math.sin(T * 4) * 5);
+    const pose = L.estado === 'danca' ? 'dancar' : L.estado === 'balanco' || L.estado === 'gangorra' || L.estado === 'carrossel' ? 'sentar' : L.estado === 'escorregador' ? (L.slideT % 3.8 > 1.6 ? 'escorregar' : 'andar') : L.andando ? 'andar' : 'parada';
+    this.animadores.laura.atualizar(pose, T);
+    this.animadores.bia.atualizar(B.estado === 'andar' ? 'andar' : 'parada', T);
+    this.animadores.pedro.atualizar(celebrando ? 'dancar' : 'parada', T);
+    this.animadores.marta.atualizar(this.vovoT % 5 < 1.6 ? 'acenar' : 'parada', T);
   }
 }
