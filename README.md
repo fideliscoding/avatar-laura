@@ -1,5 +1,9 @@
 # My Town, My World (Minha Cidade, Meu Mundo)
 
+[![Deploy no GitHub Pages](https://github.com/fideliscoding/avatar-laura/actions/workflows/deploy.yml/badge.svg?branch=main)](https://github.com/fideliscoding/avatar-laura/actions/workflows/deploy.yml)
+
+[Jogar My Town, My World](https://fideliscoding.github.io/avatar-laura/)
+
 Jogo para a Laura (9 anos) criar o próprio visual, passear por uma cidade em estilo chibi lilás e aprender valores do dia a dia (honestidade, empatia, gentileza, responsabilidade, cuidado com os outros e com o mundo) por meio de missões curtas com escolhas.
 
 Inspirado no estilo de jogos de "vida em cidade" para crianças, **sem copiar** personagens, nomes, telas ou artes de nenhum jogo existente. Sem emojis em lugar nenhum.
@@ -59,7 +63,7 @@ de deploy continua sem e2e. Posições, raios e velocidades ficam em
 
 ## Publicar
 
-Cada push na branch `main` publica automaticamente em `https://<seu-usuario>.github.io/avatar-laura/`. Passo a passo em [docs/DEPLOY.md](docs/DEPLOY.md) e, bem simples, em [GUIA-DO-BRUNO.md](GUIA-DO-BRUNO.md).
+Cada push na branch `main` publica automaticamente em `https://fideliscoding.github.io/avatar-laura/`. Passo a passo em [docs/DEPLOY.md](docs/DEPLOY.md) e, bem simples, em [GUIA-DO-BRUNO.md](GUIA-DO-BRUNO.md).
 
 ## Mapa do repositório
 
