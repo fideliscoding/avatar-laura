@@ -10,7 +10,7 @@ Plano gratuito do Supabase é suficiente. O schema e suas correções estão em 
 
 ## 2. Rodar o SQL
 
-**SQL Editor > New query**, cole todo o conteúdo de `supabase/migrations/0001_init.sql` e clique em **Run**. Depois aplique `0002_contas_e_recompensa_segura.sql` e `0003_fixa_search_path.sql`, em consultas separadas. Deve aparecer "Success". Em **Table Editor** você verá `profiles`, `avatars`, `missions`, `progress`.
+**SQL Editor > New query**, cole todo o conteúdo de `supabase/migrations/0001_init.sql` e clique em **Run**. Depois aplique `0002_contas_e_recompensa_segura.sql`, `0003_fixa_search_path.sql` e `0004_valida_escolhas_pedrinho.sql`, em consultas separadas. Deve aparecer "Success". Em **Table Editor** você verá `profiles`, `avatars`, `missions`, `progress`.
 
 ## 3. Configurar Auth
 
@@ -71,15 +71,17 @@ Com a CLI (`npx supabase@2.122.0`) e Docker: `npx supabase start`, depois `npx s
 ## 9. Implementação da etapa 03
 
 Projeto identificado: `Avatar Laura`, URL base `https://ilveddmkikbpskbnjedn.supabase.co`.
-Não acrescente `/rest/v1/` à configuração. As três migrações foram aplicadas pelo
+Não acrescente `/rest/v1/` à configuração. As quatro migrações foram aplicadas pelo
 conector Supabase nesta revisão; não reaplique arquivos já registrados no projeto.
-Para outro projeto vazio, aplique os três arquivos na ordem.
+Para outro projeto vazio, aplique os quatro arquivos na ordem.
 
 - `0002`: validação de apelido no servidor, grants explícitos, atualização de perfil
   limitada à coluna `apelido` e bloqueio de linha antes de pagar a missão. Isso
   impede pagamentos simultâneos duplicados. A função exige escolha final B para
   a missão do Pedrinho e continua exigindo `auth.uid()`.
 - `0003`: fixa o `search_path` das duas funções de gatilho da migração inicial.
+- `0004`: adiciona integridade das escolhas do Pedrinho na tabela, rejeitando
+  valores nulos ou fora de A/B/C e conclusão sem a escolha final B.
 - `src/net/supabase.ts`: cliente opcional, com timeout de rede. Sem as duas variáveis,
   exporta `null` e nenhuma tela de conta ou requisição externa é ativada.
 - `src/net/sincronizar.ts`: mescla testável e fila durável por usuário.
