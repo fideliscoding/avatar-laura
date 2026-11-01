@@ -57,7 +57,7 @@ export class AvatarAnimado {
       parte.setPosition(imagem.x + dx * cos - dy * sin, imagem.y + dx * sin + dy * cos)
         .setScale(imagem.scaleX, imagem.scaleY)
         .setRotation(imagem.rotation + Phaser.Math.DegToRad(r.parte ? movimento[r.parte] : 0) * Math.sign(imagem.scaleX || 1))
-        .setDepth(imagem.depth + 0.01 + i * 0.001).setVisible(imagem.visible).setAlpha(imagem.alpha);
+        .setDepth(imagem.depth + 0.01).setVisible(imagem.visible).setAlpha(imagem.alpha);
     });
   }
 }

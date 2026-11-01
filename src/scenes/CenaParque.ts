@@ -115,7 +115,8 @@ export class CenaParque extends Phaser.Scene {
       balanco: { x: px, y: py + BAL.corrente + 52 }, ...PARADAS, gangorra: { x: GANG.cx - GANG.w * 0.36, y: GANG.b + 8 },
     };
 
-    this.animadores = { laura: new AvatarAnimado(this.L.img), bia: new AvatarAnimado(this.bia.img), pedro: new AvatarAnimado(this.pedro.img), marta: new AvatarAnimado(this.vovo.img, true) };
+    // Preserva a ordem dos personagens quando dois estão na mesma profundidade.
+    this.animadores = { marta: new AvatarAnimado(this.vovo.img, true), pedro: new AvatarAnimado(this.pedro.img), bia: new AvatarAnimado(this.bia.img), laura: new AvatarAnimado(this.L.img) };
     this.configurarCamera();
     this.scale.on('resize', this.configurarCamera, this);
     this.scene.launch('Interface', { parque: this });
