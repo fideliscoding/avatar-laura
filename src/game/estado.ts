@@ -30,3 +30,12 @@ export function salvar(p: Progresso, arm: Armazenamento | null = armazenamentoPa
 /** Estado compartilhado entre cenas durante a sessao. */
 export const progresso: Progresso = carregar();
 export function persistir(): void { salvar(progresso) }
+
+/** Registra a recompensa de uma missão uma única vez, inclusive ao repetir a história. */
+export function recompensarMissao(p: Progresso, id: string, moedas: number): { progresso: Progresso; moedas: number } {
+  if (p.missoesConcluidas.includes(id) || moedas <= 0) return { progresso: p, moedas: 0 };
+  return {
+    progresso: { ...p, moedas: p.moedas + moedas, missoesConcluidas: [...p.missoesConcluidas, id] },
+    moedas,
+  };
+}

@@ -41,7 +41,8 @@ export class Dialogo extends Phaser.GameObjects.Container {
       this.rosto.setTexture(rostoKey).setVisible(true);
       const src = this.scene.textures.get(rostoKey).getSourceImage();
       const s = 186 / src.width; // rosto em close: 150% da largura do circulo
-      this.rosto.setScale(s).setOrigin(0.5, 0.08).setY(80 - 62);
+      // background-position: 50% 8% do protótipo: 8% do excedente vertical.
+      this.rosto.setScale(s).setOrigin(0.5, 0).setY(80 - 62 - (src.height * s - 124) * 0.08);
     } else this.rosto.setVisible(false);
     this.botoes.forEach((b) => b.destroy()); this.botoes = [];
     const yb = Math.max(150, 48 + this.fala.height + 34);

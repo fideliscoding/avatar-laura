@@ -1,6 +1,7 @@
 import Phaser from 'phaser';
+import { PROPS, BAL, GANG, PEDRO, AREIA, CURVA_ESC, VEL_LAURA, VEL_BIA, MOVIMENTO, PARADAS, PASSEIO_BIA, ANIMACOES, FALAS_PARQUE } from '../config/parque';
 import { CABELOS, CORES, FONTE } from '../config/assets';
-import { persistir, progresso } from '../game/estado';
+import { persistir, progresso, recompensarMissao } from '../game/estado';
 import { aceitarAjuda, cavarAreia, escolher, EstadoMissao, novaMissao, Opcao, TEXTOS } from '../game/missaoPedrinho';
 import { Botao } from '../ui/Botao';
 import { Dialogo } from '../ui/Dialogo';
@@ -10,20 +11,6 @@ type Alvo = Brinquedo | 'pedro' | 'areia' | 'vovo' | 'sorvete';
 type EstadoLaura = 'parada' | Brinquedo | 'danca';
 
 interface Personagem { img: Phaser.GameObjects.Image; x: number; y: number; h: number; w: number; lado: 1 | -1; fala?: Phaser.GameObjects.Container }
-
-// Coordenadas do prototipo aprovado (palco 1280x720). Ver docs/ARTE.md.
-const PROPS = {
-  sorvete: { key: 'carrinho-sorvete', cx: 1185, b: 330, w: 128 },
-  carrossel: { key: 'carrossel', cx: 180, b: 528, w: 190 },
-  escorregador: { key: 'escorregador', cx: 660, b: 338, w: 272 },
-  vovo: { key: 'vovo', cx: 1158, b: 530, w: 232 },
-} as const;
-const BAL = { left: 230, top: 150, w: 300, corrente: 190 };
-const GANG = { cx: 830, b: 446, w: 250, corte: 0.42 };
-const PEDRO = { x: 688, y: 600, h: 150 };
-const AREIA = { x: 760, y: 495, w: 360, h: 100, cx: 985, cy: 560 };
-const CURVA_ESC = [[0.10, 0.97], [0.13, 0.73], [0.17, 0.49], [0.34, 0.47], [0.42, 0.47], [0.55, 0.62], [0.68, 0.80], [0.82, 0.92], [0.95, 0.96]];
-const VEL_LAURA = 230, VEL_BIA = 90;
 
 export class CenaParque extends Phaser.Scene {
   private L!: Personagem & { estado: EstadoLaura; t: number; tx: number; ty: number; andando: boolean; arrastando: boolean; aoChegar: (() => void) | null; slideT: number };
@@ -52,6 +39,7 @@ export class CenaParque extends Phaser.Scene {
   constructor() { super('Parque') }
 
   create(): void {
+    this.vovoT = 0;
     this.missao = progresso.missoesConcluidas.includes('pedrinho-carrinho') ? { etapa: 'concluida', tentativasErradas: 0 } : novaMissao();
     this.add.image(0, 0, 'parque').setOrigin(0).setDisplaySize(1280, 720).setDepth(-10);
     const fundoClick = this.add.zone(0, 0, 1280, 720).setOrigin(0).setDepth(-9).setInteractive();
@@ -119,8 +107,7 @@ export class CenaParque extends Phaser.Scene {
     this.configurarArrasto();
 
     this.paradas = {
-      balanco: { x: px, y: py + BAL.corrente + 52 }, escorregador: { x: 556, y: 336 }, gangorra: { x: GANG.cx - GANG.w * 0.36, y: GANG.b + 8 },
-      carrossel: { x: 180, y: 545 }, pedro: { x: PEDRO.x - 80, y: PEDRO.y }, areia: { x: 900, y: 612 }, vovo: { x: 1040, y: 540 }, sorvete: { x: 1110, y: 350 },
+      balanco: { x: px, y: py + BAL.corrente + 52 }, ...PARADAS, gangorra: { x: GANG.cx - GANG.w * 0.36, y: GANG.b + 8 },
     };
 
     this.criarHud();
@@ -135,7 +122,7 @@ export class CenaParque extends Phaser.Scene {
     }).setDepth(7000);
 
     if (this.missao.etapa === 'concluida') this.deixarPedroFeliz(false);
-    this.falar(this.L, 'Que parque lindo!', 1800);
+    this.falar(this.L, FALAS_PARQUE.chegada, 1800);
   }
 
   // ---------- utilitarios
@@ -197,9 +184,11 @@ export class CenaParque extends Phaser.Scene {
   }
 
   private ganharMoedas(n: number): void {
+    if (n <= 0) return;
     let k = 0;
+    const moedasIniciais = progresso.moedas - n;
     this.time.addEvent({ delay: 70, repeat: n - 1, callback: () => {
-      progresso.moedas++; k++; this.textoMoedas.setText(String(progresso.moedas)); this.redesenharMoedas();
+      k++; this.textoMoedas.setText(String(moedasIniciais + k)); this.redesenharMoedas();
       this.tweens.add({ targets: this.hudMoedas, scale: 1.25, duration: 120, yoyo: true });
       if (k === n) persistir();
     } });
@@ -211,14 +200,14 @@ export class CenaParque extends Phaser.Scene {
     let dx = 0, dy = 0;
     L.img.on('dragstart', (p: Phaser.Input.Pointer) => {
       if (L.estado === 'danca' || this.dialogo.aberto) return;
-      this.pararBrinquedo(); L.arrastando = true; L.andando = false; dx = L.x - p.x; dy = L.y - p.y;
+      this.pararBrinquedo(); L.arrastando = true; L.andando = false; L.aoChegar = null; dx = L.x - p.x; dy = L.y - p.y;
     });
     L.img.on('drag', (p: Phaser.Input.Pointer) => { if (!L.arrastando) return; L.x = Phaser.Math.Clamp(p.x + dx, 40, 1240); L.y = Phaser.Math.Clamp(p.y + dy, 150, 715) });
     L.img.on('dragend', () => {
       if (!L.arrastando) return; L.arrastando = false;
-      let melhor: Brinquedo | null = null, md = 120;
+      let melhor: Brinquedo | null = null, md = MOVIMENTO.raioArrasto;
       for (const k of ['balanco', 'escorregador', 'gangorra', 'carrossel'] as Brinquedo[]) {
-        const r = this.paradas[k]; const d = Math.hypot(r.x - L.x, (r.y - L.y) * 1.2);
+        const r = this.paradas[k]; const d = Math.hypot(r.x - L.x, (r.y - L.y) * MOVIMENTO.pesoVertical);
         if (d < md) { md = d; melhor = k }
       }
       if (melhor) { L.x = this.paradas[melhor].x; L.y = this.paradas[melhor].y; this.iniciarBrinquedo(melhor) } else L.y = Math.max(300, L.y);
@@ -228,7 +217,7 @@ export class CenaParque extends Phaser.Scene {
   private andarAte(x: number, y: number, aoChegar?: () => void): void {
     if (this.L.estado === 'danca') return;
     this.pararBrinquedo();
-    Object.assign(this.L, { tx: Phaser.Math.Clamp(x, 40, 1240), ty: Phaser.Math.Clamp(y, 300, 705), andando: true, aoChegar: aoChegar ?? null });
+    Object.assign(this.L, { tx: Phaser.Math.Clamp(x, MOVIMENTO.minimoX, MOVIMENTO.maximoX), ty: Phaser.Math.Clamp(y, MOVIMENTO.minimoY, MOVIMENTO.maximoY), andando: true, aoChegar: aoChegar ?? null });
   }
 
   irPara(alvo: Alvo | null, x = 0, y = 0): void {
@@ -242,8 +231,8 @@ export class CenaParque extends Phaser.Scene {
     this.andarAte(r.x, r.y, () => {
       if (alvo === 'pedro') this.conversarPedro();
       else if (alvo === 'areia') this.cavar();
-      else if (alvo === 'vovo') this.falar(this.vovo, 'Que menina gentil!', 2000);
-      else if (alvo === 'sorvete') this.falar(this.L, 'Hmm, sorvete de morango!', 1800);
+      else if (alvo === 'vovo') this.falar(this.vovo, FALAS_PARQUE.marta, 2000);
+      else if (alvo === 'sorvete') this.falar(this.L, FALAS_PARQUE.sorvete, 1800);
       else this.iniciarBrinquedo(alvo);
     });
   }
@@ -314,8 +303,9 @@ export class CenaParque extends Phaser.Scene {
       this.time.delayedCall(720, () => {
         this.deixarPedroFeliz(true);
         this.confete.explode(180, 640, 250);
-        this.ganharMoedas(r.moedas);
-        if (!progresso.missoesConcluidas.includes('pedrinho-carrinho')) progresso.missoesConcluidas.push('pedrinho-carrinho');
+        const recompensa = recompensarMissao(progresso, 'pedrinho-carrinho', r.moedas);
+        Object.assign(progresso, recompensa.progresso);
+        this.ganharMoedas(recompensa.moedas);
         persistir();
         this.L.estado = 'danca'; this.L.t = 0;
         this.falar(this.pedro, TEXTOS.pedroAgradece, 2600);
@@ -335,7 +325,8 @@ export class CenaParque extends Phaser.Scene {
 
   private reiniciarMissao(): void {
     this.missao = novaMissao();
-    progresso.missoesConcluidas = progresso.missoesConcluidas.filter((m) => m !== 'pedrinho-carrinho'); persistir();
+    // Reinicia a história, preservando o registro da recompensa já recebida.
+    persistir();
     this.pedro.feliz = false; this.pedro.img.setTexture('pedro-triste'); this.pedro.w = this.pedro.h * 0.66; this.ajustar(this.pedro);
     this.balao.setVisible(true); this.tweens.killTweensOf(this.carrinho); this.carrinho.setVisible(false);
     this.definirObjetivo(TEXTOS.objetivoInicial);
@@ -371,23 +362,23 @@ export class CenaParque extends Phaser.Scene {
       else if (L.andando) { const ph = T * 11; this.desenhar(L, L.x, L.y, { by: -Math.abs(Math.sin(ph)) * 7, sy: 1 - 0.035 * Math.abs(Math.cos(ph)), sx: 1 + 0.025 * Math.abs(Math.cos(ph)), rot: Math.sin(ph) * 2.5 }) }
       else this.desenhar(L, L.x, L.y, { sy: 1 + Math.sin(T * 2.4) * 0.012, sx: 1 - Math.sin(T * 2.4) * 0.008 });
     } else if (L.estado === 'balanco') {
-      const th = Math.sin(L.t * 2.2) * Math.min(1, L.t / 1.5) * 28, r = Phaser.Math.DegToRad(th); this.balanco.th = th;
+      const th = Math.sin(L.t * ANIMACOES.balanco.velocidade) * Math.min(1, L.t / ANIMACOES.balanco.entrada) * ANIMACOES.balanco.angulo, r = Phaser.Math.DegToRad(th); this.balanco.th = th;
       L.x = this.balanco.px - Math.sin(r) * BAL.corrente; L.y = this.balanco.py + Math.cos(r) * BAL.corrente;
       this.desenhar(L, L.x, L.y, { oy: 0.64, rot: th, z: 430, sx: 0.95, sy: 0.95 });
     } else if (L.estado === 'escorregador') {
-      L.slideT += dt; const dur = 3.2; let u = (L.slideT % (dur + 0.6)) / dur; if (u > 1) u = 1;
+      L.slideT += dt; const dur = ANIMACOES.escorregador.duracao; let u = (L.slideT % (dur + ANIMACOES.escorregador.pausa)) / dur; if (u > 1) u = 1;
       const v = u < 0.5 ? u * 0.9 : 0.45 + (u - 0.5) * 1.1; const [x, y] = this.pontoEscorregador(Math.min(1, v)); const desce = v > 0.47;
       L.x = x; L.y = y; L.lado = 1;
       this.desenhar(L, x, y + (desce ? L.h * 0.3 : 0), { by: desce ? 0 : -Math.abs(Math.sin(L.t * 9)) * 4, rot: desce ? (v < 0.85 ? 18 : 6) : 0, sy: desce ? 0.82 : 1, sx: 0.92, z: desce ? (v < 0.6 ? 420 : 520) : 345 });
-      if (L.slideT > (dur + 0.6) * 2) { L.estado = 'parada'; L.x = this.paradas.escorregador.x + 190; L.y = 360 }
+      if (L.slideT > (dur + ANIMACOES.escorregador.pausa) * ANIMACOES.escorregador.descidas) { L.estado = 'parada'; L.x = this.paradas.escorregador.x + ANIMACOES.escorregador.saidaX; L.y = ANIMACOES.escorregador.saidaY }
     } else if (L.estado === 'gangorra') {
-      const a = Math.sin(L.t * 2) * 11, r = Phaser.Math.DegToRad(a); this.gangorra.tabua.setAngle(a);
-      const lx = -GANG.w * 0.36, ly = -6;
+      const a = Math.sin(L.t * ANIMACOES.gangorra.velocidade) * ANIMACOES.gangorra.angulo, r = Phaser.Math.DegToRad(a); this.gangorra.tabua.setAngle(a);
+      const lx = GANG.w * ANIMACOES.gangorra.ponta, ly = -6;
       L.x = this.gangorra.pvx + lx * Math.cos(r) - ly * Math.sin(r); L.y = this.gangorra.pvy + lx * Math.sin(r) + ly * Math.cos(r); L.lado = 1;
       this.desenhar(L, L.x, L.y, { oy: 0.58, rot: a * 0.5, sx: 0.9, sy: 0.9, z: GANG.b + 2 });
     } else if (L.estado === 'carrossel') {
-      const a = L.t * 1.6, P = PROPS.carrossel; L.x = P.cx + Math.cos(a) * 62; L.y = P.b - 38 + Math.sin(a) * 14; L.lado = Math.sin(a) > 0 ? -1 : 1;
-      this.desenhar(L, L.x, L.y, { sx: 0.78, sy: 0.78, z: Math.sin(a) > 0 ? P.b + 5 : P.b - 5, by: -Math.abs(Math.sin(a * 2)) * 3 });
+      const a = L.t * ANIMACOES.carrossel.velocidade, P = PROPS.carrossel; L.x = P.cx + Math.cos(a) * ANIMACOES.carrossel.raioX; L.y = P.b - ANIMACOES.carrossel.altura + Math.sin(a) * ANIMACOES.carrossel.raioY; L.lado = Math.sin(a) > 0 ? -1 : 1;
+      this.desenhar(L, L.x, L.y, { sx: ANIMACOES.carrossel.escala, sy: ANIMACOES.carrossel.escala, z: Math.sin(a) > 0 ? P.b + 5 : P.b - 5, by: -Math.abs(Math.sin(a * 2)) * 3 });
     } else if (L.estado === 'danca') {
       const k = L.t; let by = 0, sx = 1;
       if (L.img.texture.key !== frente) L.img.setTexture(frente);
@@ -407,8 +398,8 @@ export class CenaParque extends Phaser.Scene {
       const dx = B.tx - B.x, dy = B.ty - B.y, d = Math.hypot(dx, dy);
       if (d < 3) { B.estado = 'esperar'; B.t = 0 } else { const m = Math.min(d, VEL_BIA * dt); B.x += dx / d * m; B.y += dy / d * m; B.lado = dx > 0 ? 1 : -1 }
     } else if (B.t > 2.5) {
-      B.estado = 'andar'; const noEsc = B.tx > 520; B.tx = noEsc ? 455 : 560; B.ty = noEsc ? 445 : 352;
-      this.falar(B, noEsc ? 'Agora o balanço!' : 'Vou no escorregador!', 1600);
+      B.estado = 'andar'; const noEsc = B.tx > 520; const destino = noEsc ? PASSEIO_BIA.balanco : PASSEIO_BIA.escorregador; B.tx = destino.x; B.ty = destino.y;
+      this.falar(B, noEsc ? FALAS_PARQUE.biaBalanco : FALAS_PARQUE.biaEscorregador, 1600);
     }
     const ph = T * 9;
     this.desenhar(B, B.x, B.y, B.estado === 'andar' ? { by: -Math.abs(Math.sin(ph)) * 5, sy: 1 - 0.03 * Math.abs(Math.cos(ph)), rot: Math.sin(ph) * 2 } : { sy: 1 + Math.sin(T * 3) * 0.015 });
@@ -419,7 +410,7 @@ export class CenaParque extends Phaser.Scene {
     const w = (this.vovoT % 5) < 1.6 ? Math.sin(this.vovoT * 9) * 2.2 : 0;
     const vs = PROPS.vovo.w / this.props.vovo.width;
     this.props.vovo.setAngle(w).setScale(vs, vs * (1 + Math.sin(T * 1.6) * 0.008));
-    if (Math.floor(this.vovoT / 10) !== Math.floor(antes / 10)) this.falar(this.vovo, 'Oi, Laura!', 1800);
+    if (Math.floor(this.vovoT / 10) !== Math.floor(antes / 10)) this.falar(this.vovo, FALAS_PARQUE.aceno, 1800);
     this.posicionarFala(this.vovo);
 
     // Pedrinho

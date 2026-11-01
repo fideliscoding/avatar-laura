@@ -2,7 +2,7 @@
 
 Estilo: chibi profissional, pastel, paleta lilás, contorno suave. PNG transparente, recortado rente. Nomes em minúsculas com hífen e sem acento. Nada de emojis. Não copiar artes de jogos existentes.
 
-Palco: 1280x720. Todas as posições abaixo são do protótipo aprovado e estão em `src/scenes/CenaParque.ts`.
+Palco: 1280x720. Todas as posições abaixo são do protótipo aprovado e estão em `src/config/parque.ts`, consumidas por `src/scenes/CenaParque.ts`.
 
 **Âncora padrão:** personagens e objetos de chão usam origem (0.5, 1), ou seja, o ponto (x, y) é o meio dos pés/base. Profundidade (`depth`) = y.
 
@@ -73,6 +73,13 @@ Para as próximas etapas:
 - [ ] Pets (gato, cachorro, coelho) em 2 humores.
 - [ ] Ícones das frases prontas e acenos do multiplayer (desenhados, nunca emojis).
 - [ ] Avatares de adultos (pais) no mesmo estilo.
-- [ ] Ícone do app / favicon lilás.
+- [x] Favicon lilás em `public/favicon.svg`: coroa branca e ponto dourado, vetorial e legível em 16 e 32 px. O ícone de instalação do app fica para uma etapa futura.
 
 Ao criar um asset novo: adicione em `src/config/assets.ts`, documente aqui (arquivo, tamanho, âncora, posição, largura) e marque o item.
+
+## Revisão do port (etapa 01)
+
+Criador com fundo pastel e halo suave, seis closes, seleção persistente e pulinho.
+O recorte dos diálogos usa a posição vertical de 8% do excedente da imagem,
+como `background-position: 50% 8%` no protótipo. Capturas atualizadas em
+`docs/screenshots/phaser/`, incluindo carrossel e escorregador.
