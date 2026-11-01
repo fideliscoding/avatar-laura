@@ -3,6 +3,8 @@ import { PROPS, BAL, GANG, PEDRO, AREIA, CURVA_ESC, VEL_LAURA, VEL_BIA, MOVIMENT
 import { CABELOS, CORES, FONTE } from '../config/assets';
 import { persistir, progresso, recompensarMissao } from '../game/estado';
 import { aceitarAjuda, cavarAreia, escolher, EstadoMissao, novaMissao, Opcao, TEXTOS } from '../game/missaoPedrinho';
+import { TEXTOS_CONTAS } from '../config/contas';
+import { sessao, registrar, observarSessao, sairDaConta } from '../net/sessao';
 import { Botao } from '../ui/Botao';
 import { Dialogo } from '../ui/Dialogo';
 
@@ -31,6 +33,8 @@ export class CenaParque extends Phaser.Scene {
   private textoMoedas!: Phaser.GameObjects.Text;
   private hudMoedas!: Phaser.GameObjects.Container;
   private dialogo!: Dialogo;
+  private escolhas: Opcao[] = [];
+  private eventoMoedas?: Phaser.Time.TimerEvent;
   private missao: EstadoMissao = novaMissao();
   private confete!: Phaser.GameObjects.Particles.ParticleEmitter;
   private poeira!: Phaser.GameObjects.Particles.ParticleEmitter;
@@ -39,7 +43,7 @@ export class CenaParque extends Phaser.Scene {
   constructor() { super('Parque') }
 
   create(): void {
-    this.vovoT = 0;
+    this.vovoT = 0; this.escolhas = [];
     this.missao = progresso.missoesConcluidas.includes('pedrinho-carrinho') ? { etapa: 'concluida', tentativasErradas: 0 } : novaMissao();
     this.add.image(0, 0, 'parque').setOrigin(0).setDisplaySize(1280, 720).setDepth(-10);
     const fundoClick = this.add.zone(0, 0, 1280, 720).setOrigin(0).setDepth(-9).setInteractive();
@@ -166,6 +170,27 @@ export class CenaParque extends Phaser.Scene {
     this.textoMoedas = this.add.text(34, 0, String(progresso.moedas), { fontFamily: FONTE, fontSize: '30px', fontStyle: '700', color: CORES.textoRoxo }).setOrigin(0, 0.5);
     this.hudMoedas = this.add.container(0, 44, [g, moeda, this.textoMoedas]).setDepth(5000);
     this.redesenharMoedas();
+    if (sessao.usuario) {
+      const apelido = this.add.text(805, 25, sessao.apelido, { fontFamily: FONTE, fontSize: '20px', color: CORES.textoRoxo, backgroundColor: '#ffffff', padding: { x: 10, y: 6 }, wordWrap: { width: 140 } }).setDepth(5000);
+      const aviso = this.add.text(640, 690, '', { fontFamily: FONTE, fontSize: '20px', color: CORES.textoRoxo, backgroundColor: '#ffffff', padding: { x: 10, y: 6 } }).setOrigin(0.5).setDepth(5000);
+      let saldoAnterior = progresso.moedas;
+      const atualizar = (): void => {
+        apelido.setText(sessao.apelido);
+        aviso.setText(sessao.pendente ? TEXTOS_CONTAS.semInternet : '').setVisible(sessao.pendente);
+        if (saldoAnterior !== progresso.moedas) {
+          const diferenca = progresso.moedas - saldoAnterior;
+          if (diferenca > 0) this.ganharMoedas(diferenca);
+          else { this.eventoMoedas?.remove(); this.textoMoedas.setText(String(progresso.moedas)); this.redesenharMoedas() }
+          saldoAnterior = progresso.moedas;
+        }
+      };
+      const remover = observarSessao(atualizar);
+      this.events.once('shutdown', remover);
+      atualizar();
+      new Botao(this, 1040, 44, TEXTOS_CONTAS.sair, () => {
+        void sairDaConta().then(() => this.scene.start('Entrar')).catch(() => { aviso.setText(TEXTOS_CONTAS.falhaSair).setVisible(true) });
+      }, { tamanho: 18 }).setDepth(5000);
+    }
   }
 
   private redesenharMoedas(): void {
@@ -185,9 +210,10 @@ export class CenaParque extends Phaser.Scene {
 
   private ganharMoedas(n: number): void {
     if (n <= 0) return;
+    this.eventoMoedas?.remove();
     let k = 0;
     const moedasIniciais = progresso.moedas - n;
-    this.time.addEvent({ delay: 70, repeat: n - 1, callback: () => {
+    this.eventoMoedas = this.time.addEvent({ delay: 70, repeat: n - 1, callback: () => {
       k++; this.textoMoedas.setText(String(moedasIniciais + k)); this.redesenharMoedas();
       this.tweens.add({ targets: this.hudMoedas, scale: 1.25, duration: 120, yoyo: true });
       if (k === n) persistir();
@@ -257,6 +283,7 @@ export class CenaParque extends Phaser.Scene {
     if (this.missao.etapa === 'concluida') { this.dialogo.abrir('Pedrinho', 'pedro-feliz', TEXTOS.pedroDepois, [{ texto: 'Vamos!' }]); return }
     this.dialogo.abrir('Pedrinho', 'pedro-triste', TEXTOS.pedroPede, [{ texto: TEXTOS.respostaAjudar, acao: () => {
       this.missao = aceitarAjuda(this.missao);
+      registrar({ tipo: 'missao', missao: 'pedrinho-carrinho', escolhas: [...this.escolhas] });
       this.definirObjetivo(TEXTOS.objetivoProcurar);
       this.dica.setVisible(true);
       this.dicaTween?.stop();
@@ -289,7 +316,9 @@ export class CenaParque extends Phaser.Scene {
   }
 
   private escolherOpcao(op: Opcao): void {
+    this.escolhas = [...this.escolhas.slice(-63), op];
     const r = escolher(this.missao, op); this.missao = r.estado;
+    if (op !== 'B') registrar({ tipo: 'missao', missao: 'pedrinho-carrinho', escolhas: [...this.escolhas] });
     if (r.conselho) { this.dialogo.abrir('Dona Marta', 'vovo', r.conselho, [{ texto: TEXTOS.tentarDeNovo, acao: () => this.perguntar() }]); return }
     if (op !== 'B') return;
     const alvoX = this.pedro.x - 70;
@@ -303,9 +332,14 @@ export class CenaParque extends Phaser.Scene {
       this.time.delayedCall(720, () => {
         this.deixarPedroFeliz(true);
         this.confete.explode(180, 640, 250);
-        const recompensa = recompensarMissao(progresso, 'pedrinho-carrinho', r.moedas);
-        Object.assign(progresso, recompensa.progresso);
-        this.ganharMoedas(recompensa.moedas);
+        if (sessao.usuario) {
+          if (!progresso.missoesConcluidas.includes('pedrinho-carrinho')) progresso.missoesConcluidas.push('pedrinho-carrinho');
+          registrar({ tipo: 'concluir', missao: 'pedrinho-carrinho', escolhas: [...this.escolhas] });
+        } else {
+          const recompensa = recompensarMissao(progresso, 'pedrinho-carrinho', r.moedas);
+          Object.assign(progresso, recompensa.progresso);
+          this.ganharMoedas(recompensa.moedas);
+        }
         persistir();
         this.L.estado = 'danca'; this.L.t = 0;
         this.falar(this.pedro, TEXTOS.pedroAgradece, 2600);
@@ -324,7 +358,7 @@ export class CenaParque extends Phaser.Scene {
   }
 
   private reiniciarMissao(): void {
-    this.missao = novaMissao();
+    this.missao = novaMissao(); this.escolhas = [];
     // Reinicia a história, preservando o registro da recompensa já recebida.
     persistir();
     this.pedro.feliz = false; this.pedro.img.setTexture('pedro-triste'); this.pedro.w = this.pedro.h * 0.66; this.ajustar(this.pedro);

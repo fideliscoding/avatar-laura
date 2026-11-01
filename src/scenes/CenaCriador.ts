@@ -1,6 +1,7 @@
 import Phaser from 'phaser';
 import { CABELOS, CORES, FONTE } from '../config/assets';
 import { persistir, progresso } from '../game/estado';
+import { registrar } from '../net/sessao';
 import { Botao } from '../ui/Botao';
 
 /** Tela "Crie o seu visual": escolha de cabelo (6 opcoes) com a Laura grande a esquerda. */
@@ -63,7 +64,7 @@ export class CenaCriador extends Phaser.Scene {
   private ajustarLaura(): void { this.laura.setScale(Math.min(320 / this.laura.width, 520 / this.laura.height)) }
 
   private escolher(i: number): void {
-    progresso.cabelo = i; persistir();
+    progresso.cabelo = i; persistir(); registrar({ tipo: 'cabelo', cabelo: i });
     this.laura.setTexture(CABELOS[i].key); this.ajustarLaura();
     this.pulo = this.time.now; this.desenharCards();
   }

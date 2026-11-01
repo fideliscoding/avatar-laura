@@ -1,0 +1,15 @@
+export const TEXTOS_CONTAS = {
+  titulo: 'Entrar como responsável',
+  explicacao: 'A conta é do adulto. A criança usa somente um apelido.',
+  email: 'E-mail do responsável', senha: 'Senha', apelido: 'Apelido da criança',
+  entrar: 'Entrar', criar: 'Criar conta', voltar: 'Já tenho conta', offline: 'Jogar sem conta',
+  confirme: 'Confira seu e-mail para confirmar a conta. Depois, volte para entrar.',
+  trabalhando: 'Aguarde um instante...',
+  falha: 'Não foi possível entrar. Confira os dados e a conexão e tente novamente.',
+  falhaCadastro: 'Não foi possível criar a conta. Confira os dados e tente novamente.',
+  apelidoInvalido: 'Escolha um apelido gentil de 1 a 20 letras, números ou espaços.',
+  senhaCurta: 'Use uma senha com pelo menos 8 caracteres para a conta do responsável.',
+  emailInvalido: 'Confira o e-mail do responsável.',
+  semInternet: 'Sem internet, seu progresso será salvo depois',
+  sair: 'Sair', falhaSair: 'Não foi possível sair. Tente novamente.',
+} as const;

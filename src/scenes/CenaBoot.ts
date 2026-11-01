@@ -1,4 +1,5 @@
 import Phaser from 'phaser';
+import { supabase } from '../net/supabase';
 import { CABELOS, CORES, FONTE, IMAGENS } from '../config/assets';
 
 /** Carrega fonte e imagens com barra de progresso, gera texturas de particulas e abre o criador. */
@@ -21,6 +22,6 @@ export class CenaBoot extends Phaser.Scene {
     g.fillStyle(0xffffff); g.fillRect(0, 0, 12, 8); g.generateTexture('confete', 12, 8); g.clear();
     g.fillStyle(0xffffff); g.fillCircle(6, 6, 6); g.generateTexture('poeira', 12, 12); g.destroy();
     try { await document.fonts.load('700 26px Fredoka'); await document.fonts.load('600 26px Fredoka') } catch { /* segue com fonte reserva */ }
-    this.scene.start('Criador');
+    this.scene.start(supabase ? 'Entrar' : 'Criador');
   }
 }

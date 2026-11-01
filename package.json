@@ -14,9 +14,11 @@
     "test": "vitest run",
     "typecheck": "tsc --noEmit",
     "check:emojis": "node scripts/check-emojis.mjs",
-    "test:e2e": "playwright test"
+    "test:e2e": "playwright test",
+    "test:e2e:contas": "playwright test --config playwright.contas.config.ts"
   },
   "dependencies": {
+    "@supabase/supabase-js": "2.118.0",
     "phaser": "3.90.0"
   },
   "devDependencies": {

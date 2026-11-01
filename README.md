@@ -44,7 +44,8 @@ npm run build      # gera a pasta dist/
 npm run preview    # serve o dist/ para conferir
 npm run check:emojis
 npx playwright install --with-deps chromium  # uma vez, instala o navegador de teste
-npm run test:e2e   # build + vite preview + testes de navegador
+npm run test:e2e   # build + vite preview + testes offline de navegador
+npm run test:e2e:contas  # cadastro e entrada com servidor simulado
 ```
 
 ## Validação do port (etapa 01)
@@ -60,6 +61,23 @@ a comparação visual no servidor de desenvolvimento também foram feitas em Web
 O CI executa build, Vitest, verificação de emojis e Playwright nos PRs. O workflow
 de deploy continua sem e2e. Posições, raios e velocidades ficam em
 `src/config/parque.ts`. O favicon vetorial lilás foi mantido após revisão em tamanho pequeno.
+
+## Contas e progresso na nuvem (etapa 03)
+
+Sem configuração, o jogo continua abrindo direto no criador e salvando no navegador.
+Com Supabase configurado, aparece **Entrar como responsável**, com cadastro por
+apelido, e-mail e senha do adulto, ou **Jogar sem conta**. O parque mostra o apelido
+e o botão **Sair**. A criança não precisa fornecer e-mail nem outros dados pessoais.
+
+A conta recupera cabelo, missões e saldo oficial do servidor. O progresso do
+convidado fica separado de cada conta. Ações feitas sem rede entram em uma fila
+por usuário; o jogo mostra um aviso discreto e tenta reenviar a cada 15 segundos.
+Moedas online só mudam após a resposta da função do servidor. O saldo do
+`localStorage` nunca é promovido a saldo oficial.
+
+Copie `.env.example` para `.env.local` e preencha somente a URL base e a chave
+pública. No GitHub, configure os dois secrets públicos de build antes de publicar.
+Aplique as migrações na ordem. Instruções e validação em [docs/SUPABASE.md](docs/SUPABASE.md).
 
 ## Publicar
 

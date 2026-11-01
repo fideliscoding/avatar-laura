@@ -30,6 +30,7 @@ Valores e virtudes do cotidiano, não só religiosos:
 
 ```
 Boot (carregando, barra lilás)
+  -> Entrar (somente quando o Supabase está configurado; conta do adulto ou offline)
   -> Criador "Crie o seu visual"
        -> botão "Ir para o parque" -> Parque
   Parque -> botão "Trocar cabelo" -> Criador
