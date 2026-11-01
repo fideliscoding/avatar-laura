@@ -3,87 +3,72 @@ import { CABELOS, CORES, FONTE } from '../config/assets';
 import { persistir, progresso } from '../game/estado';
 import { registrar } from '../net/sessao';
 import { Botao } from '../ui/Botao';
+import { AvatarAnimado } from '../ui/AvatarAnimado';
 
-/** Tela "Crie o seu visual": escolha de cabelo (6 opcoes) com a Laura grande a esquerda. */
+/** Criador com grade e avatar reorganizados conforme a área visível do dispositivo. */
 export class CenaCriador extends Phaser.Scene {
   private laura!: Phaser.GameObjects.Image;
-  private cards: Phaser.GameObjects.Graphics[] = [];
-  private pulo = 0;
-
+  private avatar!: AvatarAnimado;
+  private cards: { g: Phaser.GameObjects.Graphics; x: number; y: number; w: number; h: number }[] = [];
+  private mascaras: Phaser.GameObjects.Graphics[] = [];
+  private pulo = -1000;
+  private alvo = { w: 320, h: 520 };
   constructor() { super('Criador') }
 
   create(): void {
-    this.cards = [];
-    this.pulo = 0;
-    this.add.rectangle(640, 360, 1280, 720, 0xd9c7f7);
-    const fundo = this.add.image(640, 360, 'parque').setDisplaySize(1320, 760).setAlpha(0.55);
-    if (this.renderer.type === Phaser.WEBGL) fundo.postFX?.addBlur(1, 2, 2, 1.2);
-    const tinta = this.add.graphics();
-    tinta.fillStyle(0xbea0f0, 0.45); tinta.fillRect(0, 0, 1280, 720);
-    // Halo suave, sem a borda circular que não existe no protótipo.
-    for (let raio = 600; raio >= 20; raio -= 20) {
-      tinta.fillStyle(0xffffff, 0.012); tinta.fillCircle(486, 396, raio);
-    }
-
-    this.add.text(60, 34, 'My Town, My World', { fontFamily: FONTE, fontSize: '54px', fontStyle: '700', color: '#ffffff' })
-      .setShadow(0, 4, '#7a4fc9', 0, false, true);
-    const sub = this.add.text(82, 112, 'Crie o seu visual', { fontFamily: FONTE, fontSize: '26px', fontStyle: '600', color: CORES.textoRoxo });
-    const pill = this.add.graphics(); pill.fillStyle(0xffffff, 0.75); pill.fillRoundedRect(64, 106, sub.width + 36, 42, 21); pill.setDepth(0);
-    sub.setDepth(1);
-
-    const sombra = this.add.ellipse(400, 638, 300, 56, 0x7850c8, 0.35);
-    sombra.setDepth(0);
-    this.laura = this.add.image(400, 640, CABELOS[progresso.cabelo].key).setOrigin(0.5, 1);
-    this.ajustarLaura();
-
-    // painel
-    const px = 664, py = 96;
-    const painel = this.add.graphics();
-    painel.fillStyle(0x502896, 0.18); painel.fillRoundedRect(px, py + 14, 560, 520, 34);
-    painel.fillStyle(0xffffff, 0.85); painel.fillRoundedRect(px, py, 560, 520, 34);
-    painel.lineStyle(4, 0xffffff, 1); painel.strokeRoundedRect(px, py, 560, 520, 34);
-    this.add.text(px + 32, py + 24, 'Cabelo', { fontFamily: FONTE, fontSize: '28px', fontStyle: '700', color: '#6b3fc0' });
-
-    CABELOS.forEach((c, i) => {
-      const cx = px + 26 + (i % 3) * 176, cy = py + 76 + Math.floor(i / 3) * 206, cw = 160, ch = 190;
-      const g = this.add.graphics(); this.cards.push(g);
-      const thumb = this.add.image(cx + cw / 2, cy + 6, c.key).setOrigin(0.5, 0);
-      thumb.setScale((150 * 2.5) / thumb.height); // cabeca em close, como no prototipo
-      const m = this.make.graphics({}, false); m.fillStyle(0xffffff); m.fillRoundedRect(cx + 4, cy + 4, cw - 8, 150, 20);
-      thumb.setMask(m.createGeometryMask());
-      this.add.text(cx + cw / 2, cy + ch - 22, c.nome, { fontFamily: FONTE, fontSize: '18px', fontStyle: '600', color: CORES.textoRoxo }).setOrigin(0.5);
-      const zona = this.add.zone(cx, cy, cw, ch).setOrigin(0).setInteractive({ useHandCursor: true });
-      zona.on('pointerup', () => this.escolher(i));
-      (g as Phaser.GameObjects.Graphics & { box?: number[] }).box = [cx, cy, cw, ch];
+    this.pulo = -1000; this.reconstruir();
+    this.scale.on('resize', this.reconstruir, this);
+    this.events.once('shutdown', () => { this.scale.off('resize', this.reconstruir, this); this.mascaras.forEach(m => m.destroy()); this.mascaras = [] });
+  }
+  private reconstruir(): void {
+    this.mascaras.forEach(m => m.destroy()); this.mascaras = [];
+    this.children.removeAll(true); this.cards = [];
+    const w = this.scale.width, h = this.scale.height, retrato = w < 600, curto = h < 520;
+    this.add.rectangle(w / 2, h / 2, w, h, 0xd9c7f7);
+    const fundo = this.add.image(w / 2, h / 2, 'parque').setScale(Math.max((w + 40) / 1280, (h + 40) / 720)).setAlpha(0.45);
+    if (this.renderer.type === Phaser.WEBGL) fundo.postFX?.addBlur(0, 1, 1, 1);
+    this.add.rectangle(w / 2, h / 2, w, h, 0xbea0f0, 0.3);
+    const titulo = this.add.text(retrato ? w / 2 : 36, retrato ? 20 : 24, 'My Town, My World', { fontFamily: FONTE, fontSize: retrato ? '26px' : curto ? '30px' : '48px', fontStyle: '700', color: '#ffffff' }).setOrigin(retrato ? 0.5 : 0, 0).setShadow(0, 3, '#7a4fc9');
+    this.add.text(titulo.x, retrato ? 58 : curto ? 66 : 92, 'Crie o seu visual', { fontFamily: FONTE, fontSize: retrato || curto ? '18px' : '24px', color: CORES.textoRoxo, backgroundColor: '#ffffff', padding: { x: 12, y: 6 } }).setOrigin(retrato ? 0.5 : 0, 0);
+    const peY = retrato ? h * (h < 650 ? 0.34 : 0.43) : h - (curto ? 24 : 80);
+    const avatarX = retrato ? w / 2 : w * 0.3;
+    this.alvo = { w: retrato ? w * 0.48 : w * 0.28, h: retrato ? peY - 88 : h * (curto ? 0.66 : 0.72) };
+    this.add.ellipse(avatarX, peY + 2, this.alvo.w, 20, 0x7850c8, 0.2);
+    this.laura = this.add.image(avatarX, peY, CABELOS[progresso.cabelo].key).setOrigin(0.5, 1);
+    this.avatar = new AvatarAnimado(this.laura);
+    const px = retrato ? 12 : w * 0.53, py = retrato ? peY + 16 : curto ? 16 : 96;
+    const pw = retrato ? w - 24 : w - px - 24, ph = retrato ? h - py - 82 : h - py - 98;
+    const painel = this.add.graphics(); painel.fillStyle(0xffffff, 0.94); painel.fillRoundedRect(px, py, pw, ph, 24);
+    this.add.text(px + 16, py + 12, 'Cabelo', { fontFamily: FONTE, fontSize: '22px', fontStyle: '700', color: CORES.textoRoxo });
+    const gap = 8, cw = (pw - 32 - gap * 2) / 3, ch = (ph - 58 - gap) / 2;
+    CABELOS.forEach((cabelo, i) => {
+      const x = px + 16 + i % 3 * (cw + gap), y = py + 48 + Math.floor(i / 3) * (ch + gap);
+      const g = this.add.graphics(); this.cards.push({ g, x, y, w: cw, h: ch });
+      const alturaRosto = Math.max(36, ch - 38);
+      const thumb = this.add.image(x + cw / 2, y + 4, cabelo.key).setOrigin(0.5, 0);
+      thumb.setScale(alturaRosto * 2.5 / thumb.height);
+      const mascara = this.make.graphics({}, false); mascara.fillStyle(0xffffff); mascara.fillRoundedRect(x + 3, y + 3, cw - 6, alturaRosto, 12); this.mascaras.push(mascara);
+      thumb.setMask(mascara.createGeometryMask());
+      this.add.text(x + cw / 2, y + ch - 18, cabelo.nome, { fontFamily: FONTE, fontSize: retrato || curto ? '14px' : '17px', color: CORES.textoRoxo, align: 'center', wordWrap: { width: cw - 6 } }).setOrigin(0.5);
+      this.add.zone(x, y, cw, ch).setOrigin(0).setInteractive({ useHandCursor: true }).on('pointerup', () => this.escolher(i));
     });
     this.desenharCards();
-
-    new Botao(this, 1010, 670, 'Ir para o parque', () => { persistir(); this.scene.start('Parque') });
+    new Botao(this, retrato ? w / 2 : px + pw / 2, h - 36, 'Ir para o parque', () => { persistir(); this.scene.start('Parque') }, { tamanho: retrato || curto ? 20 : 26, largura: retrato ? w - 32 : 250 });
   }
-
-  private ajustarLaura(): void { this.laura.setScale(Math.min(320 / this.laura.width, 520 / this.laura.height)) }
-
   private escolher(i: number): void {
     progresso.cabelo = i; persistir(); registrar({ tipo: 'cabelo', cabelo: i });
-    this.laura.setTexture(CABELOS[i].key); this.ajustarLaura();
-    this.pulo = this.time.now; this.desenharCards();
+    this.laura.setTexture(CABELOS[i].key); this.pulo = this.time.now; this.desenharCards();
   }
-
   private desenharCards(): void {
-    this.cards.forEach((g, i) => {
-      const [x, y, w, h] = (g as Phaser.GameObjects.Graphics & { box: number[] }).box;
-      const sel = i === progresso.cabelo;
-      g.clear();
-      if (sel) { g.fillStyle(CORES.roxo, 0.25); g.fillRoundedRect(x - 4, y - 4, w + 8, h + 8, 28) }
-      g.fillStyle(0xeadfff, 1); g.fillRoundedRect(x, y, w, h, 24);
-      g.lineStyle(4, sel ? CORES.roxo : 0xeadfff, 1); g.strokeRoundedRect(x, y, w, h, 24);
+    this.cards.forEach(({ g, x, y, w, h }, i) => {
+      g.clear(); g.fillStyle(0xeadfff); g.fillRoundedRect(x, y, w, h, 16);
+      g.lineStyle(i === progresso.cabelo ? 4 : 2, i === progresso.cabelo ? CORES.roxo : 0xe3d3ff); g.strokeRoundedRect(x, y, w, h, 16);
     });
   }
-
   update(t: number): void {
-    const k = Math.min(1, (t - this.pulo) / 450);
-    const s = 1 + Math.sin(k * Math.PI) * 0.08, br = Math.sin(t / 600) * 0.012;
-    const base = Math.min(320 / this.laura.width, 520 / this.laura.height);
-    this.laura.setScale(base * (s - br), base * (s + br));
+    const k = Phaser.Math.Clamp((t - this.pulo) / 450, 0, 1), pulo = 1 + Math.sin(k * Math.PI) * 0.08;
+    const base = Math.min(this.alvo.w / this.laura.width, this.alvo.h / this.laura.height);
+    this.laura.setScale(base * pulo);
+    this.avatar.atualizar(k < 1 ? 'acenar' : 'parada', t / 1000);
   }
 }

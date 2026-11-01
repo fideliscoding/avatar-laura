@@ -5,7 +5,7 @@
 Um mundo pequeno e acolhedor onde a Laura cria o próprio visual, passeia por lugares da cidade e ajuda pessoas. Cada lugar tem missões curtas que ensinam um valor do dia a dia por meio de uma escolha. O jogo nunca pune: escolhas que não ajudam recebem um conselho gentil e a chance de tentar de novo.
 
 - Público: Laura, 9 anos (e amigas/amigos no futuro). Leitura simples, frases curtas, botões grandes.
-- Plataforma: navegador (celular, tablet, computador). Palco fixo 1280x720 escalado para caber (Scale.FIT).
+- Plataforma: navegador (celular, tablet, computador). Mundo lógico 1280x720 com câmera que acompanha a Laura. Interface adaptativa em pixels visíveis (Scale.RESIZE).
 - Tom: carinhoso, colorido, sem pressa, sem tempo-limite, sem derrota.
 - Estilo: chibi profissional, paleta lilás, fonte Fredoka, sem emojis.
 
@@ -124,3 +124,30 @@ Ver `AGENTS.md`. Resumo: sem chat livre (frases prontas), sem dados pessoais, co
 - **Pets adotados como missão** (responsabilidade: alimentar, dar banho, passear).
 - **Muitas opções para criar:** lugares, personagens, missões e itens (editor simples com Tiled e JSON).
 - **Multiplayer com amigos:** ver e brincar com amigos aprovados no mesmo parque, com frases prontas.
+
+## 10. Mobile first e movimentos (etapa 03A)
+
+O mundo conserva as coordenadas aprovadas do protótipo. A apresentação passa a usar
+`Scale.RESIZE`: o canvas ocupa a área visual do navegador, desconta áreas seguras
+e se adapta à abertura do teclado. A interface não é reduzida junto com o cenário.
+
+- **Parque:** câmera com limites acompanha a Laura; zoom mínimo de 0,65 mantém
+  personagens legíveis. Cabeçalho e atalhos ficam em `CenaInterface`, fora da câmera.
+  No rodapé, os destinos são paginados com botões de pelo menos 44 px; todos os
+  brinquedos, Pedrinho, areia e Dona Marta são alcançáveis sem depender de estarem
+  no enquadramento inicial. O toque e o arrasto são convertidos para o mundo.
+- **Missão:** rosto, fala e opções se reorganizam ao girar o aparelho. Em retrato,
+  as respostas ficam empilhadas. Rotação preserva diálogo, estado e recompensa.
+- **Criador:** avatar, grade de seis cabelos e botão do parque se reorganizam em
+  retrato e paisagem. A escolha persiste, inclusive durante a rotação.
+- **Conta:** campos com fonte de 16 px e altura mínima de 44 px. Com teclado ou
+  pouca altura, o formulário permite rolagem interna e mantém as ações acessíveis,
+  sem apagar os valores preenchidos.
+- **Avatares:** braços, pernas e cabeça são articulados com recortes dos PNGs
+  aprovados: passos alternados, respiração, aceno, dança e pernas dobradas nos
+  brinquedos. Os seis cabelos usam a mesma lógica. Bia caminha com passos, Dona
+  Marta move o braço no aceno e Pedrinho comemora brevemente ao receber o carrinho.
+
+Essa articulação procedural não cria novas vistas de lado nem folhas desenhadas
+quadro a quadro. Essas artes continuam listadas em `docs/ARTE.md`; o jogo já possui
+movimento independente dos membros enquanto elas não existem.

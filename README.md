@@ -62,6 +62,19 @@ O CI executa build, Vitest, verificação de emojis e Playwright nos PRs. O work
 de deploy continua sem e2e. Posições, raios e velocidades ficam em
 `src/config/parque.ts`. O favicon vetorial lilás foi mantido após revisão em tamanho pequeno.
 
+## Jogo no celular e movimentos (etapa 03A)
+
+O jogo ocupa a tela em retrato e paisagem. No parque, a câmera acompanha a Laura;
+use o chão para andar e os atalhos do rodapé para visitar brinquedos e amigos.
+Os controles e diálogos mantêm tamanho de leitura e toque, sem reduzir toda a
+interface a uma miniatura. Girar a tela preserva o cabelo e a missão em andamento.
+O formulário de conta também se adapta à área restante quando o teclado abre.
+
+Os personagens têm articulação de braços, pernas e cabeça com as artes atuais:
+passos, respiração, aceno, dança e poses para os brinquedos. Há limitações de
+recorte e ainda faltam folhas desenhadas de poses/vistas, documentadas em
+[docs/ARTE.md](docs/ARTE.md). [Capturas e vídeo](docs/screenshots/mobile/README.md).
+
 ## Contas e progresso na nuvem (etapa 03)
 
 Sem configuração, o jogo continua abrindo direto no criador e salvando no navegador.

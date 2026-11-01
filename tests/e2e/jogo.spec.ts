@@ -2,51 +2,7 @@ import { expect, test, type Page } from '@playwright/test';
 import type Phaser from 'phaser';
 import { TEXTOS } from '../../src/game/missaoPedrinho';
 
-declare global { interface Window { __jogo: Phaser.Game } }
-
-async function tocar(page: Page, x: number, y: number): Promise<void> {
-  const caixa = await page.locator('canvas').boundingBox();
-  if (!caixa) throw new Error('Palco não encontrado');
-  await page.mouse.click(caixa.x + x * caixa.width / 1280, caixa.y + y * caixa.height / 720);
-}
-
-async function textos(page: Page): Promise<string[]> {
-  return page.evaluate(() => {
-    const resultado: string[] = [];
-    const visitar = (objetos: Phaser.GameObjects.GameObject[]): void => {
-      for (const objeto of objetos) {
-        if ('visible' in objeto && !objeto.visible) continue;
-        if ('text' in objeto) resultado.push(String(objeto.text));
-        if ('list' in objeto) visitar((objeto as Phaser.GameObjects.Container).list);
-      }
-    };
-    for (const cena of window.__jogo.scene.getScenes(true)) visitar(cena.children.list);
-    return resultado;
-  });
-}
-
-async function botao(page: Page, texto: string): Promise<void> {
-  await expect.poll(() => textos(page)).toContain(texto);
-  // Aguarda a entrada animada do diálogo antes de calcular as coordenadas.
-  await page.waitForTimeout(350);
-  const ponto = await page.evaluate((rotulo) => {
-    const buscar = (objetos: Phaser.GameObjects.GameObject[]): { x: number; y: number } | null => {
-      for (const objeto of objetos) {
-        if ('visible' in objeto && !objeto.visible) continue;
-        if ('text' in objeto && objeto.text === rotulo) {
-          const t = objeto as Phaser.GameObjects.Text;
-          const matriz = t.getWorldTransformMatrix();
-          return { x: matriz.tx, y: matriz.ty };
-        }
-        if ('list' in objeto) { const achou = buscar((objeto as Phaser.GameObjects.Container).list); if (achou) return achou }
-      }
-      return null;
-    };
-    return buscar(window.__jogo.scene.getScenes(true)[0].children.list);
-  }, texto);
-  if (!ponto) throw new Error(`Botão ausente: ${texto}`);
-  await tocar(page, ponto.x, ponto.y);
-}
+import { botao, tocar, projetar, textos } from '../apoio/jogo';
 
 async function abrir(page: Page): Promise<void> {
   await page.goto('./');
@@ -127,11 +83,13 @@ test('chão, arrasto, brinquedos e falas do parque', async ({ page }) => {
   await abrir(page);
   await botao(page, 'Ir para o parque');
   await tocar(page, 500, 680);
-  await expect.poll(() => page.evaluate(() => Math.round((window.__jogo.scene.getScene('Parque') as unknown as EstadoObservado).L.x))).toBe(500);
-  const caixa = (await page.locator('canvas').boundingBox())!;
-  await page.mouse.move(caixa.x + 500, caixa.y + 600);
-  await page.mouse.down();
-  await page.mouse.move(caixa.x + 372, caixa.y + 338, { steps: 12 });
+  await expect.poll(() => page.evaluate(() => Math.abs((window.__jogo.scene.getScene('Parque') as unknown as EstadoObservado).L.x - 500))).toBeLessThan(4);
+  const inicio = await projetar(page, 500, 600);
+  await page.mouse.move(inicio.x, inicio.y); await page.mouse.down();
+  for (let i = 0; i < 3; i++) {
+    const fim = await projetar(page, 372, 338);
+    await page.mouse.move(fim.x, fim.y, { steps: 10 }); await page.waitForTimeout(80);
+  }
   await page.mouse.up();
   await expect.poll(() => estadoLaura(page)).toBe('balanco');
   await page.waitForTimeout(1600);

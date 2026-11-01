@@ -23,7 +23,7 @@ Referências obrigatórias:
 ## Estrutura e padrões de código
 
 ```
-src/main.ts            configuração do Phaser (1280x720, Scale.FIT)
+src/main.ts            configuração do Phaser (Scale.RESIZE; mundo lógico 1280x720)
 src/config/assets.ts   lista central de assets e cores (toda imagem nova entra aqui)
 src/scenes/            uma classe por cena (CenaBoot, CenaCriador, CenaParque, ...)
 src/game/              lógica pura, sem Phaser (missões, estado, regras). Sempre com teste.
@@ -35,7 +35,7 @@ tests/                 testes Vitest (*.test.ts)
 - Nomes em português (cenas, variáveis de domínio, textos). Termos técnicos do Phaser ficam como são.
 - Lógica de missões fica em `src/game/` como funções puras e testáveis; a cena só chama essas funções e anima.
 - Textos que a criança lê ficam em constantes (ex.: `TEXTOS` em `missaoPedrinho.ts`), nunca espalhados.
-- Coordenadas no palco de 1280x720. Personagens com origem (0.5, 1) nos pés e profundidade (`depth`) igual ao `y`.
+- Mundo e interações mantêm coordenadas de 1280x720; a interface usa pixels do viewport, em cena separada, com layout mobile first. Personagens com origem (0.5, 1) nos pés e profundidade (`depth`) igual ao `y`.
 - Sem `any`. Sem `console.log` esquecido. Sem dependências desnecessárias.
 - O gancho `window.__jogo` existe para testes automatizados; mantenha.
 

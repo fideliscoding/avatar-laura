@@ -83,3 +83,22 @@ Criador com fundo pastel e halo suave, seis closes, seleção persistente e puli
 O recorte dos diálogos usa a posição vertical de 8% do excedente da imagem,
 como `background-position: 50% 8%` no protótipo. Capturas atualizadas em
 `docs/screenshots/phaser/`, incluindo carrossel e escorregador.
+
+## Articulação e enquadramento mobile (etapa 03A)
+
+Nenhuma imagem foi baixada ou substituída. `src/ui/AvatarAnimado.ts` divide os PNGs
+em recortes de cabeça, tronco, braços e pernas, com pivôs normalizados, e anima
+cada parte independentemente. As texturas originais continuam centralizadas em
+`src/config/assets.ts`. A âncora e o marcador de interação conservam os pés e a
+profundidade por y. Marta usa um recorte próprio do braço levantado.
+
+`src/game/movimentoAvatar.ts` define passos alternados, respiração, pernas
+inclinadas para sentar/escorregar, aceno e dança. É lógica pura com testes.
+A mesma articulação funciona nos seis cabelos; a direção horizontal é espelhada.
+Cabeça e membros mantêm o desenho aprovado, com a limitação visual de recortes:
+não são poses novas desenhadas e pode haver pequenas emendas nas articulações.
+As folhas de caminhada, vistas de lado completas e poses sentadas desenhadas
+permanecem na lista de assets que faltam. Somente as transformações e os recortes
+são novos, portanto não há PNG novo a registrar.
+
+Capturas e gravação de movimento em [screenshots/mobile](screenshots/mobile/README.md).

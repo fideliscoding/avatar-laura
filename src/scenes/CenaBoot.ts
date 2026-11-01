@@ -8,10 +8,11 @@ export class CenaBoot extends Phaser.Scene {
 
   preload(): void {
     const { width: w, height: h } = this.scale;
-    this.add.text(w / 2, h / 2 - 60, 'My Town, My World', { fontFamily: FONTE, fontSize: '48px', fontStyle: '700', color: '#ffffff' }).setOrigin(0.5);
-    const barraFundo = this.add.graphics(); barraFundo.fillStyle(0xffffff, 0.2); barraFundo.fillRoundedRect(w / 2 - 260, h / 2 + 10, 520, 28, 14);
+    this.add.text(w / 2, h / 2 - 60, 'My Town, My World', { fontFamily: FONTE, fontSize: `${Math.min(48, w * 0.07)}px`, fontStyle: '700', color: '#ffffff' }).setOrigin(0.5);
+    const larguraBarra = Math.min(520, w - 48);
+    const barraFundo = this.add.graphics(); barraFundo.fillStyle(0xffffff, 0.2); barraFundo.fillRoundedRect(w / 2 - larguraBarra / 2, h / 2 + 10, larguraBarra, 28, 14);
     const barra = this.add.graphics();
-    this.load.on('progress', (v: number) => { barra.clear(); barra.fillStyle(CORES.lilas, 1); barra.fillRoundedRect(w / 2 - 256, h / 2 + 14, Math.max(20, 512 * v), 20, 10) });
+    this.load.on('progress', (v: number) => { barra.clear(); barra.fillStyle(CORES.lilas, 1); barra.fillRoundedRect(w / 2 - larguraBarra / 2 + 4, h / 2 + 14, Math.max(12, (larguraBarra - 8) * v), 20, 10) });
     this.load.setBaseURL(import.meta.env.BASE_URL);
     for (const c of CABELOS) this.load.image(c.key, c.arquivo);
     for (const [k, v] of Object.entries(IMAGENS)) this.load.image(k, v);
