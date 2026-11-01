@@ -5,6 +5,9 @@ import { persistir, progresso, recompensarMissao } from '../game/estado';
 import { aceitarAjuda, cavarAreia, escolher, EstadoMissao, novaMissao, Opcao, TEXTOS } from '../game/missaoPedrinho';
 import { sessao, registrar } from '../net/sessao';
 import { layoutParque } from '../game/layout';
+import { amigos, type EventoSocial } from '../net/sala';
+import { obterFrase } from '../game/frases';
+import { interpolar, type Aceno, type EstadoCompartilhado } from '../game/regrasSala';
 import { AvatarAnimado } from '../ui/AvatarAnimado';
 import type { CenaInterface } from './CenaInterface';
 import { Dialogo } from '../ui/Dialogo';
@@ -15,11 +18,17 @@ type EstadoLaura = 'parada' | Brinquedo | 'danca';
 
 interface Personagem { img: Phaser.GameObjects.Image; x: number; y: number; h: number; w: number; lado: 1 | -1; fala?: Phaser.GameObjects.Container }
 
+interface AmigoVisual extends Personagem { avatar: AvatarAnimado; etiqueta: Phaser.GameObjects.Text; atual: EstadoCompartilhado; gesto?: { tipo: Aceno; inicio: number } }
+
 export class CenaParque extends Phaser.Scene {
   private L!: Personagem & { estado: EstadoLaura; t: number; tx: number; ty: number; andando: boolean; arrastando: boolean; aoChegar: (() => void) | null; slideT: number };
   private bia!: Personagem & { t: number; estado: 'andar' | 'esperar'; tx: number; ty: number };
   private pedro!: Personagem & { feliz: boolean };
   private vovo!: Personagem;
+  private amigoFocado: string | null = null;
+  private socialAberto = false;
+  private gesto?: { tipo: Aceno; inicio: number };
+  private amigosVisuais = new Map<string, AmigoVisual>();
   private vovoT = 0;
   private pedroCelebraAte = 0;
   private props: Record<string, Phaser.GameObjects.Image> = {};
@@ -43,7 +52,9 @@ export class CenaParque extends Phaser.Scene {
   constructor() { super('Parque') }
 
   create(): void {
-    this.vovoT = 0; this.escolhas = []; this.interface = undefined;
+    this.vovoT = 0; this.escolhas = []; this.interface = undefined; this.socialAberto = false; this.amigoFocado = null; this.gesto = undefined; this.amigosVisuais.clear();
+    amigos.configurar(sessao.usuario, sessao.apelido);
+    amigos.aoEvento = (usuario, evento) => this.receberSocial(usuario, evento);
     this.objetivoAtual = progresso.missoesConcluidas.includes('pedrinho-carrinho') ? TEXTOS.objetivoConcluida : TEXTOS.objetivoInicial;
     this.missao = progresso.missoesConcluidas.includes('pedrinho-carrinho') ? { etapa: 'concluida', tentativasErradas: 0 } : novaMissao();
     this.add.image(0, 0, 'parque').setOrigin(0).setDisplaySize(1280, 720).setDepth(-10);
@@ -120,7 +131,7 @@ export class CenaParque extends Phaser.Scene {
     this.configurarCamera();
     this.scale.on('resize', this.configurarCamera, this);
     this.scene.launch('Interface', { parque: this });
-    this.events.once('shutdown', () => { this.scale.off('resize', this.configurarCamera, this); this.scene.stop('Interface') });
+    this.events.once('shutdown', () => { amigos.pausar(); this.scale.off('resize', this.configurarCamera, this); this.scene.stop('Interface') });
     this.confete = this.add.particles(0, 0, 'confete', {
       emitting: false, lifespan: 3600, speedX: { min: -480, max: 480 }, speedY: { min: -840, max: -240 }, gravityY: 1150,
       rotate: { start: 0, end: 720, random: true }, scaleY: { min: 0.5, max: 1 }, tint: [...CORES.confete], alpha: { start: 1, end: 0.6 },
@@ -148,7 +159,7 @@ export class CenaParque extends Phaser.Scene {
 
   private falar(p: Personagem, texto: string, ms = 2200): void {
     p.fala?.destroy();
-    const t = this.add.text(0, 0, texto, { fontFamily: FONTE, fontSize: '18px', fontStyle: '600', color: CORES.textoRoxo }).setOrigin(0.5);
+    const t = this.add.text(0, 0, texto, { fontFamily: FONTE, fontSize: `${Math.max(18, Math.round(16 / this.cameras.main.zoom))}px`, wordWrap: { width: Math.min(320, (this.cameras.main.width - 24) / this.cameras.main.zoom) }, fontStyle: '600', color: CORES.textoRoxo }).setOrigin(0.5);
     const w = t.width + 28, h = t.height + 12;
     const g = this.add.graphics(); g.fillStyle(0x000000, 0.12); g.fillRoundedRect(-w / 2, -h / 2 + 4, w, h, 18);
     g.fillStyle(0xffffff); g.fillRoundedRect(-w / 2, -h / 2, w, h, 18); g.lineStyle(3, CORES.lilas); g.strokeRoundedRect(-w / 2, -h / 2, w, h, 18);
@@ -175,7 +186,7 @@ export class CenaParque extends Phaser.Scene {
     const L = this.L;
     let dx = 0, dy = 0;
     L.img.on('dragstart', (p: Phaser.Input.Pointer) => {
-      if (L.estado === 'danca' || this.dialogo?.aberto) return;
+      if (L.estado === 'danca' || this.dialogo?.aberto || this.socialAberto) return;
       this.pararBrinquedo(); L.arrastando = true; L.andando = false; L.aoChegar = null; const ponto = this.mundo(p); dx = L.x - ponto.x; dy = L.y - ponto.y;
     });
     L.img.on('drag', (p: Phaser.Input.Pointer) => { if (!L.arrastando) return; const ponto = this.mundo(p); L.x = Phaser.Math.Clamp(ponto.x + dx, 40, 1240); L.y = Phaser.Math.Clamp(ponto.y + dy, 150, 715) });
@@ -197,12 +208,14 @@ export class CenaParque extends Phaser.Scene {
   }
 
   irPara(alvo: Alvo | null, x = 0, y = 0): void {
-    if (this.L.estado === 'danca' || this.dialogo?.aberto || this.L.arrastando) return;
+    if (this.L.estado === 'danca' || this.dialogo?.aberto || this.L.arrastando || this.socialAberto) return;
     if (!alvo) {
+      this.cameras.main.startFollow(this.L.img, true, 0.16, 0.16, 0, 86);
       const anel = this.add.ellipse(x, y, 40, 16).setStrokeStyle(3, 0xffffff, 0.9).setDepth(y);
       this.tweens.add({ targets: anel, scale: 1.6, alpha: 0, duration: 500, onComplete: () => anel.destroy() });
       this.andarAte(x, y); return;
     }
+    this.cameras.main.startFollow(this.L.img, true, 0.16, 0.16, 0, 86);
     const r = this.paradas[alvo];
     this.andarAte(r.x, r.y, () => {
       if (alvo === 'pedro') this.conversarPedro();
@@ -316,6 +329,61 @@ export class CenaParque extends Phaser.Scene {
     this.definirObjetivo(TEXTOS.objetivoInicial);
   }
 
+  bloquearSocial(aberto: boolean): void { this.socialAberto = aberto }
+  focarAmigo(usuario: string): void {
+    const amigo = this.amigosVisuais.get(usuario);
+    if (amigo) { this.amigoFocado = usuario; this.cameras.main.startFollow(amigo.img, true, 0.16, 0.16, 0, 86) }
+  }
+  private receberSocial(usuario: string, evento: EventoSocial): void {
+    const proprio = usuario === sessao.usuario;
+    const personagem = proprio ? this.L : this.amigosVisuais.get(usuario);
+    if (!personagem) return;
+    if (evento.tipo === 'frase') {
+      const frase = obterFrase(evento.id); if (!frase) return;
+      this.falar(personagem, frase.texto);
+      if (!proprio) this.interface?.notificarSocial(`${amigos.remotos.get(usuario)?.membro.apelido ?? ''}: ${frase.texto}`);
+    } else {
+      const gesto = { tipo: evento.aceno, inicio: this.time.now };
+      if (proprio) this.gesto = gesto;
+      else (personagem as AmigoVisual).gesto = gesto;
+      if (evento.aceno === 'coracao') {
+        const pontos: Phaser.Math.Vector2[] = [];
+        for (let i = 0; i < 40; i++) { const t = i * Math.PI / 20; pontos.push(new Phaser.Math.Vector2(16 * Math.pow(Math.sin(t),3), -(13*Math.cos(t)-5*Math.cos(2*t)-2*Math.cos(3*t)-Math.cos(4*t)))) }
+        const coracao = this.add.graphics().setPosition(personagem.x, personagem.y-personagem.h).setDepth(4800);
+        coracao.fillStyle(CORES.rosa); coracao.fillPoints(pontos,true); coracao.lineStyle(2,0xffffff); coracao.strokePoints(pontos,true);
+        this.tweens.add({ targets: coracao, y: coracao.y - 65, scale: 1.4, alpha: 0, duration: 1400, onComplete: () => coracao.destroy() });
+      }
+    }
+  }
+  private aplicarGesto(img: Phaser.GameObjects.Image, gesto: { tipo: Aceno; inicio: number } | undefined, tempo: number): void {
+    if (gesto?.tipo === 'pulo') { const k = (tempo-gesto.inicio)/700; if (k>=0 && k<1) img.y -= Math.sin(k*Math.PI)*40 }
+  }
+  private atualizarAmigos(dt: number, tempo: number): void {
+    for (const [usuario,visual] of this.amigosVisuais) if (!amigos.remotos.has(usuario)) {
+      if (this.amigoFocado === usuario) { this.amigoFocado = null; this.cameras.main.startFollow(this.L.img, true, 0.16, 0.16, 0, 86) }
+      visual.img.destroy(); visual.etiqueta.destroy(); visual.fala?.destroy(); this.amigosVisuais.delete(usuario);
+    }
+    for (const [usuario,dados] of amigos.remotos) {
+      const alvo = dados.estado, cabelo = CABELOS.find(c => c.id === alvo.cabelo) ?? CABELOS[0];
+      let visual = this.amigosVisuais.get(usuario);
+      if (!visual) {
+        const img = this.add.image(alvo.x,alvo.y,cabelo.key).setOrigin(0.5,1).setName(`amigo:${usuario}`);
+        const etiqueta = this.add.text(alvo.x,alvo.y-190,dados.membro.apelido,{ fontFamily: FONTE, fontSize: '14px', color: CORES.textoRoxo, backgroundColor: '#ffffff', padding: { x: 6, y: 3 }, wordWrap: { width: 130 } }).setOrigin(0.5,1).setDepth(4400);
+        visual = { img, etiqueta, avatar: new AvatarAnimado(img), atual: { ...alvo }, x: alvo.x, y: alvo.y, h: 172, w: 107, lado: 1 };
+        this.amigosVisuais.set(usuario,visual);
+      }
+      visual.atual = { ...alvo, x: interpolar(visual.atual.x,alvo.x,dt), y: interpolar(visual.atual.y,alvo.y,dt) };
+      visual.x=visual.atual.x; visual.y=visual.atual.y;
+      visual.img.setTexture(cabelo.key); const base=Math.min(107/visual.img.width,172/visual.img.height);
+      visual.img.setPosition(visual.x,visual.y).setScale(base*alvo.sx,base*alvo.sy).setOrigin(0.5,alvo.origemY).setAngle(alvo.angulo).setDepth(alvo.z);
+      this.aplicarGesto(visual.img,visual.gesto,this.time.now);
+      const pose = alvo.estado==='andar' ? 'andar' : ['balanco','gangorra','carrossel'].includes(alvo.estado) ? 'sentar' : alvo.estado==='escorregador' ? 'escorregar' : alvo.estado==='danca' ? 'dancar' : 'parada';
+      visual.avatar.atualizar(visual.gesto?.tipo==='aceno' && this.time.now-visual.gesto.inicio<1100 ? 'acenar' : pose,tempo);
+      visual.etiqueta.setText(dados.membro.apelido).setScale(1/this.cameras.main.zoom).setPosition(visual.img.x,visual.img.y-visual.img.displayHeight*visual.img.originY-8);
+      this.posicionarFala(visual);
+    }
+  }
+
   // ---------- loop
   private pontoEscorregador(u: number): [number, number] {
     const n = CURVA_ESC.length - 1, f = Math.min(n - 1e-6, u * n), i = Math.floor(f), k = f - i;
@@ -403,7 +471,13 @@ export class CenaParque extends Phaser.Scene {
     this.posicionarFala(P);
     this.balao.setPosition(P.x, P.y - P.h - 35 + Math.sin(T * 4) * 5);
     const pose = L.estado === 'danca' ? 'dancar' : L.estado === 'balanco' || L.estado === 'gangorra' || L.estado === 'carrossel' ? 'sentar' : L.estado === 'escorregador' ? (L.slideT % 3.8 > 1.6 ? 'escorregar' : 'andar') : L.andando ? 'andar' : 'parada';
-    this.animadores.laura.atualizar(pose, T);
+    const base = Math.min(L.w / L.img.width, L.h / L.img.height);
+    amigos.publicar({ x: L.img.x, y: L.img.y, cabelo: CABELOS[progresso.cabelo].id,
+      estado: L.arrastando ? 'arrastando' : L.andando ? 'andar' : L.estado,
+      angulo: L.img.angle, origemY: L.img.originY, sx: L.img.scaleX / base, sy: L.img.scaleY / base, z: Math.min(800,L.img.depth) }, time);
+    this.aplicarGesto(L.img, this.gesto, time);
+    this.animadores.laura.atualizar(this.gesto?.tipo === 'aceno' && time - this.gesto.inicio < 1100 ? 'acenar' : pose, T);
+    this.atualizarAmigos(dt, T);
     this.animadores.bia.atualizar(B.estado === 'andar' ? 'andar' : 'parada', T);
     this.animadores.pedro.atualizar(celebrando ? 'dancar' : 'parada', T);
     this.animadores.marta.atualizar(this.vovoT % 5 < 1.6 ? 'acenar' : 'parada', T);

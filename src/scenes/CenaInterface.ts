@@ -5,6 +5,9 @@ import { progresso, persistir } from '../game/estado';
 import { layoutParque } from '../game/layout';
 import { sessao, sairDaConta } from '../net/sessao';
 import { Botao } from '../ui/Botao';
+import { PainelAmigos } from '../ui/PainelAmigos';
+import { amigos } from '../net/sala';
+import { TEXTOS_AMIGOS } from '../config/amigos';
 import { Dialogo } from '../ui/Dialogo';
 import type { CenaParque, Alvo } from './CenaParque';
 
@@ -26,6 +29,8 @@ export class CenaInterface extends Phaser.Scene {
   private aviso!: Phaser.GameObjects.Text;
   private pagina = 0;
   private saldo = 0;
+  private painelAmigos!: PainelAmigos;
+  private mensagemSocial = { texto: '', ate: 0 };
   private contagem?: Phaser.Time.TimerEvent;
 
   constructor() { super('Interface') }
@@ -33,9 +38,13 @@ export class CenaInterface extends Phaser.Scene {
   create(): void {
     this.pagina = 0; this.saldo = progresso.moedas;
     this.dialogo = new Dialogo(this);
+    this.painelAmigos = new PainelAmigos(this, {
+      frase: id => { amigos.enviarFrase(id) }, gesto: tipo => { amigos.enviarAceno(tipo) },
+      ver: usuario => this.parque.focarAmigo(usuario), fechar: () => this.parque.bloquearSocial(false),
+    });
     this.reconstruir(); this.parque.conectarInterface(this);
     this.scale.on('resize', this.reconstruir, this);
-    this.events.once('shutdown', () => { this.scale.off('resize', this.reconstruir, this) });
+    this.events.once('shutdown', () => { this.scale.off('resize', this.reconstruir, this); this.painelAmigos.destruir() });
   }
 
   private reconstruir(): void {
@@ -62,12 +71,16 @@ export class CenaInterface extends Phaser.Scene {
         void sairDaConta().then(() => { this.parque.scene.stop(); this.scene.start('Entrar') })
           .catch(() => { this.aviso.setText(TEXTOS_CONTAS.falhaSair).setVisible(true) });
       }, { tamanho: 16, largura: 60 }));
+      this.hud.add(new Botao(this, l.retrato ? w - 62 : w - 242, l.retrato ? 68 : 28, TEXTOS_AMIGOS.titulo, () => {
+        if (this.dialogo.aberto) return;
+        this.parque.bloquearSocial(true); this.painelAmigos.abrir();
+      }, { tamanho: 16, largura: 96 }));
       this.apelido = this.add.text(16, 58, sessao.apelido, { fontFamily: FONTE, fontSize: '16px', color: CORES.textoRoxo });
       this.hud.add(this.apelido);
     } else this.apelido = undefined;
-    const yObjetivo = sessao.usuario && l.retrato ? 82 : 57;
+    const yObjetivo = sessao.usuario && l.retrato ? 106 : 57;
     this.objetivo = this.add.text(16, yObjetivo, this.parque.objetivoAtual, { fontFamily: FONTE, fontSize: l.retrato || h < 500 ? '16px' : '18px', fontStyle: '600', color: CORES.textoRoxo, wordWrap: { width: w - 32 } });
-    if (sessao.usuario && !l.retrato) this.apelido?.setPosition(180, 18);
+    if (sessao.usuario && !l.retrato) this.apelido?.setPosition(180, 8).setFontSize(w < 700 ? 14 : 16).setWordWrapWidth(Math.max(80,w-490),true);
     this.hud.add(this.objetivo);
     const paginas = Math.ceil(DESTINOS.length / l.porPagina);
     this.pagina = Math.min(this.pagina, paginas - 1);
@@ -84,14 +97,17 @@ export class CenaInterface extends Phaser.Scene {
       () => this.parque.irPara(item.alvo), { tamanho: 16, largura: passo - 8 })));
     this.aviso = this.add.text(w / 2, h - l.rodape - 10, '', { fontFamily: FONTE, fontSize: '15px', color: CORES.textoRoxo, backgroundColor: '#ffffff', wordWrap: { width: w - 32 }, align: 'center', padding: { x: 8, y: 6 } }).setOrigin(0.5, 1);
     this.hud.add(this.aviso);
-    this.dialogo.reorganizar();
+    this.dialogo.reorganizar(); this.painelAmigos?.reorganizar();
   }
 
+  notificarSocial(texto: string): void { this.mensagemSocial = { texto, ate: this.time.now + 2600 } }
   definirObjetivo(texto: string): void { this.objetivo?.setText(texto) }
   update(): void {
     if (!this.moedas) return;
     this.apelido?.setText(sessao.apelido);
-    this.aviso.setText(sessao.pendente ? TEXTOS_CONTAS.semInternet : '').setVisible(sessao.pendente);
+    this.painelAmigos.atualizar();
+    const social = amigos.fase === 'reconectando' ? TEXTOS_AMIGOS.reconectando : this.time.now < this.mensagemSocial.ate ? this.mensagemSocial.texto : '';
+    this.aviso.setText(social || (sessao.pendente ? TEXTOS_CONTAS.semInternet : '')).setVisible(!!social || sessao.pendente);
     if (this.saldo !== progresso.moedas) {
       const inicio = this.saldo, fim = progresso.moedas; this.saldo = fim;
       this.contagem?.remove(); let atual = inicio;

@@ -103,3 +103,47 @@ test('conta no parque pequeno mantém apelido, saldo e sair sem sobrepor control
   await page.screenshot({ path: 'docs/screenshots/mobile/10-conta-parque-pequeno.png' });
   await clicar(page, 'Sair'); await page.getByLabel('E-mail do responsável').waitFor();
 });
+
+test('pedido no celular fica isolado e oferece somente comunicação pronta', async ({ page }) => {
+  await page.setViewportSize({ width: 298, height: 567 });
+  const usuario = { id: '11111111-1111-4111-8111-111111111111', aud: 'authenticated', role: 'authenticated', email: 'adulto@example.invalid', app_metadata: { provider: 'email' }, user_metadata: {}, created_at: '2026-11-01T00:00:00Z' };
+  const codificar = (valor: unknown) => btoa(JSON.stringify(valor)).replace(/\+/g,'-').replace(/\//g,'_').replace(/=/g,'');
+  const token = `${codificar({ alg: 'HS256', typ: 'JWT' })}.${codificar({ sub: usuario.id, exp: Math.floor(Date.now()/1000)+3600, role: 'authenticated' })}.assinatura-de-teste`;
+  await page.route('https://supabase-teste.invalid/**', async rota => {
+    const url = rota.request().url();
+    if (url.includes('/rpc/entrar_na_sala') || url.includes('/rpc/consultar_sala')) await rota.fulfill({ json: { id: '22222222-2222-4222-8222-222222222222', codigo: 'ABCDEF', dono_id: '33333333-3333-4333-8333-333333333333', ativa: true, versao: 1 } });
+    else if (url.includes('/room_members')) await rota.fulfill({ json: { aprovado: false } });
+    else if (url.includes('/token')) await rota.fulfill({ json: { access_token: token, token_type: 'bearer', expires_in: 3600, refresh_token: 'refresh-de-teste', user: usuario } });
+    else if (url.includes('/profiles')) await rota.fulfill({ json: { moedas: 15, apelido: 'Estrela Lilas 123' } });
+    else if (url.includes('/avatars')) await rota.fulfill({ json: { cabelo: 'cacheado' } });
+    else if (url.includes('/progress')) await rota.fulfill({ json: [{ mission_id: 'pedrinho-carrinho', status: 'concluida' }] });
+    else if (url.includes('/logout')) await rota.fulfill({ status: 204 });
+    else await rota.fulfill({ json: usuario });
+  });
+  const sockets: string[] = []; page.on('websocket', ws => sockets.push(ws.url()));
+  await page.goto('./');
+  await page.getByLabel('E-mail do responsável').fill('adulto@example.invalid');
+  await page.getByLabel('Senha', { exact: true }).fill('senha-de-teste-123');
+  await clicar(page, 'Entrar'); await expect.poll(() => temTexto(page, 'Crie o seu visual')).toBe(true);
+  await clicar(page, 'Ir para o parque'); await clicar(page, 'Amigos');
+  const painel = page.getByRole('region', { name: 'Amigos', exact: true });
+  await expect(painel).toBeVisible();
+  const campo = page.getByLabel('Código de 6 letras');
+  await campo.fill('ab12'); await expect(campo).toHaveValue('AB');
+  await page.getByRole('button', { name: 'Pedir para entrar', exact: true }).click();
+  await expect(painel).toContainText('Use o código de seis letras compartilhado pelo responsável.');
+  await campo.fill('abcdef');
+  await page.getByRole('button', { name: 'Pedir para entrar', exact: true }).click();
+  await expect(painel).toContainText('Aguardando a aprovação do responsável.');
+  await expect(campo).toBeHidden();
+  await page.getByRole('button', { name: 'Frases', exact: true }).click();
+  await expect(painel).toContainText('Aguardando a aprovação do responsável.');
+  await expect(page.getByRole('button', { name: 'Oi!', exact: true })).toHaveCount(0);
+  await expect(painel.locator('textarea, [contenteditable="true"], input:visible')).toHaveCount(0);
+  const caixa = (await painel.boundingBox())!;
+  expect(caixa.x).toBeGreaterThanOrEqual(0); expect(caixa.x + caixa.width).toBeLessThanOrEqual(298);
+  expect(caixa.y).toBeGreaterThanOrEqual(0); expect(caixa.y + caixa.height).toBeLessThanOrEqual(567);
+  expect(sockets).toEqual([]);
+  await page.getByRole('button', { name: 'Voltar ao parque', exact: true }).click();
+  await expect(painel).toBeHidden();
+});
