@@ -1,0 +1,27 @@
+# Arte necessária (priorizada)
+
+Estilo atual: chibi profissional, pastel, lilás (`#b58cf5`, `#8b55e6`, `#5a2fa8`) com rosa `#f27ab3`, contorno suave, PNG transparente recortado rente, nomes sem acento com hífen, origem (0.5, 1). Nada copiado de outros jogos. Ao entregar, documentar em `docs/ARTE.md` incluindo o ponto `mao` (x, y no PNG).
+
+## P0 (destrava o sistema de interações)
+1. Poses da Laura para os 6 cabelos (ou corpo + cabelo em camadas, preferido): `sentada`, `deitada`, `dormindo` (olhos fechados), `segurando` (braço estendido), `andando` 4 quadros, `comendo`.
+2. Mesmas poses para Bia e Pedrinho (mínimo sentado e segurando).
+3. Expressões em camada de rosto: feliz, surpresa, triste, sono, rindo (reuso no multiplayer como acenos).
+4. Fundo da sala e do quarto (1280x720) sem móveis (móveis são sprites separados).
+5. Móveis com 2 estados: cama + cobertor separado, sofá, TV ligada/desligada, abajur aceso/apagado, armário/guarda-roupa aberto/fechado.
+6. Itens de mão pequenos (~128 px): maçã, suco, pão, ursinho, livro, escova de dentes, toalha.
+
+## P1 (casa completa)
+7. Fundos: cozinha, banheiro, quintal, lavanderia.
+8. Cozinha: geladeira aberta/fechada, fogão chama on/off, micro-ondas, torradeira, pia, mesa, cadeira, panela, ovo/ovo frito, prato sujo/limpo.
+9. Banheiro: box do chuveiro (porta fosca), banheira, sanitário com tampa, pia com espelho, armarinho. Pose `tomando-banho` (ombros para cima, com toalha na saída).
+10. Lavanderia: máquina de lavar (tambor separado para girar), varal, cesto, roupa suja/limpa dobrada.
+11. Ícones de interface desenhados: mochila, mão, levantar, arrumar tudo, mapa, mudo.
+12. Sons curtos (licença livre CC0, registrados com origem): abrir, fechar, clique, água em loop, descarga, plim, mastigar, ronco suave, música da TV/rádio.
+
+## P2 (lugares)
+13. Mapa da cidade (tileset Tiled) com fachadas: casa, escola, padaria, clínica, salão, estúdio, centro comunitário, pet shop.
+14. Interiores: sala de aula, pátio, padaria, consultório, salão, estúdio, salão comunitário, pet shop (fundo + 4 a 6 objetos cada).
+15. Pets (gato, cachorro, coelho) em 3 poses: em pé, sentado, dormindo; e potes de água/ração.
+16. Pose `dancando` (2 quadros) e NPCs adultos (padeiro, médica, professora).
+
+Placeholders: enquanto não houver arte, usar `Graphics` lilás com o nome do objeto, como manda o `AGENTS.md`.
