@@ -8,8 +8,8 @@ Cada etapa tem um prompt pronto em `prompts/`. Faça uma etapa por vez: cole o p
 | 02 | `02-deploy-pages.md` | Site publicado no GitHub Pages a cada push | Publicado e validado |
 | 03 | `03-supabase-contas-progresso.md` | Login do responsável, perfil, avatar e progresso salvos na nuvem | Publicado; responsável confirmou o funcionamento |
 | 03A | `03a-mobile-first-e-motion.md` | Jogo mobile first, câmera, controles por toque e avatares articulados | Publicado; responsável confirmou a conclusão |
-| 04 | `04-multiplayer-realtime.md` | Ver amigos aprovados no parque, frases prontas, acenos | Implementado neste PR |
-| 05 | `05-novos-lugares-missoes.md` | Mapa da cidade (Tiled), 2 lugares novos, 3 missões novas, sistema de missões por dados | A fazer |
+| 04 | `04-multiplayer-realtime.md` | Ver amigos aprovados no parque, frases prontas, acenos | Publicado; responsável confirmou o multiplayer |
+| 05 | `05-novos-lugares-missoes.md` | Mapa da cidade (Tiled), 2 lugares novos, 3 missões novas, sistema de missões por dados | Implementado neste PR |
 
 ## Depois da etapa 05 (ideias, em ordem sugerida)
 

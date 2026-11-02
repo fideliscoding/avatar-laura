@@ -13,6 +13,13 @@ export const CABELOS: readonly Cabelo[] = [
 ];
 
 export const IMAGENS: Record<string, string> = {
+  'cidade-ilustrada': 'assets/cenarios/cidade-ilustrada.webp',
+  'padaria-cenario': 'assets/cenarios/padaria.webp',
+  'pet-cenario': 'assets/cenarios/pet-shop.webp',
+  'casa-cenario': 'assets/cenarios/casa-laura.webp',
+  'dona-rosa': 'assets/personagens/npcs/dona-rosa.png',
+  'bolinha': 'assets/personagens/npcs/bolinha.png',
+  'cidade-tiles': 'assets/mapas/cidade-tiles.svg',
   'parque': 'assets/cenarios/parque.jpg',
   'laura-lado-liso': 'assets/personagens/laura/laura-lado-liso.png',
   'bia': 'assets/personagens/npcs/bia.png',

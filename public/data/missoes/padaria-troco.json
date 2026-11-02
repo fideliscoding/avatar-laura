@@ -1,0 +1,43 @@
+{
+  "id": "padaria-troco",
+  "titulo": "Troco a mais",
+  "valor": "Honestidade",
+  "lugar": "Padaria",
+  "personagens": [
+    "Dona Rosa",
+    "Laura"
+  ],
+  "recompensa": 10,
+  "inicio": "troco",
+  "passos": [
+    {
+      "id": "troco",
+      "personagem": "Dona Rosa",
+      "texto": "Aqui está seu pão e o troco. Opa! Você percebeu que recebeu moedas a mais. O que vai fazer?",
+      "opcoes": [
+        {
+          "id": "A",
+          "texto": "A) Ficar com o troco",
+          "conselho": "Esse dinheiro faz falta para a padaria. Que tal avisar a Dona Rosa e devolver o que veio a mais?"
+        },
+        {
+          "id": "B",
+          "texto": "B) Avisar e devolver",
+          "proximo": "fim"
+        },
+        {
+          "id": "C",
+          "texto": "C) Não falar nada",
+          "conselho": "A Dona Rosa pode não ter percebido. Você pode ajudar contando com gentileza o que aconteceu."
+        }
+      ]
+    },
+    {
+      "id": "fim",
+      "personagem": "Dona Rosa",
+      "texto": "Obrigada por avisar e devolver o troco! Você agiu com honestidade.",
+      "opcoes": [],
+      "final": true
+    }
+  ]
+}

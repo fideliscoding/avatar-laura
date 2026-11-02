@@ -137,3 +137,38 @@ A primeira linha mostra aceno; a segunda mostra a pose usada nos brinquedos.
 Também foram conferidos [WebGL](screenshots/correcao-recortes-webgl.png) e o
 [balanço no celular](screenshots/correcao-balanco-mobile.png).
 Essas transformações ainda não equivalem a poses sentadas desenhadas de lado.
+
+## Cidade e interiores ilustrados (etapa 05)
+
+As referências enviadas pelo responsável definem o nível de acabamento: bairro
+panorâmico em vista elevada, fachadas distintas, ruas, jardins e muitos detalhes.
+As artes foram geradas para o universo da Laura, sem reproduzir mapas, personagens,
+logos ou edifícios das referências. O parque existente e os seis avatares permanecem
+com suas artes aprovadas. Textos e controles são desenhados pelo jogo.
+
+| Asset | Uso |
+|---|---|
+| `assets/cenarios/cidade-ilustrada.webp` | Bairro com Parque, Padaria, Pet Shop e Casa da Laura |
+| `assets/cenarios/padaria.webp` | Interior com balcão, pães, forno e prateleiras |
+| `assets/cenarios/pet-shop.webp` | Interior com cama, potinhos e acessórios |
+| `assets/cenarios/casa-laura.webp` | Quarto lilás ilustrado; função Em breve |
+| `assets/personagens/npcs/dona-rosa.png` | Padeira independente, com transparência |
+| `assets/personagens/npcs/bolinha.png` | Filhote independente, com transparência |
+
+Os fundos usam WebP com qualidade 86, na resolução original, somando cerca de
+1,2 MB. Os personagens conservam PNG e transparência. Os arquivos originais da
+geração foram preservados no ambiente; nenhuma imagem foi baixada de outro jogo.
+Todos os assets usados no jogo estão centralizados em `src/config/assets.ts`.
+
+`public/assets/mapas/cidade.tmj` continua como mapa Tiled 40x30 de células 32x24
+(mundo 1280x720), carregado por `load.tilemapTiledJSON`. Sua camada de objetos
+Portas define as áreas de toque, `cena` e os destinos `entradaX`/`entradaY`. A
+camada de chão técnico e `cidade-tiles.svg` ficam ocultos sob a ilustração; os
+polígonos de colisão de mobiliário ainda não fazem parte deste mapa.
+
+Os quatro fundos ocupam o mundo 1280x720. Dona Rosa tem altura de referência
+280 px e é recortada abaixo do avental para ficar atrás da borda do balcão;
+a cabeça e o chapéu ficam inteiros. Bolinha tem altura de referência 145 px e um
+movimento suave sobre a cama. Os avatares continuam usando o rig corrigido.
+
+Capturas atualizadas em [screenshots/cidade](screenshots/cidade/README.md).

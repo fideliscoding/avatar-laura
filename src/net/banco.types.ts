@@ -62,6 +62,7 @@ export type Database = {
         Row: {
           ativa: boolean
           criado_em: string
+          definicao: Json | null
           id: string
           lugar: string
           ordem: number
@@ -73,6 +74,7 @@ export type Database = {
         Insert: {
           ativa?: boolean
           criado_em?: string
+          definicao?: Json | null
           id: string
           lugar?: string
           ordem?: number
@@ -84,6 +86,7 @@ export type Database = {
         Update: {
           ativa?: boolean
           criado_em?: string
+          definicao?: Json | null
           id?: string
           lugar?: string
           ordem?: number
