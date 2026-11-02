@@ -1,3 +1,4 @@
+import { MISSOES } from '../game/missoes/catalogo';
 import type { Progresso, Armazenamento } from '../game/estado';
 
 export const IDS_CABELOS = ['liso', 'rabo', 'trancas', 'cacheado', 'coque', 'coquinhos'] as const;
@@ -29,8 +30,8 @@ function operacaoValida(valor: unknown): valor is Operacao {
   const op = valor as Partial<Operacao> & { cabelo?: unknown; missao?: unknown; escolhas?: unknown };
   if (typeof op.id !== 'string') return false;
   if (op.tipo === 'cabelo') return Number.isInteger(op.cabelo) && Number(op.cabelo) >= 0 && Number(op.cabelo) < 6;
-  return (op.tipo === 'missao' || op.tipo === 'concluir') && op.missao === 'pedrinho-carrinho' &&
-    Array.isArray(op.escolhas) && op.escolhas.every(e => e === 'A' || e === 'B' || e === 'C');
+  return (op.tipo === 'missao' || op.tipo === 'concluir') && MISSOES.some(m=>m.id===op.missao) &&
+    Array.isArray(op.escolhas) && op.escolhas.length<=64 && op.escolhas.every(e => typeof e==='string' && MISSOES.find(m=>m.id===op.missao)!.passos.some(p=>p.opcoes.some(o=>o.id===e)));
 }
 
 /** Fila durável por usuário; conserva a ordem e só remove uma ação após confirmação. */

@@ -1,0 +1,57 @@
+{
+  "id": "pet-bolinha",
+  "titulo": "Cuidar do Bolinha",
+  "valor": "Responsabilidade",
+  "lugar": "Pet Shop",
+  "personagens": [
+    "Bolinha",
+    "Laura"
+  ],
+  "recompensa": 10,
+  "inicio": "agua",
+  "passos": [
+    {
+      "id": "agua",
+      "personagem": "Bolinha",
+      "texto": "O Bolinha está com sede. Vamos colocar água limpa no potinho?",
+      "opcoes": [
+        {
+          "id": "agua",
+          "texto": "Dar água",
+          "proximo": "comida"
+        }
+      ]
+    },
+    {
+      "id": "comida",
+      "personagem": "Bolinha",
+      "texto": "Agora ele precisa de uma porção de comida própria para filhotes.",
+      "opcoes": [
+        {
+          "id": "comida",
+          "texto": "Dar comida",
+          "proximo": "carinho"
+        }
+      ]
+    },
+    {
+      "id": "carinho",
+      "personagem": "Bolinha",
+      "texto": "Barriguinha cheia! Vamos fazer um carinho com cuidado?",
+      "opcoes": [
+        {
+          "id": "carinho",
+          "texto": "Fazer carinho",
+          "proximo": "fim"
+        }
+      ]
+    },
+    {
+      "id": "fim",
+      "personagem": "Bolinha",
+      "texto": "O Bolinha ficou feliz! Cuidar de um animal é uma responsabilidade de todos os dias.",
+      "opcoes": [],
+      "final": true
+    }
+  ]
+}

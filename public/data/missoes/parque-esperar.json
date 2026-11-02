@@ -1,0 +1,43 @@
+{
+  "id": "parque-esperar",
+  "titulo": "Esperar a vez",
+  "valor": "Paciência",
+  "lugar": "Parque",
+  "personagens": [
+    "Bia",
+    "Laura"
+  ],
+  "recompensa": 5,
+  "inicio": "fila",
+  "passos": [
+    {
+      "id": "fila",
+      "personagem": "Bia",
+      "texto": "Estou terminando minha vez no escorregador. O que você vai fazer?",
+      "opcoes": [
+        {
+          "id": "A",
+          "texto": "A) Passar na frente",
+          "conselho": "A Bia também quer brincar. Esperar a vez deixa a brincadeira boa para todo mundo."
+        },
+        {
+          "id": "B",
+          "texto": "B) Esperar a Bia terminar",
+          "proximo": "fim"
+        },
+        {
+          "id": "C",
+          "texto": "C) Pedir que ela saia agora",
+          "conselho": "Cada pessoa tem sua vez. Que tal esperar um pouquinho e combinar de brincar juntas?"
+        }
+      ]
+    },
+    {
+      "id": "fim",
+      "personagem": "Bia",
+      "texto": "Obrigada por esperar! Agora é a sua vez. Brincar com paciência é mais divertido.",
+      "opcoes": [],
+      "final": true
+    }
+  ]
+}

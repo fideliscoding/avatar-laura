@@ -1,0 +1,88 @@
+{
+  "id": "pedrinho-carrinho",
+  "titulo": "O carrinho do Pedrinho",
+  "valor": "Honestidade e empatia",
+  "lugar": "Parque",
+  "personagens": [
+    "Pedrinho",
+    "Dona Marta",
+    "Laura"
+  ],
+  "recompensa": 15,
+  "inicio": "inicio",
+  "textos": {
+    "objetivoInicial": "Toque no chão para andar. Ajude quem precisa!",
+    "objetivoProcurar": "Procure o carrinho azul do Pedrinho. Será que está na areia?",
+    "pedroPede": "Perdi meu carrinho azul...",
+    "respostaAjudar": "Eu te ajudo a procurar!",
+    "pergunta": "Achei um carrinho azul na areia! O que você vai fazer?",
+    "conselhoA": "Hmm... o Pedrinho está tristinho procurando o carrinho dele. Como será que ele se sente sem o brinquedo favorito?",
+    "conselhoC": "Se o carrinho ficar na areia, o Pedrinho pode nunca encontrar. Será que tem um jeito de ajudar?",
+    "tentarDeNovo": "Tentar de novo",
+    "pedroAgradece": "Meu carrinho! Obrigado!",
+    "pedroAmiga": "Obrigado, Laura! Você é uma amiga de verdade!",
+    "pedroDepois": "Obrigado de novo, Laura! Vamos brincar no escorregador?",
+    "areiaDepois": "Que areia fofinha!",
+    "objetivoConcluida": "Missão completa! Você devolveu o carrinho. +15 moedas",
+    "opcoes": {
+      "A": "A) Guardar pra mim",
+      "B": "B) Devolver ao Pedrinho",
+      "C": "C) Deixar ali"
+    }
+  },
+  "passos": [
+    {
+      "id": "inicio",
+      "personagem": "Pedrinho",
+      "texto": "Perdi meu carrinho azul...",
+      "opcoes": [
+        {
+          "id": "ajudar",
+          "texto": "Eu te ajudo a procurar!",
+          "proximo": "procurando"
+        }
+      ]
+    },
+    {
+      "id": "procurando",
+      "personagem": "Laura",
+      "texto": "Procure o carrinho azul do Pedrinho. Será que está na areia?",
+      "opcoes": [
+        {
+          "id": "cavar",
+          "texto": "Procurar na areia",
+          "proximo": "escolhendo"
+        }
+      ]
+    },
+    {
+      "id": "escolhendo",
+      "personagem": "Laura",
+      "texto": "Achei um carrinho azul na areia! O que você vai fazer?",
+      "opcoes": [
+        {
+          "id": "A",
+          "texto": "A) Guardar pra mim",
+          "conselho": "Hmm... o Pedrinho está tristinho procurando o carrinho dele. Como será que ele se sente sem o brinquedo favorito?"
+        },
+        {
+          "id": "B",
+          "texto": "B) Devolver ao Pedrinho",
+          "proximo": "concluida"
+        },
+        {
+          "id": "C",
+          "texto": "C) Deixar ali",
+          "conselho": "Se o carrinho ficar na areia, o Pedrinho pode nunca encontrar. Será que tem um jeito de ajudar?"
+        }
+      ]
+    },
+    {
+      "id": "concluida",
+      "personagem": "Pedrinho",
+      "texto": "Meu carrinho! Obrigado!",
+      "opcoes": [],
+      "final": true
+    }
+  ]
+}
