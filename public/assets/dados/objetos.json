@@ -1,0 +1,8 @@
+{
+  "versao": 1,
+  "objetos": [
+    {"id":"banco-parque","nome":"Banco","tipo":"assento","sprite":{"padrao":"interacao-banco"},"origem":[0.5,1],"largura":170,"area":[-90,-100,180,110],"pontoUso":[0,24],"estadoInicial":{},"snaps":[{"x":-33,"y":-30,"pose":"sentado","virado":1},{"x":33,"y":-30,"pose":"sentado","virado":-1}]},
+    {"id":"sorvete-parque","nome":"Sorvete","tipo":"pegavel","sprite":{"padrao":"interacao-sorvete","mordida1":"interacao-sorvete-1","mordida2":"interacao-sorvete-2"},"origem":[0.5,1],"largura":36,"area":[-32,-64,64,64],"pontoUso":[0,20],"estadoInicial":{},"comestivel":true},
+    {"id":"bebedouro-parque","nome":"Bebedouro","tipo":"agua","sprite":{"padrao":"interacao-bebedouro","ligado":"interacao-bebedouro-ligado"},"origem":[0.5,1],"largura":70,"area":[-40,-100,80,105],"pontoUso":[0,24],"estadoInicial":{"ligado":false},"particulas":"gotas"}
+  ]
+}

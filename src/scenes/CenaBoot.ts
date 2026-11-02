@@ -1,3 +1,4 @@
+import {validarCatalogo} from '../game/interacao/catalogo';
 import Phaser from 'phaser';
 import { supabase } from '../net/supabase';
 import { CABELOS, CORES, FONTE, IMAGENS } from '../config/assets';
@@ -14,12 +15,15 @@ export class CenaBoot extends Phaser.Scene {
     const barra = this.add.graphics();
     this.load.on('progress', (v: number) => { barra.clear(); barra.fillStyle(CORES.lilas, 1); barra.fillRoundedRect(w / 2 - larguraBarra / 2 + 4, h / 2 + 14, Math.max(12, (larguraBarra - 8) * v), 20, 10) });
     this.load.setBaseURL(import.meta.env.BASE_URL);
+    this.load.json('catalogo-objetos','assets/dados/objetos.json');
+    this.load.json('objetos-parque','assets/dados/comodos/parque.json');
     this.load.tilemapTiledJSON('cidade','assets/mapas/cidade.tmj');
     for (const c of CABELOS) this.load.image(c.key, c.arquivo);
     for (const [k, v] of Object.entries(IMAGENS)) this.load.image(k, v);
   }
 
   async create(): Promise<void> {
+    try {validarCatalogo(this.cache.json.get('catalogo-objetos'))} catch(erro){if(import.meta.env.DEV)console.error(erro);throw erro}
     const g = this.make.graphics({}, false);
     g.fillStyle(0xffffff); g.fillRect(0, 0, 12, 8); g.generateTexture('confete', 12, 8); g.clear();
     g.fillStyle(0xffffff); g.fillCircle(6, 6, 6); g.generateTexture('poeira', 12, 12); g.destroy();
