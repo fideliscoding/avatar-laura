@@ -23,7 +23,7 @@ describe('cozinha por receitas',()=>{
  it('torradeira transforma pão e exige o prazo do preparo',()=>{
   let e=acao(estadosIniciaisCasa(),'pao','pegar').estados;e=acao(e,'torradeira','tocar').estados;
   expect(e.find(s=>s.id==='pao')!.local).toBe('consumido');
-  e=acao(e,'torradeira','acao2').estados;expect(e.find(s=>s.id==='pao')).toMatchObject({local:'chao',modo:1});
+  e=acao(e,'torradeira','acao2').estados;expect(e.find(s=>s.id==='pao')).toMatchObject({local:'chao',modo:2});
  });
  it('micro-ondas só libera depois de três segundos e preserva o prazo no estado',()=>{
   let e=acao(estadosIniciaisCasa(),'pao','pegar').estados;e=acao(e,'micro-ondas','tocar').estados;
@@ -68,4 +68,10 @@ describe('arrumação e segredos',()=>{
   let e=acao(estadosIniciaisCasa(),'pao','pegar').estados;e=acao(e,'pao','soltar',{comodo:'banheiro',ponto:{x:600,y:550}}).estados;e=acao(e,'sofa','tocar').estados;
   const r=acao(e,'tapete','arrumar');expect(r.aceita).toBe(true);expect(r.estados.find(s=>s.id==='pao')).toMatchObject({x:220,y:640,local:'chao',comodo:'cozinha'});expect(r.estados.every(s=>!s.trava&&s.ocupantes.length===0)).toBe(true);
  });
+});
+
+it('casinha do pet também move itens atomicamente para dentro e para fora',()=>{
+ let e=acao(estadosIniciaisCasa(),'bau','tocar').estados;e=acao(e,'bau','retirar',{item:'ursinho'}).estados;e=acao(e,'casinha-pet','tocar').estados;e=acao(e,'casinha-pet','guardar',{item:'ursinho'}).estados;
+ expect(e.find(s=>s.id==='ursinho')!.local).toBe('consumido');expect(e.find(s=>s.id==='casinha-pet')!.itens).toEqual(['ursinho']);
+ expect(acao(e,'casinha-pet','retirar',{item:'ursinho'}).estados.find(s=>s.id==='ursinho')!.local).toBe('mao');
 });

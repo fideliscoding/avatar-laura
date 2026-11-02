@@ -32,7 +32,7 @@ test('cidade, novas missões, conselhos, diário e recompensa única no celular'
   await expect(pet).toContainText('Missão concluída');await pet.getByRole('button',{name:'Voltar a brincar',exact:true}).click();
   await expect.poll(()=>textos(page)).toContain('20 moedas');
   await botao(page,'Cidade');await botao(page,'>');await botao(page,'Casa');
-  await expect.poll(()=>textos(page)).toContain('Em breve');await page.screenshot({path:'docs/screenshots/cidade/6-casa-mobile.png'});await botao(page,'Cidade');await botao(page,'Parque');
+  await expect(page.getByRole('button',{name:'Cômodos',exact:true})).toBeVisible();await page.screenshot({path:'docs/screenshots/cidade/6-casa-mobile.png'});await botao(page,'Cidade');await botao(page,'Parque');
   await destino(page,'Esperar a vez');
   const bia=page.getByRole('region',{name:'Esperar a vez',exact:true});
   await bia.getByRole('button',{name:'A) Passar na frente',exact:true}).click();await expect(bia).toContainText('Esperar a vez');

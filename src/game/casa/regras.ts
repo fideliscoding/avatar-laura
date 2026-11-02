@@ -16,7 +16,7 @@ export function aplicarCasa(estados:EstadoObjeto[],a:AcaoInteracao):ConfirmacaoI
   if(a.versao!==s.versao)return negar();
   if(a.tipo==='acao2'&&s.prontoEm){
    if(a.agora<s.prontoEm)return negar();const item=estados.find(e=>s.itens.includes(e.id)&&!!receitaPara(s.id,e.id));if(!item)return negar();
-   return alterar([{...s,ligado:false,prontoEm:0,itens:s.itens.filter(i=>i!==item.id)},{...item,local:'chao',x:s.x,y:s.y+45,origem:{x:s.x,y:s.y+45},comodo:s.comodo,aberto:true,modo:1,trava:null}]);
+   return alterar([{...s,ligado:false,prontoEm:0,itens:s.itens.filter(i=>i!==item.id)},{...item,local:'chao',x:s.x,y:s.y+45,origem:{x:s.x,y:s.y+45},comodo:s.comodo,aberto:true,modo:receitaPara(s.id,item.id)?.modoResultado??1,trava:null}]);
   }
   if(s.prontoEm&&a.tipo==='tocar')return negar();
   if(a.tipo==='tocar'&&mao){
@@ -49,7 +49,7 @@ export function aplicarCasa(estados:EstadoObjeto[],a:AcaoInteracao):ConfirmacaoI
   return {...r,estados:r.estados.map(e=>e.id===s.id?{...e,aberto:e.ocupantes.length>0}:e),efeitos:[...r.efeitos,{tipo:'particulas',nome:a.tipo==='levantar'?'gotas':'brilho'}]};
  }
  if(d.funcao==='banheira'&&a.tipo==='tocar'&&s.ocupantes.some(o=>daInstancia(o,a.jogador,a.instancia)))return alterar([{...s,ocupantes:s.ocupantes.filter(o=>!daInstancia(o,a.jogador,a.instancia)),noite:false}]);
- if(d.funcao==='guardar'||d.funcao==='roupas'||d.funcao==='escrever'||d.funcao==='pendurar'||d.funcao==='descartar'){
+ if(s.tipo==='recipiente'||d.funcao==='escrever'){
   if((a.tipo==='retirar'||a.tipo==='guardar')&&a.item){
    if(!s.aberto||a.versao!==s.versao)return negar();const item=estados.find(e=>e.id===a.item);if(!item||item.tipo!=='pegavel')return negar();
    if(a.tipo==='guardar'){

@@ -4,36 +4,63 @@
     "item": "ovo",
     "requer": "panela",
     "resultado": "Ovo preparado",
-    "tempo": 0
+    "tempo": 0,
+    "modoResultado": 2
   },
   {
     "aparelho": "micro-ondas",
     "item": "suco",
     "resultado": "Suco morninho",
-    "tempo": 3000
+    "tempo": 3000,
+    "modoResultado": 1
   },
   {
     "aparelho": "micro-ondas",
     "item": "leite",
     "resultado": "Leite morninho",
-    "tempo": 3000
+    "tempo": 3000,
+    "modoResultado": 1
   },
   {
     "aparelho": "micro-ondas",
     "item": "pao",
     "resultado": "Pão quentinho",
-    "tempo": 3000
+    "tempo": 3000,
+    "modoResultado": 1
   },
   {
     "aparelho": "torradeira",
     "item": "pao",
     "resultado": "Torrada",
-    "tempo": 0
+    "tempo": 0,
+    "modoResultado": 2
   },
   {
     "aparelho": "maquina",
     "item": "roupa-suja",
     "resultado": "Roupa limpa e dobrada",
-    "tempo": 5000
+    "tempo": 5000,
+    "modoResultado": 1
+  },
+  {
+    "aparelho": "micro-ondas",
+    "item": "maca",
+    "resultado": "Maçã morninha",
+    "tempo": 3000,
+    "modoResultado": 1
+  },
+  {
+    "aparelho": "micro-ondas",
+    "item": "queijo",
+    "resultado": "Queijo morninho",
+    "tempo": 3000,
+    "modoResultado": 1
+  },
+  {
+    "aparelho": "micro-ondas",
+    "item": "ovo",
+    "resultado": "Ovo morninho",
+    "tempo": 3000,
+    "modoResultado": 1
   }
 ]
