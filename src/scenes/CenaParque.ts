@@ -190,7 +190,7 @@ export class CenaParque extends Phaser.Scene {
 
   private configurarCamera(): void {
     const l = layoutParque(this.scale.width, this.scale.height, !!sessao.usuario);
-    this.cameras.main.setViewport(0, l.cabecalho, l.largura, l.alturaMundo)
+    this.cameras.main.setViewport(0,0,this.scale.width,this.scale.height)
       .setBounds(0, 0, 1280, 720).setZoom(l.zoom)
       .startFollow(this.L.img, true, 0.16, 0.16, 0, 86);
   }

@@ -65,7 +65,7 @@ de deploy continua sem e2e. Posições, raios e velocidades ficam em
 ## Jogo no celular e movimentos (etapa 03A)
 
 O jogo ocupa a tela em retrato e paisagem. No parque, a câmera acompanha a Laura;
-use o chão para andar e os atalhos do rodapé para visitar brinquedos e amigos.
+use o chão para andar e o celular para visitar brinquedos e amigos.
 Os controles e diálogos mantêm tamanho de leitura e toque, sem reduzir toda a
 interface a uma miniatura. Girar a tela preserva o cabelo e a missão em andamento.
 O formulário de conta também se adapta à área restante quando o teclado abre.
@@ -121,7 +121,7 @@ Fonte Fredoka (SIL Open Font License 1.1). Artes geradas para este projeto.
 
 ## Brincar com amigos
 
-Com contas diferentes, abra **Amigos > Área do responsável** no parque. O adulto
+Com contas diferentes, abra **Celular > Amigos > Área do responsável** no parque. O adulto
 cria uma sala e compartilha o código de seis letras apenas com os responsáveis
 conhecidos. Na outra conta, informe o código e peça entrada. O dono precisa tocar
 em **Aprovar** e depois **Confirmar**. A sala comporta seis jogadores, incluindo o dono.
@@ -142,8 +142,8 @@ em [docs/ARTE.md](docs/ARTE.md#correção-das-juntas-e-do-cabelo-dos-avatares).
 
 ## Cidade e diário
 
-No rodapé do parque, use as setas até **Mapa da cidade**. Laura pode andar pelo
-mapa e entrar pelas portas, ou usar os atalhos do rodapé. A cidade tem Parque,
+No celular, abra **Mapa** e escolha o mapa da cidade. Laura pode andar pelo
+mapa e entrar pelas portas, ou usar o app Mapa do celular. A cidade tem Parque,
 Padaria, Pet Shop e Casa da Laura (seis cômodos interativos).
 
 Na Padaria, avise sobre o troco a mais; no Pet Shop, dê água, comida e carinho ao
@@ -163,8 +163,8 @@ as construções e os personagens pertencem ao universo da Laura.
 ## Objetos e mochila
 
 No parque, toque no banco para sentar, no sorvete para pegá-lo e no bebedouro para
-ligar a água. Os mesmos destinos aparecem nas setas do rodapé. Toque no avatar
-com o sorvete para comer em três mordidas. **Mochila**, no canto inferior direito,
+ligar a água. Os mesmos destinos ficam no app Mapa do celular. Toque no avatar
+com o sorvete para comer em três mordidas. **Mochila**, no app Personagens do celular,
 permite guardar, pegar e soltar itens; há uma mão e seis espaços. **Levantar** ou
 tocar no chão libera o banco.
 
@@ -178,8 +178,8 @@ e [capturas](docs/screenshots/interacoes/README.md).
 ## Casa da Laura
 
 A porta **Casa** no mapa abre seis cômodos: sala, cozinha, quarto, banheiro,
-quintal e lavanderia. **Cômodos** abre o minimapa; **Usar** aproxima Laura do
-objeto escolhido e **Opções** mostra suas ações. Tudo funciona por toque.
+quintal e lavanderia. **Mapa > Cômodos** abre o minimapa; os ícones de objetos no app Personagens
+aproximam Laura e preservam as opções de cada objeto. Tudo funciona por toque.
 
 Abra móveis para pegar itens, leve-os na mão ou na mochila e solte em outro
 ambiente. Prepare comida na cozinha, lave roupa, plante as sementes do baú e
@@ -192,3 +192,19 @@ cômodo. O dono precisa estar na casa para confirmar ações. A migração
 `0008_casa_comodos.sql` já está aplicada. Móveis e fundos usam placeholders
 Graphics, com as artes pendentes registradas em [ARTE.md](docs/ARTE.md).
 Veja [as capturas dos seis cômodos](docs/screenshots/casa/README.md).
+
+## Celular de navegação
+
+A Etapa 1 do prompt 09 substitui os cabeçalhos e rodapés pelo ícone de celular
+no canto superior direito. Os controles aparecem como desenhos, sem rótulos
+visíveis, e mantêm nomes acessíveis para leitores de tela.
+
+- **Personagens:** criador atual, mochila e utilidades do personagem.
+- **Mapa:** cidade, lugares, cômodos e atalhos já existentes.
+- **Amigos:** convite e aprovação do responsável, frases prontas e gestos.
+- **Moedas:** saldo e diário.
+- **Sair:** confirmação por ícones antes de encerrar a sessão.
+
+Toque fora ou na seta para fechar. As mecânicas anteriores continuam disponíveis;
+arrasto novo, encaixes e as demais etapas do prompt 09 aguardam aprovação.
+[Capturas do celular](docs/screenshots/celular/README.md).

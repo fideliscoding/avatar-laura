@@ -6,13 +6,13 @@ import { botao, tocar, projetar, textos } from '../apoio/jogo';
 
 async function abrir(page: Page): Promise<void> {
   await page.goto('./');
-  await expect.poll(() => textos(page)).toContain('Crie o seu visual');
+  await expect(page.getByRole('button',{name:'Ir para o parque',exact:true})).toBeVisible();
 }
 
 async function buscarCarrinho(page: Page): Promise<void> {
   await tocar(page, 688, 510);
   await botao(page, TEXTOS.respostaAjudar);
-  await expect.poll(() => textos(page)).toContain(TEXTOS.objetivoProcurar);
+  await expect.poll(()=>page.evaluate(()=>(window.__jogo.scene.getScene('Parque') as unknown as {missao:{etapa:string}}).missao.etapa)).toBe('procurando');
   await tocar(page, 985, 560);
   await expect.poll(() => textos(page)).toContain(TEXTOS.pergunta);
 }
@@ -22,10 +22,10 @@ test('missão completa, conselhos, persistência e recompensa única ao repetir'
   page.on('pageerror', erro => erros.push(erro.message));
   page.on('console', mensagem => { if (mensagem.type() === 'error') erros.push(mensagem.text()) });
   await abrir(page);
-  for (const cabelo of ['Liso', 'Rabo de cavalo', 'Tranças', 'Cacheado', 'Coque', 'Coquinhos']) expect(await textos(page)).toContain(cabelo);
+  for (const cabelo of ['Liso', 'Rabo de cavalo', 'Tranças', 'Cacheado', 'Coque', 'Coquinhos']) await expect(page.getByRole('button',{name:cabelo,exact:true})).toBeVisible();
   await botao(page, 'Cacheado');
   await page.reload();
-  await expect.poll(() => textos(page)).toContain('Crie o seu visual');
+  await expect(page.getByRole('button',{name:'Ir para o parque',exact:true})).toBeVisible();
   expect(await page.evaluate(() => JSON.parse(localStorage.getItem('mtmw:progresso:v1')!).cabelo)).toBe(3);
   await page.screenshot({ path: 'docs/screenshots/phaser/1-criador.png' });
   await botao(page, 'Ir para o parque');
@@ -38,7 +38,7 @@ test('missão completa, conselhos, persistência e recompensa única ao repetir'
     await botao(page, TEXTOS.tentarDeNovo);
   }
   await botao(page, TEXTOS.opcoes.B);
-  await expect.poll(() => textos(page)).toContain(TEXTOS.objetivoConcluida);
+  await expect.poll(()=>page.evaluate(()=>(window.__jogo.scene.getScene('Parque') as unknown as {missao:{etapa:string}}).missao.etapa)).toBe('concluida');
   await page.screenshot({ path: 'docs/screenshots/phaser/4-confete.png' });
   await expect.poll(() => page.evaluate(() => JSON.parse(localStorage.getItem('mtmw:progresso:v1')!).moedas)).toBe(15);
   await botao(page, 'Jogar a missão de novo');

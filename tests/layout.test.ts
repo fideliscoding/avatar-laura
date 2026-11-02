@@ -9,7 +9,7 @@ describe('layout mobile first', () => {
       expect(l.zoom * 172).toBeGreaterThanOrEqual(110);
       expect(l.alturaMundo).toBeGreaterThanOrEqual(100);
       expect(l.cabecalho + l.alturaMundo + l.rodape).toBeLessThanOrEqual(h);
-      expect(l.porPagina).toBeGreaterThanOrEqual(1);
+      expect(l.porPagina).toBeGreaterThanOrEqual(1);expect(l.cabecalho).toBe(0);expect(l.rodape).toBe(0);
       const entrada = layoutEntrada(w,h);
       expect(entrada.larguraForm).toBeLessThan(w);
       expect(entrada.topoForm + entrada.alturaForm).toBeLessThan(entrada.acaoY);

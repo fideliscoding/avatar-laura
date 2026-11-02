@@ -7,10 +7,12 @@ import { progresso, persistir, recompensarMissao } from '../game/estado';
 import { sessao, registrar } from '../net/sessao';
 import { PainelCidade } from '../ui/PainelCidade';
 
+function interfaceDaCena(origem:string):string{return origem==='Parque'?'Interface':origem==='Casa'?'CasaInterface':origem==='Criador'?'CriadorInterface':'LugarInterface'}
+
 export function abrirPainelMissao(cena: Phaser.Scene, id?: string): void {
   if(cena.scene.isActive('Missao'))return;
   const origem=cena.scene.key;
-  cena.scene.pause(); if(origem==='Parque')cena.scene.pause('Interface'); else cena.scene.pause('LugarInterface');
+  cena.scene.pause(); cena.scene.pause(interfaceDaCena(origem));
   cena.scene.launch('Missao',{origem,id});
 }
 
@@ -22,9 +24,9 @@ export class CenaMissao extends Phaser.Scene {
     const fundo=this.add.rectangle(0,0,this.scale.width,this.scale.height,0x2b1f45,.62).setOrigin(0).setInteractive();
     const redimensionar=()=>fundo.setSize(this.scale.width,this.scale.height);
     this.scale.on('resize',redimensionar);this.events.once('shutdown',()=>this.scale.off('resize',redimensionar));
-    this.painel=new PainelCidade(this,this.missao?.titulo??T.diario);this.mostrar();
+    this.painel=new PainelCidade(this,this.missao?.titulo??T.diario,!!this.missao);this.mostrar();
   }
-  private fechar():void {this.scene.resume(this.origem);this.scene.resume(this.origem==='Parque'?'Interface':'LugarInterface');this.scene.stop()}
+  private fechar():void {this.scene.resume(this.origem);this.scene.resume(interfaceDaCena(this.origem));this.scene.stop()}
   private mostrar(conselho?:string):void {
     const p=this.painel;p.root.replaceChildren();
     const fechar=p.botao(T.fechar,()=>this.fechar());fechar.style.position='sticky';fechar.style.top='0';fechar.style.zIndex='1';
@@ -33,8 +35,8 @@ export class CenaMissao extends Phaser.Scene {
       for(const m of MISSOES) {
         const concluida=progresso.missoesConcluidas.includes(m.id);
         const card=document.createElement('article');card.style.cssText='background:#efe5ff;border-radius:16px;padding:14px;margin:12px 0';
-        const titulo=document.createElement('h3');titulo.textContent=m.titulo;titulo.style.margin='0 0 8px';card.append(titulo);
-        const descricao=document.createElement('p');descricao.textContent=`${m.valor} · ${m.lugar} · ${m.recompensa} moedas`;card.append(descricao);
+        const titulo=document.createElement('h3');titulo.textContent=m.titulo;titulo.style.cssText='position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);';card.append(titulo);
+        const descricao=document.createElement('p');descricao.textContent=`${m.valor} · ${m.lugar} · ${m.recompensa} moedas`;descricao.style.cssText='position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);';card.append(descricao);
         const selo=document.createElementNS('http://www.w3.org/2000/svg','svg');selo.setAttribute('viewBox','0 0 80 80');selo.setAttribute('width','54');selo.setAttribute('height','54');selo.setAttribute('aria-label',concluida?T.selo:T.pendente);
         const forma=document.createElementNS(selo.namespaceURI,'circle');forma.setAttribute('cx','40');forma.setAttribute('cy','40');forma.setAttribute('r','34');forma.setAttribute('fill',concluida?'#ffd23f':'#d9c5ff');selo.append(forma);
         if(concluida){const marca=document.createElementNS(selo.namespaceURI,'path');marca.setAttribute('d','M23 40 L35 52 L58 27');marca.setAttribute('fill','none');marca.setAttribute('stroke','#5a2fa8');marca.setAttribute('stroke-width','7');selo.append(marca)}
@@ -53,7 +55,7 @@ export class CenaMissao extends Phaser.Scene {
           persistir();
         } else registrar({tipo:'missao',missao:m.id,escolhas:r.estado.escolhas});
         this.mostrar(r.conselho??undefined);
-      });
+      },true);
     }
     p.reorganizar();
   }

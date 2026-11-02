@@ -24,3 +24,10 @@ Cada etapa tem um prompt pronto em `prompts/`. Faça uma etapa por vez: cole o p
 7. Artes desenhadas para poses sentadas e caminhada, vistas de lado para todos os cabelos e gangorra em duas peças (articulação procedural já disponível na etapa 03A).
 8. Modo criar: lugares, personagens, missões e itens editáveis.
 9. PWA (instalar no tablet, funcionar offline).
+
+## Modelo de toque, entrega incremental
+
+| Prompt | Subetapa | Status |
+|---|---|---|
+| 09 | 1: celular e remoção de barras/botões textuais de navegação | Implementado neste PR; aguarda aprovação |
+| 09 | 2–13 | Aguardam solicitação e aprovação; não implementadas neste PR |

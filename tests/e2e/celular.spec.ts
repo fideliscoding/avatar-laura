@@ -1,0 +1,20 @@
+import {expect,test} from '@playwright/test';
+import {botao,destino} from '../apoio/jogo';
+test.use({hasTouch:true});
+test('só o celular fica fixo; cinco apps, fechar fora, voltar e saída por ícones',async({page})=>{
+ const erros:string[]=[];page.on('pageerror',e=>erros.push(e.message));await page.setViewportSize({width:390,height:844});await page.goto('./');await botao(page,'Ir para o parque');
+ await expect(page.getByRole('button',{name:'Celular',exact:true})).toBeVisible();await expect(page.getByRole('button',{name:'Trocar cabelo',exact:true})).toHaveCount(0);
+ await page.screenshot({path:'docs/screenshots/celular/1-parque.png'});
+ await page.getByRole('button',{name:'Celular',exact:true}).tap();const c=page.getByRole('dialog',{name:'Celular',exact:true});
+ for(const app of ['Personagens','Mapa','Amigos','Moedas','Sair'])await expect(c.getByRole('button',{name:app,exact:true})).toBeVisible();
+ expect(await c.locator('button').evaluateAll(bs=>bs.every(b=>!(b.textContent??'').trim()))).toBe(true);
+ expect(await c.locator('button').evaluateAll(bs=>bs.every(b=>{const r=b.getBoundingClientRect();return r.width>=64&&r.height>=64}))).toBe(true);
+ await expect.poll(()=>c.evaluate(e=>e.getAnimations().every(a=>a.playState==='finished'||a.playState==='idle'))).toBe(true);await page.screenshot({path:'docs/screenshots/celular/2-apps.png'});
+ await c.getByRole('button',{name:'Sair',exact:true}).tap();await c.getByRole('button',{name:'Cancelar saída',exact:true}).tap();await expect(c.getByRole('button',{name:'Personagens',exact:true})).toBeVisible();
+ await c.getByRole('button',{name:'Moedas',exact:true}).tap();await expect(c.getByLabel('0 moedas',{exact:true})).toBeVisible();await c.getByRole('button',{name:'Voltar',exact:true}).tap();await c.getByRole('button',{name:'Voltar',exact:true}).tap();await expect(c).not.toBeVisible();
+ await page.getByRole('button',{name:'Celular',exact:true}).tap();await page.locator('[data-fora-celular]').tap({position:{x:4,y:4}});await expect(c).not.toBeVisible();
+ await destino(page,'Mapa da cidade');await expect(page.getByRole('button',{name:'Celular',exact:true})).toBeVisible();await botao(page,'Casa');
+ await expect(page.getByRole('button',{name:'Celular',exact:true})).toBeVisible();await expect(page.getByRole('combobox')).toHaveCount(0);await page.screenshot({path:'docs/screenshots/celular/3-casa.png'});
+ await page.setViewportSize({width:844,height:390});await page.getByRole('button',{name:'Celular',exact:true}).tap();await expect.poll(async()=>{const r=await c.boundingBox();return !!r&&r.y>=0&&r.y+r.height<=390}).toBe(true);await page.screenshot({path:'docs/screenshots/celular/4-paisagem.png'});
+ await c.getByRole('button',{name:'Sair',exact:true}).tap();await c.getByRole('button',{name:'Confirmar saída',exact:true}).tap();await expect(page.getByLabel('E-mail do responsável')).toBeVisible();expect(erros).toEqual([]);
+});

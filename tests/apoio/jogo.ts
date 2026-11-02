@@ -34,7 +34,17 @@ export async function textos(page: Page): Promise<string[]> {
   });
 }
 export async function botao(page: Page, texto: string): Promise<void> {
-  const nativo=page.getByRole('button',{name:texto,exact:true});if(await nativo.count()===1&&await nativo.isVisible()){await nativo.click();return}
+  await page.evaluate(()=>new Promise<void>(r=>requestAnimationFrame(()=>requestAnimationFrame(()=>r()))));
+  const nativo=page.getByRole('button',{name:texto,exact:true});if(await nativo.count()===1&&await nativo.isVisible()){await nativo.click();await page.evaluate(()=>new Promise<void>(r=>requestAnimationFrame(()=>requestAnimationFrame(()=>r()))));return}
+  const rotas=new Set(['Trocar cabelo','Mochila','Levantar','Mapa da cidade','Cidade','Parque','Padaria','Pet Shop','Casa','Cômodos','Balanço','Escorregador','Gangorra','Carrossel','Sorvete','Dona Marta','Pedrinho','Areia','Esperar a vez','Meu diário','Sentar no banco','Pegar sorvete','Bebedouro','Amigos','Sair','Cuidar do Bolinha','Troco a mais']);
+  if((rotas.has(texto)||texto.startsWith('Usar '))&&!(await textos(page)).includes(texto)&&await page.getByRole('button',{name:'Celular',exact:true}).count()){
+    const celular=page.getByRole('dialog',{name:'Celular',exact:true});
+    while(await celular.isVisible())await celular.getByRole('button',{name:'Voltar',exact:true}).click();
+    await page.getByRole('button',{name:'Celular',exact:true}).click();
+    if(texto==='Amigos'||texto==='Sair'){await celular.getByRole('button',{name:texto,exact:true}).click();return}
+    const app=/Trocar cabelo|Mochila|Levantar|^Usar /.test(texto)?'Personagens':texto==='Meu diário'?'Moedas':'Mapa';
+    await celular.getByRole('button',{name:app,exact:true}).click();await celular.getByRole('button',{name:texto,exact:true}).click();const destinoCena:Record<string,string>={'Mapa da cidade':'Cidade',Cidade:'Cidade',Parque:'Parque',Casa:'Casa',Padaria:'Padaria','Pet Shop':'PetShop'};if(destinoCena[texto])await expect.poll(()=>page.evaluate(k=>window.__jogo.scene.isActive(k),destinoCena[texto])).toBe(true);await page.evaluate(()=>new Promise<void>(r=>requestAnimationFrame(()=>requestAnimationFrame(()=>r()))));return;
+  }
   // Aguarda a apresentação do novo viewport antes de tocar após rotação/teclado.
   await page.evaluate(() => new Promise<void>(resolve => requestAnimationFrame(() => requestAnimationFrame(() => resolve()))));
   await expect.poll(() => textos(page)).toContain(texto);
@@ -57,9 +67,9 @@ export async function botao(page: Page, texto: string): Promise<void> {
   await tocarTela(page, ponto.x, ponto.y);
 }
 export async function destino(page: Page, nome: string): Promise<void> {
-  for (let pagina = 0; pagina < 32; pagina++) {
-    if ((await textos(page)).includes(nome)) { await botao(page, nome); return }
-    await botao(page, '>');
-  }
-  throw new Error(`Destino ausente: ${nome}`);
+  await botao(page,nome);
+}
+
+export async function saldoVisivel(page:Page,valor:number):Promise<void>{
+ await page.getByRole('button',{name:'Celular',exact:true}).click();const c=page.getByRole('dialog',{name:'Celular'});await c.getByRole('button',{name:'Moedas',exact:true}).click();await expect(c.getByLabel(`${valor} moedas`,{exact:true})).toBeVisible();await c.getByRole('button',{name:'Voltar',exact:true}).click();await c.getByRole('button',{name:'Voltar',exact:true}).click();
 }

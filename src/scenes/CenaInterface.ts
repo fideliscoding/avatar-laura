@@ -1,20 +1,12 @@
-import {TEXTOS_INTERACAO as TI} from '../config/interacoes';
-import { MISSOES } from '../game/missoes/catalogo';
-import { abrirPainelMissao } from './CenaMissao';
-import { TEXTOS_CIDADE } from '../config/cidade';
+import {IMAGENS} from '../config/assets';
 import Phaser from 'phaser';
-import { CORES, FONTE } from '../config/assets';
-import { TEXTOS_CONTAS } from '../config/contas';
-import { progresso, persistir } from '../game/estado';
-import { layoutParque } from '../game/layout';
-import { sessao, sairDaConta } from '../net/sessao';
-import { Botao } from '../ui/Botao';
-import { PainelAmigos } from '../ui/PainelAmigos';
-import { amigos } from '../net/sala';
-import { TEXTOS_AMIGOS } from '../config/amigos';
-import { Dialogo } from '../ui/Dialogo';
-import type { CenaParque, Alvo } from './CenaParque';
-
+import {TEXTOS_INTERACAO as TI} from '../config/interacoes';
+import {TEXTOS_CIDADE} from '../config/cidade';
+import {MISSOES} from '../game/missoes/catalogo';
+import {abrirPainelMissao} from './CenaMissao';
+import {Dialogo} from '../ui/Dialogo';
+import {instalarCelular} from '../ui/instalarCelular';
+import type {CenaParque,Alvo} from './CenaParque';
 const DESTINOS: { alvo: Alvo | 'cidade' | 'diario' | 'missao' | 'banco' | 'pegar-sorvete' | 'agua' | 'mochila' | 'levantar'; nome: string; missao?: string }[] = [
   { alvo: 'balanco', nome: 'Balanço' }, { alvo: 'escorregador', nome: 'Escorregador' },
   { alvo: 'gangorra', nome: 'Gangorra' }, { alvo: 'carrossel', nome: 'Carrossel' },
@@ -24,121 +16,32 @@ const DESTINOS: { alvo: Alvo | 'cidade' | 'diario' | 'missao' | 'banco' | 'pegar
   {alvo:'banco',nome:TI.banco},{alvo:'pegar-sorvete',nome:TI.sorvete},{alvo:'agua',nome:TI.agua},{alvo:'mochila',nome:TI.mochila},{alvo:'levantar',nome:TI.levantar},
 ];
 
-/** Interface em pixels visíveis, independente da câmera que acompanha a Laura. */
-export class CenaInterface extends Phaser.Scene {
-  dialogo!: Dialogo;
-  private parque!: CenaParque;
-  private hud!: Phaser.GameObjects.Container;
-  private objetivo!: Phaser.GameObjects.Text;
-  private moedas!: Phaser.GameObjects.Text;
-  private apelido?: Phaser.GameObjects.Text;
-  private aviso!: Phaser.GameObjects.Text;
-  private pagina = 0;
-  private saldo = 0;
-  private painelAmigos!: PainelAmigos;
-  private mensagemSocial = { texto: '', ate: 0 };
-  private contagem?: Phaser.Time.TimerEvent;
-
-  constructor() { super('Interface') }
-  init(dados: { parque: CenaParque }): void { this.parque = dados.parque }
-  create(): void {
-    this.pagina = 0; this.saldo = progresso.moedas;
-    this.dialogo = new Dialogo(this);
-    this.painelAmigos = new PainelAmigos(this, {
-      frase: id => { amigos.enviarFrase(id) }, gesto: tipo => { amigos.enviarAceno(tipo) },
-      ver: usuario => this.parque.focarAmigo(usuario), fechar: () => this.parque.bloquearSocial(false),
-    });
-    this.reconstruir(); this.parque.conectarInterface(this);
-    this.scale.on('resize', this.reconstruir, this);
-    this.events.once('shutdown', () => { this.scale.off('resize', this.reconstruir, this); this.painelAmigos.destruir() });
-  }
-
-  private reconstruir(): void {
-    this.contagem?.remove();
-    this.hud?.destroy(true);
-    this.hud = this.add.container().setDepth(5000);
-    const w = this.scale.width, h = this.scale.height, l = layoutParque(w, h, !!sessao.usuario);
-    const fundo = this.add.graphics();
-    fundo.fillStyle(0xf4edff, 0.97); fundo.fillRect(0, 0, w, l.cabecalho);
-    fundo.fillStyle(0xffffff, 0.97); fundo.fillRect(0, h - l.rodape, w, l.rodape);
-    this.hud.add(fundo);
-    const cabelo = new Botao(this, w < 340 ? 65 : 85, 28, 'Trocar cabelo', () => {
-      if (this.dialogo.aberto) return;
-      persistir(); this.parque.scene.stop(); this.scene.start('Criador');
-    }, { tamanho: w < 340 ? 14 : 16, largura: w < 340 ? 106 : 140 });
-    this.hud.add(cabelo);
-    this.moedas = this.add.text(w - 16, 28, String(progresso.moedas), { fontFamily: FONTE, fontSize: '24px', fontStyle: '700', color: CORES.textoRoxo }).setOrigin(1, 0.5);
-    const moeda = this.add.circle(w - 76, 28, 17, 0xffd23f).setStrokeStyle(3, 0xe8a10c);
-    const estrela = this.add.star(w - 76, 28, 5, 6, 12, 0xe8a10c);
-    this.hud.add([moeda, estrela, this.moedas]);
-    if (sessao.usuario) {
-      this.hud.add(new Botao(this, w - 145, 28, TEXTOS_CONTAS.sair, () => {
-        if (this.dialogo.aberto) return;
-        void sairDaConta().then(() => { this.parque.scene.stop(); this.scene.start('Entrar') })
-          .catch(() => { this.aviso.setText(TEXTOS_CONTAS.falhaSair).setVisible(true) });
-      }, { tamanho: 16, largura: 60 }));
-      this.hud.add(new Botao(this, l.retrato ? w - 62 : w - 242, l.retrato ? 68 : 28, TEXTOS_AMIGOS.titulo, () => {
-        if (this.dialogo.aberto) return;
-        this.parque.bloquearSocial(true); this.painelAmigos.abrir();
-      }, { tamanho: 16, largura: 96 }));
-      this.apelido = this.add.text(16, 58, sessao.apelido, { fontFamily: FONTE, fontSize: '16px', color: CORES.textoRoxo });
-      this.hud.add(this.apelido);
-    } else this.apelido = undefined;
-    const yObjetivo = sessao.usuario && l.retrato ? 106 : 57;
-    this.objetivo = this.add.text(16, yObjetivo, this.parque.objetivoAtual, { fontFamily: FONTE, fontSize: l.retrato || h < 500 ? '16px' : '18px', fontStyle: '600', color: CORES.textoRoxo, wordWrap: { width: w - 32 } });
-    if (sessao.usuario && !l.retrato) this.apelido?.setPosition(180, 8).setFontSize(w < 700 ? 14 : 16).setWordWrapWidth(Math.max(80,w-490),true);
-    this.hud.add(this.objetivo);
-    const porPagina=w<360?1:l.porPagina;
-    const paginas = Math.ceil(DESTINOS.length / porPagina);
-    this.pagina = Math.min(this.pagina, paginas - 1);
-    const y = h - l.rodape / 2 + 8;
-    this.hud.add(this.add.text(w / 2, h - l.rodape + 8, 'Explore o parque', { fontFamily: FONTE, fontSize: '14px', color: CORES.textoRoxo }).setOrigin(0.5, 0));
-    if (paginas > 1) {
-      this.hud.add(new Botao(this, 23, y, '<', () => { this.pagina = (this.pagina - 1 + paginas) % paginas; this.reconstruir() }, { tamanho: 18, largura: 44 }));
-      this.hud.add(new Botao(this, w - 23, y, '>', () => { this.pagina = (this.pagina + 1) % paginas; this.reconstruir() }, { tamanho: 18, largura: 44 }));
-    }
-    const margem = paginas > 1 ? 52 : 12;
-    const itens = DESTINOS.slice(this.pagina * porPagina, (this.pagina + 1) * porPagina);
-    const passo = (w - margem * 2) / itens.length;
-    itens.forEach((item, i) => this.hud.add(new Botao(this, margem + passo * (i + 0.5), y, item.nome,
-      () => {
-        if(this.dialogo.aberto || this.painelAmigos.aberto)return;
-        if(item.alvo==='cidade')this.parque.scene.start('Cidade');
-        else if(item.alvo==='diario')abrirPainelMissao(this.parque);
-        else if(item.alvo==='missao'){if(item.missao==='parque-esperar')this.parque.conversarBia();else abrirPainelMissao(this.parque,item.missao)}
-        else if(item.alvo==='banco')this.parque.interacoes.interagir('banco-parque');
-        else if(item.alvo==='pegar-sorvete')this.parque.interacoes.interagir('sorvete-parque');
-        else if(item.alvo==='agua')this.parque.interacoes.interagir('bebedouro-parque');
-        else if(item.alvo==='levantar')this.parque.interacoes.levantar();
-        else if(item.alvo==='mochila')this.abrirMochila()
-        else this.parque.irPara(item.alvo);
-      }, { tamanho: 16, largura: passo - 8 })));
-    this.aviso = this.add.text(w / 2, h - l.rodape - 10, '', { fontFamily: FONTE, fontSize: '15px', color: CORES.textoRoxo, backgroundColor: '#ffffff', wordWrap: { width: w - 32 }, align: 'center', padding: { x: 8, y: 6 } }).setOrigin(0.5, 1);
-    this.hud.add(this.aviso);
-    const mochila=document.createElement('button');mochila.type='button';mochila.setAttribute('aria-label',TI.mochila);mochila.title=TI.mochila;
-    mochila.style.cssText='width:64px;height:64px;border:3px solid #b58cf5;border-radius:20px;background:#8b55e6;box-shadow:0 4px 0 #5a2fa8;cursor:pointer;touch-action:manipulation';
-    mochila.innerHTML='<svg aria-hidden="true" viewBox="0 0 64 64" width="48" height="48"><path d="M22 19v-5q10-12 20 0v5" fill="none" stroke="#fff" stroke-width="5"/><rect x="11" y="18" width="42" height="40" rx="12" fill="#d9c5ff"/><rect x="18" y="35" width="28" height="17" rx="6" fill="#f6afd4"/><path d="M24 42h16" stroke="#8b55e6" stroke-width="3"/></svg>';
-    mochila.addEventListener('click',()=>this.abrirMochila());this.hud.add(this.add.dom(w-43,h-l.rodape-46,mochila));
-    this.dialogo.reorganizar(); this.painelAmigos?.reorganizar();
-  }
-
-  private abrirMochila():void{if(this.dialogo.aberto||this.painelAmigos.aberto)return;this.parque.scene.pause();this.scene.pause();this.scene.launch('Mochila',{parque:this.parque})}
-  notificarSocial(texto: string): void { this.mensagemSocial = { texto, ate: this.time.now + 2600 } }
-  definirObjetivo(texto: string): void { this.objetivo?.setText(texto) }
-  update(): void {
-    if (!this.moedas) return;
-    this.apelido?.setText(sessao.apelido);
-    this.painelAmigos.atualizar();
-    const social = amigos.fase === 'reconectando' ? TEXTOS_AMIGOS.reconectando : this.time.now < this.mensagemSocial.ate ? this.mensagemSocial.texto : '';
-    this.aviso.setText(social || (sessao.pendente ? TEXTOS_CONTAS.semInternet : '')).setVisible(!!social || sessao.pendente);
-    if (this.saldo !== progresso.moedas) {
-      const inicio = this.saldo, fim = progresso.moedas; this.saldo = fim;
-      this.contagem?.remove(); let atual = inicio;
-      if (fim <= inicio || fim - inicio > 100) this.moedas.setText(String(fim));
-      else this.contagem = this.time.addEvent({ delay: 70, repeat: fim - inicio - 1, callback: () => {
-        this.moedas.setText(String(++atual));
-        this.tweens.add({ targets: this.moedas, scale: 1.18, duration: 100, yoyo: true });
-      } });
-    }
-  }
+/** O celular substitui cabeçalho, saldo fixo e rodapé de atalhos. */
+export class CenaInterface extends Phaser.Scene{
+ dialogo!:Dialogo;private parque!:CenaParque;
+ constructor(){super('Interface')}
+ init(dados:{parque:CenaParque}):void{this.parque=dados.parque}
+ create():void{
+  this.dialogo=new Dialogo(this);this.parque.conectarInterface(this);
+  instalarCelular(this,this.parque,{
+   podeAbrir:()=>!this.dialogo.aberto,bloquear:aberto=>this.parque.bloquearSocial(aberto),focar:id=>this.parque.focarAmigo(id),
+   personagens:()=>DESTINOS.filter(d=>['mochila','levantar'].includes(d.alvo)).map(d=>({nome:d.nome,acao:()=>this.executar(d)})),
+   mapa:()=>DESTINOS.filter(d=>!['mochila','levantar','diario'].includes(d.alvo)).map(d=>({nome:d.nome,icone:d.alvo==='cidade'?'mapa' as const:undefined,imagem:d.alvo==='pedro'?import.meta.env.BASE_URL+IMAGENS['pedro-triste']:d.alvo==='vovo'?import.meta.env.BASE_URL+IMAGENS.vovo:undefined,acao:()=>this.executar(d)})),
+  });
+  const reorganizar=()=>this.dialogo.reorganizar();this.scale.on('resize',reorganizar);this.events.once('shutdown',()=>this.scale.off('resize',reorganizar));
+ }
+ private executar(item:typeof DESTINOS[number]):void{
+  if(this.dialogo.aberto)return;
+  if(item.alvo==='cidade')this.parque.scene.start('Cidade');
+  else if(item.alvo==='diario')abrirPainelMissao(this.parque);
+  else if(item.alvo==='missao'){if(item.missao==='parque-esperar')this.parque.conversarBia();else abrirPainelMissao(this.parque,item.missao)}
+  else if(item.alvo==='banco')this.parque.interacoes.interagir('banco-parque');
+  else if(item.alvo==='pegar-sorvete')this.parque.interacoes.interagir('sorvete-parque');
+  else if(item.alvo==='agua')this.parque.interacoes.interagir('bebedouro-parque');
+  else if(item.alvo==='levantar')this.parque.interacoes.levantar();
+  else if(item.alvo==='mochila'){this.parque.scene.pause();this.scene.pause();this.scene.launch('Mochila',{parque:this.parque})}
+  else this.parque.irPara(item.alvo);
+ }
+ notificarSocial(texto:string):void{const aviso=this.add.text(12,this.scale.height-72,texto,{fontFamily:'Fredoka',fontSize:'22px',color:'#5a2fa8',backgroundColor:'#fff',wordWrap:{width:this.scale.width-24}}).setDepth(7000);this.time.delayedCall(2600,()=>aviso.destroy())}
+ definirObjetivo(_texto:string):void{}
 }

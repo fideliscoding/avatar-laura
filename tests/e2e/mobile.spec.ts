@@ -13,11 +13,11 @@ test.describe('jogo mobile first', () => {
 
   test('missão por toque, câmera, membros articulados e rotação com diálogo aberto', async ({ page }) => {
     const erros: string[] = []; page.on('pageerror', erro => erros.push(erro.message));
-    await page.goto('./'); await expect.poll(() => textos(page)).toContain('Crie o seu visual');
+    await page.goto('./'); await expect(page.getByRole('button',{name:'Ir para o parque',exact:true})).toBeVisible();
     const caixa = (await page.locator('canvas').boundingBox())!;
     expect(caixa.height).toBe(844); expect(caixa.width).toBe(390);
     await botao(page, 'Cacheado'); await botao(page, 'Ir para o parque');
-    await expect.poll(() => textos(page)).toContain('Balanço');
+    await expect(page.getByRole('button',{name:'Celular',exact:true})).toBeVisible();
     await tocar(page, 550, 650);
     await expect.poll(() => page.evaluate(() => Math.abs((window.__jogo.scene.getScene('Parque') as unknown as ParqueObservado).L.x - 550))).toBeLessThan(10);
     await destino(page, 'Sorvete');
@@ -72,11 +72,11 @@ test.describe('jogo mobile first', () => {
 
   test('criador ocupa a tela de um aparelho pequeno e preserva o cabelo ao girar', async ({ page }) => {
     await page.setViewportSize({ width: 298, height: 567 }); await page.goto('./');
-    await expect.poll(() => textos(page)).toContain('Crie o seu visual');
+    await expect(page.getByRole('button',{name:'Ir para o parque',exact:true})).toBeVisible();
     await botao(page, 'Coquinhos');
     await page.screenshot({ path: 'docs/screenshots/mobile/8-criador-pequeno.png' });
     await page.setViewportSize({ width: 567, height: 298 }); await page.waitForTimeout(300);
-    await botao(page, 'Ir para o parque'); await expect.poll(() => textos(page)).toContain('Trocar cabelo');
+    await botao(page, 'Ir para o parque'); await expect(page.getByRole('button',{name:'Celular',exact:true})).toBeVisible();
     expect(await page.evaluate(() => JSON.parse(localStorage.getItem('mtmw:progresso:v1')!).cabelo)).toBe(5);
   });
 });

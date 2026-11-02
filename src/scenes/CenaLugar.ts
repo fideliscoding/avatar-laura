@@ -42,9 +42,9 @@ export class CenaLugar extends Phaser.Scene {
     for(const [i,missao] of MISSOES.filter(m=>m.lugar===this.lugar).entries())this.destinos.push({nome:missao.titulo,x:620+i*70,y:550,acao:()=>abrirPainelMissao(this,missao.id)});
     this.add.zone(350,250,580,260).setOrigin(0).setInteractive().on('pointerdown',(_p:unknown,_x:unknown,_y:unknown,ev:Phaser.Types.Input.EventData)=>{ev.stopPropagation();if(this.destinos[0])this.ir(this.destinos[0])});
   }
-  protected rotulo(x:number,y:number,texto:string,tamanho=28):void {this.add.text(x,y,texto,{fontFamily:FONTE,fontSize:`${tamanho}px`,color:CORES.textoRoxo,backgroundColor:'#ffffff',padding:{x:12,y:8}}).setOrigin(.5)}
+  protected rotulo(x:number,y:number,texto:string,tamanho=28):void {this.add.text(x,y,texto,{fontFamily:FONTE,fontSize:`${tamanho}px`,color:CORES.textoRoxo,backgroundColor:'#ffffff',padding:{x:12,y:8}}).setOrigin(.5).setVisible(import.meta.env.DEV)}
   private ajustarCamera():void {
-    const w=this.scale.width,h=this.scale.height;this.cameras.main.setViewport(0,88,w,Math.max(100,h-176)).setBounds(0,0,1280,720).setZoom(Math.max(.65,w/1280,(h-176)/720)).startFollow(this.avatar,true,.16,.16,0,45);
+    const w=this.scale.width,h=this.scale.height;this.cameras.main.setViewport(0,0,w,h).setBounds(0,0,1280,720).setZoom(Math.max(.65,w/1280,h/720)).startFollow(this.avatar,true,.16,.16,0,45);
   }
   titulo():string {return this.lugar}
   acoes():DestinoLugar[]{return this.destinos}
