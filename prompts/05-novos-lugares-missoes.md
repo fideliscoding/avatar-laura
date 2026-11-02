@@ -19,7 +19,7 @@ Faça:
    - **Pet Shop**: missão "Cuidar do Bolinha" (responsabilidade): dar água, comida e carinho em um filhote (3 passos de toque). Recompensa 10 moedas. Prepara o terreno para "pets adotados como missão".
 4. Uma terceira missão no **Parque**: "Esperar a vez" (paciência) com a Bia no escorregador. Recompensa 5 moedas.
 5. Tela **Meu diário** (botão no HUD): lista das missões com o valor aprendido e um selo desenhado em código para cada concluída.
-6. Se o Supabase estiver ativo, cadastre as missões novas via migração `supabase/migrations/0004_missoes_cidade.sql` (insert em `missions`).
+6. Se o Supabase estiver ativo, cadastre as missões novas via migração `supabase/migrations/0006_missoes_cidade.sql` (insert em `missions`).
 7. Atualize `docs/GDD.md`, `docs/ARTE.md` (assets usados e que faltam) e `docs/ROADMAP.md`.
 
 ## Critérios de aceite

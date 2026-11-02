@@ -139,3 +139,19 @@ Detalhes de autorização e testes em [docs/SUPABASE.md](docs/SUPABASE.md) e
 A composição dos avatares preserva o cabelo inteiro e cobre as juntas das pernas,
 inclusive nos brinquedos e no multiplayer. Detalhes e comparação dos seis cabelos
 em [docs/ARTE.md](docs/ARTE.md#correção-das-juntas-e-do-cabelo-dos-avatares).
+
+## Cidade e diário
+
+No rodapé do parque, use as setas até **Mapa da cidade**. Laura pode andar pelo
+mapa e entrar pelas portas, ou usar os atalhos do rodapé. A cidade tem Parque,
+Padaria, Pet Shop e Casa da Laura (quarto provisório com Em breve).
+
+Na Padaria, avise sobre o troco a mais; no Pet Shop, dê água, comida e carinho ao
+Bolinha. No parque, **Esperar a vez** leva Laura até Bia para praticar paciência.
+**Meu diário** lista os valores aprendidos e os selos de conclusão. As quatro
+missões somam 40 moedas e repetir uma história não paga novamente.
+
+Os dados ficam em `public/data/missoes/`. O motor e o catálogo são independentes
+do Phaser; novos JSONs são descobertos automaticamente. Consulte
+[como criar uma missão](docs/GDD.md#criar-uma-missão-por-json) e as
+[capturas da cidade](docs/screenshots/cidade/README.md).

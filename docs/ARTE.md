@@ -59,6 +59,10 @@ Botões roxos e rosa com sombra, caixa de diálogo branca com borda lilás e ros
 ## Assets que faltam
 
 Prioridade alta (resolvem as limitações conhecidas):
+- [ ] Tileset final da cidade, fachadas e portas de Parque, Padaria, Pet Shop e Casa.
+- [ ] Fundo e balcão final da Padaria; padeira Dona Rosa em estilo chibi.
+- [ ] Fundo final do Pet Shop e filhote Bolinha com água, comida e carinho.
+- [ ] Quarto final da Casa da Laura (a entrega atual mostra Em breve).
 - [ ] `laura-lado-<cabelo>.png` para rabo, tranças, cacheado, coque e coquinhos (hoje só existe o liso).
 - [ ] `laura-sentada-<cabelo>.png` (balanço, gangorra, banco, carrossel).
 - [ ] `gangorra-base.png` e `gangorra-tabua.png` separadas.
@@ -137,3 +141,18 @@ A primeira linha mostra aceno; a segunda mostra a pose usada nos brinquedos.
 Também foram conferidos [WebGL](screenshots/correcao-recortes-webgl.png) e o
 [balanço no celular](screenshots/correcao-balanco-mobile.png).
 Essas transformações ainda não equivalem a poses sentadas desenhadas de lado.
+
+## Cidade e lugares provisórios (etapa 05)
+
+`public/assets/mapas/cidade.tmj` é um mapa ortogonal Tiled de 40x30 células de
+32x24 pixels (mundo 1280x720). O tileset `cidade-tiles.svg` foi desenhado em código
+com seis células pastel: grama, caminho, lilás, flor, água e piso. A margem de 2 px
+e o espaçamento de 4 px repetem a cor externa das células para evitar linhas de
+outras cores com filtragem linear. O asset está centralizado em `config/assets.ts`;
+o mapa é carregado por `load.tilemapTiledJSON` no Boot.
+
+As fachadas, a Padaria, Dona Rosa, Bolinha, potinhos e o quarto são placeholders
+em `Graphics`, com formas lilases/pastel, sem imagens baixadas. O avatar usa os
+PNGs e o rig corrigido existentes. O diário desenha seu selo com círculo e traço
+SVG; a lista permanece legível com rolagem no celular. As artes finais continuam
+na lista acima. Capturas em [screenshots/cidade](screenshots/cidade/README.md).

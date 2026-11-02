@@ -34,7 +34,8 @@ Boot (carregando, barra lilás)
   -> Criador "Crie o seu visual"
        -> botão "Ir para o parque" -> Parque
   Parque -> botão "Trocar cabelo" -> Criador
-  (futuro) Parque -> mapa da cidade -> outros lugares (casa, escola, padaria, pet shop)
+  Parque -> Mapa da cidade -> Padaria, Pet Shop, Casa da Laura
+  Parque e lugares -> Meu diário
 ```
 
 ### 3.1 Boot
@@ -71,7 +72,7 @@ Interações:
 
 ## 4. Missão do Pedrinho: "O carrinho do Pedrinho"
 
-Valor: **honestidade e empatia**. Código: `src/game/missaoPedrinho.ts`. Testes: `tests/missaoPedrinho.test.ts`. ID no banco: `pedrinho-carrinho`.
+Valor: **honestidade e empatia**. Dados: `public/data/missoes/pedrinho-carrinho.json`; fachada de compatibilidade e animações: `src/game/missaoPedrinho.ts`. Testes: `tests/missaoPedrinho.test.ts`. ID no banco: `pedrinho-carrinho`.
 
 | Etapa | O que acontece | Texto exato |
 |---|---|---|
@@ -169,3 +170,78 @@ A composição dos seis cabelos mantém cabeça, cabelo e tronco na mesma camada
 para preservar a silhueta. Os braços têm máscaras próprias e as pernas se
 sobrepõem à base da saia, com pose frontal simétrica. A implementação é a mesma
 para o avatar local e os amigos; a câmera e o estado dos brinquedos permanecem iguais.
+
+## Cidade e missões por dados (etapa 05)
+
+| Missão | Lugar | Valor | Moedas |
+|---|---|---|---|
+| O carrinho do Pedrinho | Parque | Honestidade e empatia | 15 |
+| Troco a mais | Padaria | Honestidade | 10 |
+| Cuidar do Bolinha | Pet Shop | Responsabilidade | 10 |
+| Esperar a vez | Parque, com Bia | Paciência | 5 |
+
+O mapa Tiled `public/assets/mapas/cidade.tmj` tem uma camada de chão e objetos
+Portas com a propriedade `cena`. Laura anda até a porta para entrar. Os atalhos
+do rodapé também a levam até a entrada, inclusive fora do enquadramento do celular.
+Os novos lugares mantêm o mundo 1280x720, câmera acompanhando o avatar e uma
+cena de interface em pixels visíveis. O diário e as missões permitem rolagem,
+rotação e fechamento pelo botão fixo no topo. Casa é um quarto com Em breve.
+
+O motor genérico vive em `src/game/missoes/motor.ts`. Um passo oferece opções;
+conselhos mantêm o passo atual e nunca retiram moedas. Eventos desconhecidos
+não avançam. A primeira transição para o final devolve a recompensa; repeti-la
+não devolve moedas. A proteção global por identificador fica em `recompensarMissao`
+(offline) ou na RPC autenticada (online). O catálogo valida identificadores,
+referências, finais alcançáveis e caminhos sem ciclos. Após muitos conselhos,
+o histórico é resumido preservando os cuidados já realizados e a chance de tentar.
+
+Os textos e efeitos do Pedrinho continuam iguais: a fachada conserva a busca,
+as falas, o carrinho, os conselhos da Marta, confete e dança; o conteúdo e as
+transições vêm do JSON/motor. Não se abre o painel genérico pelo diário para
+pular essa história. Bia inicia sua missão por toque na personagem ou pelo
+atalho Esperar a vez. As novas missões dos lugares aparecem automaticamente no
+rodapé a partir do catálogo. Missões e recompensas continuam individuais; ao
+sair do parque, o avatar deixa o Realtime do parque, e volta a entrar ao retornar.
+
+### Criar uma missão por JSON
+
+1. Crie `public/data/missoes/identificador-unico.json`, seguindo o exemplo abaixo.
+   Não é necessário editar uma lista de arquivos: Vite descobre todos os JSONs.
+2. Use o nome de um lugar existente em `lugar`: Parque, Padaria ou Pet Shop.
+   A missão aparece nos atalhos daquele lugar e no diário automaticamente.
+3. Para um lugar novo, crie uma cena seguindo `CenaLugar`, registre-a em `main.ts`
+   e acrescente sua porta no Tiled com a propriedade `cena`. Não altere o motor.
+4. Rode build e testes; confira as opções, os conselhos e a recompensa repetida.
+5. Para contas online, gere o registro do catálogo a partir do mesmo JSON:
+   `node scripts/gerar-catalogo-sql.mjs identificador-unico`. Grave a saída em uma
+   migração **nova** e aplique no Supabase. Essa etapa cadastra dados confiáveis no
+   servidor; o navegador não pode cadastrar missões nem escolher a recompensa.
+
+```json
+{
+  "id": "agradecer-ajuda",
+  "titulo": "Obrigado pela ajuda",
+  "valor": "Gratidão",
+  "lugar": "Parque",
+  "personagens": ["Bia", "Laura"],
+  "recompensa": 5,
+  "inicio": "agradecer",
+  "passos": [
+    {
+      "id": "agradecer",
+      "personagem": "Bia",
+      "texto": "Eu guardei um lugar para você brincar!",
+      "opcoes": [
+        { "id": "A", "texto": "Agradecer", "proximo": "fim" },
+        { "id": "B", "texto": "Sair sem falar", "conselho": "Um agradecimento mostra que você percebeu o cuidado da amiga." }
+      ]
+    },
+    { "id": "fim", "personagem": "Bia", "texto": "De nada! Vamos brincar juntas.", "opcoes": [], "final": true }
+  ]
+}
+```
+
+Use identificadores de opção com letras, números e hífen, no máximo 64 passos
+por percurso e recompensa inteira entre 1 e 100. Não adicione campos de chat,
+dados pessoais ou links. O selo do diário é desenhado por código SVG, sem emoji.
+Artes provisórias e capturas estão em `docs/ARTE.md` e `docs/screenshots/cidade/`.

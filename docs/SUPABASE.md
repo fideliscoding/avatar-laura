@@ -10,7 +10,7 @@ Plano gratuito do Supabase é suficiente. O schema e suas correções estão em 
 
 ## 2. Rodar o SQL
 
-**SQL Editor > New query**, cole todo o conteúdo de `supabase/migrations/0001_init.sql` e clique em **Run**. Depois aplique `0002_contas_e_recompensa_segura.sql`, `0003_fixa_search_path.sql`, `0004_valida_escolhas_pedrinho.sql` e `0005_salas_multiplayer.sql`, em consultas separadas. Deve aparecer "Success". Em **Table Editor** você verá `profiles`, `avatars`, `missions`, `progress`, `rooms`, `room_members`.
+**SQL Editor > New query**, cole todo o conteúdo de `supabase/migrations/0001_init.sql` e clique em **Run**. Depois aplique `0002_contas_e_recompensa_segura.sql`, `0003_fixa_search_path.sql`, `0004_valida_escolhas_pedrinho.sql`, `0005_salas_multiplayer.sql` e `0006_missoes_cidade.sql`, em consultas separadas. Deve aparecer "Success". Em **Table Editor** você verá `profiles`, `avatars`, `missions`, `progress`, `rooms`, `room_members`.
 
 ## 3. Configurar Auth
 
@@ -65,9 +65,9 @@ Com a CLI (`npx supabase@2.122.0`) e Docker: `npx supabase start`, depois `npx s
 ## 9. Implementação da etapa 03
 
 Projeto identificado: `Avatar Laura`, URL base `https://ilveddmkikbpskbnjedn.supabase.co`.
-Não acrescente `/rest/v1/` à configuração. As cinco migrações foram aplicadas pelo
+Não acrescente `/rest/v1/` à configuração. As seis migrações foram aplicadas pelo
 conector Supabase nesta revisão; não reaplique arquivos já registrados no projeto.
-Para outro projeto vazio, aplique os cinco arquivos na ordem.
+Para outro projeto vazio, aplique os seis arquivos na ordem.
 
 - `0002`: validação de apelido no servidor, grants explícitos, atualização de perfil
   limitada à coluna `apelido` e bloqueio de linha antes de pagar a missão. Isso
@@ -185,3 +185,32 @@ superfície de API a revisar (aviso 0029 citado acima), incluindo as seis RPCs d
 sala. Elas conferem usuário/permissão e não permitem execução por anon/PUBLIC.
 Permanece o aviso anterior de proteção contra senhas vazadas desabilitada.
 Não foram detectados novos avisos de RLS ausente ou `search_path` mutável.
+
+## Catálogo da cidade (etapa 05)
+
+A migração `0006_missoes_cidade.sql` foi aplicada ao projeto Avatar Laura. O número
+0004 do prompt já estava ocupado; migrações aplicadas permanecem intactas. Ela
+cadastra Troco a mais (10), Cuidar do Bolinha (10) e Esperar a vez (5), adicionando
+`missions.definicao` com o percurso JSON confiável. Os tipos foram regenerados.
+As políticas existentes de `missions`/`progress` continuam ativas; o cliente não
+recebe permissão para editar o catálogo ou concluir progresso diretamente.
+
+`concluir_missao` mantém a assinatura e o bloqueio do perfil, pagando uma única
+vez por usuário/missão. Para as missões novas, o helper privado
+`caminho_missao_valido` repassa os eventos pelo JSON do servidor e exige atingir
+o final, na ordem. Água, comida e carinho não podem ser pulados. Conselhos podem
+ser repetidos sem punição. A missão do Pedrinho conserva o protocolo A/B/C e a
+escolha final B, incluindo a proteção anterior na tabela. A fila agora aceita os
+IDs das opções do catálogo, mantém o isolamento por conta e o saldo oficial.
+
+Além da simulação SQL local, uma transação no projeto real criou um usuário
+fictício temporário, assumiu a role authenticated e conferiu as quatro conclusões:
+10, 20, 25 e 40 moedas. Cuidado incompleto foi recusado, repetir manteve 40 e
+atualização direta de moedas continuou negada. Ao final houve ROLLBACK, sem conta
+ou progresso de teste persistidos. Não foram usados dados da criança.
+
+Os advisors antes/depois mantiveram os sete avisos de RPCs autenticadas
+SECURITY DEFINER e a proteção contra senhas vazadas desabilitada, já explicados
+com links acima. Não surgiram novos avisos de RLS ausente ou search_path mutável.
+Para cadastrar outra missão online, use o gerador descrito no GDD e uma migração
+nova; a recompensa e o percurso aceitos sempre vêm do banco, nunca do cliente.
