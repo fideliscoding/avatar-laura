@@ -1304,7 +1304,7 @@
       "tipo": "assento",
       "funcao": "balanco",
       "sprite": {
-        "padrao": "casa-balanco-casa"
+        "padrao": "balanco-estrutura"
       },
       "origem": [
         0.5,

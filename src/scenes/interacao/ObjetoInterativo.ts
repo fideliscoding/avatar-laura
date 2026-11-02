@@ -20,6 +20,7 @@ export class ObjetoInterativo {
  desenhar(estado:EstadoObjeto):void{
   const d=this.definicao,chave=estado.mordidas>0?d.sprite[`mordida${estado.mordidas}`]:estado.ligado?d.sprite.ligado:estado.aberto?d.sprite.aberto:undefined;
   this.imagem.setTexture(chave??d.sprite.padrao??Object.values(d.sprite)[0]);this.imagem.setScale(d.largura/this.imagem.width*(this.imagem.getData('interacao-squash')??1)).setPosition(estado.x,estado.y).setDepth(estado.y);
+  const [ax,ay]=d.area;this.zona.setPosition(estado.x+ax,estado.y+ay).setDepth(estado.y+2);
   const chao=estado.local==='chao';this.imagem.setVisible(chao);this.zona.setVisible(chao);if(this.zona.input)this.zona.input.enabled=chao;
  }
  static garantirTexturas(cena:Phaser.Scene):void{

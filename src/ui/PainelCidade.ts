@@ -8,8 +8,9 @@ export class PainelCidade {
     this.root.style.cssText='box-sizing:border-box;overflow:auto;overscroll-behavior:contain;touch-action:pan-y;background:#fff9ff;color:#5a2fa8;border:4px solid #b58cf5;border-radius:24px;padding:18px;font:18px Fredoka,sans-serif;box-shadow:0 10px 35px #3d247060;';
     this.elemento=cena.add.dom(0,0,this.root).setDepth(9001);
     cena.scale.on('resize',this.reorganizar,this);
-    cena.events.once('shutdown',()=>{cena.scale.off('resize',this.reorganizar,this);this.elemento.destroy()});this.reorganizar();
+    cena.events.once('shutdown',this.destruir,this);this.reorganizar();
   }
+  destruir():void{this.cena.scale.off('resize',this.reorganizar,this);this.cena.events.off('shutdown',this.destruir,this);this.elemento.destroy()}
   reorganizar(): void { const w=this.cena.scale.width,h=this.cena.scale.height;this.root.style.width=`${Math.min(600,w-20)}px`;this.root.style.maxHeight=`${h-20}px`;this.elemento.updateSize().setPosition(w/2,h/2) }
   texto(texto: string, tag='p'): HTMLElement { const p=document.createElement(tag);p.textContent=texto;this.root.append(p);return p }
   botao(texto: string, acao:()=>void): HTMLButtonElement {

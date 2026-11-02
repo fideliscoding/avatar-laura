@@ -1,3 +1,4 @@
+import dadosCasa from '../../public/assets/dados/casa-objetos.json' with {type:'json'};
 // Lista central de assets. Chaves (key) sao usadas em todo o codigo; caminhos sao relativos a public/.
 // Ancoras e escalas estao documentadas em docs/ARTE.md.
 
@@ -52,3 +53,6 @@ export const CORES = {
 
 // Texturas provisórias geradas em Graphics para a etapa de interações.
 export const TEXTURAS_INTERACAO=['interacao-banco','interacao-sorvete','interacao-sorvete-1','interacao-sorvete-2','interacao-bebedouro','interacao-bebedouro-ligado'] as const;
+
+// Texturas provisórias da casa, geradas por Graphics a partir do catálogo.
+export const TEXTURAS_CASA=dadosCasa.objetos.map(d=>d.sprite.padrao);

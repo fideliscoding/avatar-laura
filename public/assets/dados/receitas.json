@@ -1,1 +1,39 @@
-[]
+[
+  {
+    "aparelho": "fogao",
+    "item": "ovo",
+    "requer": "panela",
+    "resultado": "Ovo preparado",
+    "tempo": 0
+  },
+  {
+    "aparelho": "micro-ondas",
+    "item": "suco",
+    "resultado": "Suco morninho",
+    "tempo": 3000
+  },
+  {
+    "aparelho": "micro-ondas",
+    "item": "leite",
+    "resultado": "Leite morninho",
+    "tempo": 3000
+  },
+  {
+    "aparelho": "micro-ondas",
+    "item": "pao",
+    "resultado": "Pão quentinho",
+    "tempo": 3000
+  },
+  {
+    "aparelho": "torradeira",
+    "item": "pao",
+    "resultado": "Torrada",
+    "tempo": 0
+  },
+  {
+    "aparelho": "maquina",
+    "item": "roupa-suja",
+    "resultado": "Roupa limpa e dobrada",
+    "tempo": 5000
+  }
+]
