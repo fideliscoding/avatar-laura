@@ -15,7 +15,7 @@ export function interpolar(atual: number, alvo: number, delta: number): number {
   return atual + (alvo - atual) * (1 - Math.exp(-12 * Math.max(0, Math.min(0.25, delta))));
 }
 
-export const ESTADOS_AVATAR = ['parada', 'andar', 'arrastando', 'balanco', 'escorregador', 'gangorra', 'carrossel', 'danca'] as const;
+export const ESTADOS_AVATAR = ['parada', 'andar', 'arrastando', 'balanco', 'escorregador', 'gangorra', 'carrossel', 'danca','sentado','segurando','comendo','deitado','dormindo'] as const;
 export type EstadoAvatar = typeof ESTADOS_AVATAR[number];
 export const ACENOS = ['aceno','pulo','coracao'] as const;
 export type Aceno = typeof ACENOS[number];

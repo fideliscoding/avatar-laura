@@ -53,19 +53,23 @@ export class GerenteInteracao {
    if(this.renovando.has(s.id))continue;this.renovando.add(s.id);void this.solicitar(s.id,'renovar').finally(()=>this.renovando.delete(s.id));
   }
  }
- atualizar():PoseInteracao{
+ prepararAvatar():PoseInteracao{
   let pose:PoseInteracao=this.inventario().mao?'segurando':'em-pe';if(this.cena.time.now<this.comendoAte)pose='comendo';
+  for(const s of this.estados()){
+   const ocupado=s.ocupantes.find(o=>daInstancia(o,this.transporte.usuario,this.transporte.instancia));
+   if(ocupado&&this.assentoDesejado){const snap=definicaoObjeto(s.id).snaps![ocupado.snap];this.acoes.sentar(s.x+snap.x,s.y+snap.y,snap.virado??1);pose=ocupado.dormindo?'dormindo':snap.pose==='deitado'?'deitado':'sentado'}
+  }
+  this.avatar.aplicarPose(pose);return pose;
+ }
+ atualizar():void{
   for(const s of this.estados()){
    const visual=this.objetos.get(s.id);if(!visual)continue;visual.desenhar(s);
    if(s.local==='mao'&&s.trava){
     const img=daInstancia(s.trava,this.transporte.usuario,this.transporte.instancia)?this.avatar.imagem:this.acoes.remotos().get(s.trava.jogador);
-    if(img){const mao=new Avatar(img).mao();visual.imagem.setVisible(true).setPosition(mao.x,mao.y).setDepth(img.depth+1).setScale((s.mordidas===2?.6:s.mordidas===1?.8:1)*30/visual.imagem.width*(img.scaleX<0?-1:1),30/visual.imagem.width);}
+    if(img){const mao=new Avatar(img).mao();visual.imagem.setVisible(true).setPosition(mao.x,mao.y).setDepth(img.depth+1).setScale((s.mordidas===2?.6:s.mordidas===1?.8:1)*30/visual.imagem.width*(img.scaleX<0?-1:1),(s.mordidas===2?.6:s.mordidas===1?.8:1)*30/visual.imagem.width);}
    }
-   const ocupado=s.ocupantes.find(o=>daInstancia(o,this.transporte.usuario,this.transporte.instancia));
-   if(ocupado&&this.assentoDesejado){const snap=definicaoObjeto(s.id).snaps![ocupado.snap];this.acoes.sentar(s.x+snap.x,s.y+snap.y,snap.virado??1);pose=ocupado.dormindo?'dormindo':snap.pose==='deitado'?'deitado':'sentado'}
    if(s.tipo==='agua'&&s.ligado&&this.cena.time.now-this.ultimaAgua>400){this.ultimaAgua=this.cena.time.now;this.efeitos.particulas('gotas',s.x-5,s.y-75)}
   }
-  this.avatar.aplicarPose(pose);return pose;
  }
  destruir():void{clearInterval(this.timer);this.transporte.encerrar();for(const o of this.objetos.values())o.destruir();this.objetos.clear()}
 }
