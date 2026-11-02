@@ -198,3 +198,12 @@ A minutagem está no formato m:ss. Para abrir no ponto exato, acrescente `?t=<se
 - **Missões de virtudes continuam**, mas aparecem como balão no personagem (ex.: Pedrinho com balão de ícone de estojo perdido), sem painel nem lista na tela.
 - **Multiplayer por convite e salvamento** são preservados.
 - **Sem monetização.** O original tem AW Pass mensal (VL 6:50). Nós não teremos passe, assinatura, anúncios ou compras.
+
+## Entrega 09.1
+
+A Etapa 1 de `prompts/09-modelo-toque-sem-botoes.md` foi implementada em PR próprio:
+celular com cinco apps, fechamento por fora/seta, saída confirmada por ícones,
+atalhos antigos reunidos nos apps e remoção das barras fixas. Os nomes acessíveis
+continuam em pt-BR; convites e salvamento usam as rotinas anteriores. Falas de
+missões e a área do responsável permanecem legíveis. As Etapas 2–13 ainda aguardam
+aprovação e não fazem parte desta entrega.

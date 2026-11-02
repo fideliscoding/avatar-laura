@@ -155,3 +155,17 @@ A zona acompanha a nova posição do objeto solto. `CasaInterface` mantém contr
 sem o zoom do mundo, e `PainelCidade.destruir` remove DOM e ouvintes ao fechar.
 A assinatura visual ignora renovações de lease, evitando reconstruir o seletor
 sem necessidade. A Presence anuncia o cômodo; o parque ignora avatares da casa.
+
+## Navegação por celular (09.1)
+
+Os atalhos foram movidos para o celular; as transações e regras dos objetos são
+as mesmas. `instalarCelular` reutiliza `PainelAmigos`, saída, diário e callbacks
+existentes. `Celular` roda nas cenas de interface, separado da câmera do mundo.
+Seu contêiner DOM ignora ponteiros quando fechado; apenas o ícone captura toque.
+Ao abrir, a camada externa bloqueia o gesto e permite fechar sem acionar o chão.
+A HUD acompanha pause/resume e shutdown da cena para não sobrar em outros lugares.
+
+A lógica de navegação/confirmação está em `src/game/celular.ts`, sem Phaser, com
+testes. Os ícones e nomes acessíveis ficam em `Icones.ts`. Dados do Supabase,
+travas, receitas e movimento anterior não foram alterados. Os testes existentes
+agora percorrem os mesmos fluxos pelos apps, em vez de usar rodapés removidos.

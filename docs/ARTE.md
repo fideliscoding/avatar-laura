@@ -226,3 +226,24 @@ indicadas acima. A mão usa o mesmo ponto normalizado da etapa 06, com item em
 profundidade do avatar +1. Estrelas, moeda, patinho, notas e flores são desenhados.
 
 Capturas dos seis ambientes: [casa](screenshots/casa/README.md).
+
+## Celular e ícones de navegação (09, Etapa 1)
+
+O celular lilás com estrela e os cinco apps são desenhos SVG próprios em
+`src/ui/Icones.ts`: Personagens, Mapa, Amigos, Moedas e Sair. Há seta, confirmação,
+cancelamento, mochila e ícones de utilidades. Nenhum asset foi baixado ou copiado.
+Os SVGs decorativos têm `aria-hidden`; nomes acessíveis ficam nos botões, sem
+rótulos visuais. Os alvos novos têm pelo menos 64x64 pixels do viewport.
+
+Assets que faltam para refinar os atalhos secundários:
+
+- [x] Pictogramas próprios de balanço, escorregador, gangorra, carrossel, areia,
+  sorvete, banco e dos seis cômodos, desenhados em SVG lilás.
+- [ ] Pictogramas exclusivos dos demais objetos; enquanto faltam, usam desenhos
+  provisórios de caixa, mão e água, sem rótulos visuais.
+- [ ] Retratos adicionais do futuro app Personagens. A Etapa 1 conserva o criador
+  e as seis miniaturas aprovadas, sem implementar arrastar retratos ou categorias.
+
+Nomes de móveis/portas só são desenhados no modo de desenvolvimento. O modo
+publicado não mostra esses rótulos. Missões e instruções privadas do responsável
+mantêm seus textos; não são cabeçalho nem rodapé do mundo.

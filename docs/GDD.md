@@ -283,3 +283,23 @@ premiada uma vez por jogador. Estrelas e patinho são descobertas visuais. Sem
 conta, recompensas são locais; com conta, moedas dependem da confirmação do
 servidor. Se estiver sem rede, a casa continua pelo cache e o botão permite
 repetir a confirmação quando a conexão voltar, sem duplicar saldo.
+
+## Celular de navegação (prompt 09, somente Etapa 1)
+
+Durante a brincadeira, a HUD fixa é apenas o ícone de celular no canto superior
+direito. O cenário ocupa todo o viewport. Tocar abre um aparelho lilás com quique
+e cinco apps próprios: Personagens, Mapa, Amigos, Moedas e Sair. A seta volta ao
+início do aparelho e fecha; tocar fora ou Escape também fecha. Navegação por
+teclado mantém foco dentro do aparelho e respeita movimento reduzido.
+
+Personagens reúne o criador existente e os acessos de mochila/levantar. Mapa
+reúne cidade, destinos e cômodos existentes. Amigos abre o fluxo atual no parque e conserva convite, aprovação
+pelo responsável, frases prontas, gestos e acompanhamento. Moedas mostra o saldo
+e o diário. Sair usa a rotina atual, com confirmação e cancelamento em ícones;
+apenas abrir o app não encerra a sessão.
+
+Os comandos de navegação/utilidades usam desenhos, com `aria-label` em pt-BR.
+Falas e escolhas de missões e os formulários/instruções do responsável conservam
+texto legível. Esta entrega não converte missões em novos balões, não muda arrasto,
+encaixes, comida, combinações, emoções, câmera arrastável ou o criador completo.
+Esses trabalhos pertencem às Etapas 2–13 e aguardam aprovação individual.
