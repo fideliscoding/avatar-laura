@@ -1,6 +1,6 @@
 import { expect, test, type Page } from '@playwright/test';
 
-import { botao as clicar, destino, textos } from '../apoio/jogo';
+import { botao as clicar, destino, textos, saldoVisivel } from '../apoio/jogo';
 async function temTexto(page: Page, texto: string): Promise<boolean> { return (await textos(page)).includes(texto) }
 
 test('cadastro validado, orientação de confirmação e falha de login em pt-BR', async ({ page }) => {
@@ -28,7 +28,7 @@ test('cadastro validado, orientação de confirmação e falha de login em pt-BR
   await clicar(page, 'Entrar');
   await expect.poll(() => temTexto(page, 'Não foi possível entrar. Confira os dados e a conexão e tente novamente.')).toBe(true);
   await clicar(page, 'Jogar sem conta');
-  await expect.poll(() => temTexto(page, 'Crie o seu visual')).toBe(true);
+  await expect(page.getByRole('button',{name:'Ir para o parque',exact:true})).toBeVisible();
   expect(erros).toEqual([]);
 });
 
@@ -44,7 +44,7 @@ test('campos DOM acompanham o palco em celular nas duas orientações', async ({
     await page.getByLabel('E-mail do responsável').fill('adulto@example.invalid');
   }
   await clicar(page, 'Jogar sem conta');
-  await expect.poll(() => temTexto(page, 'Crie o seu visual')).toBe(true);
+  await expect(page.getByRole('button',{name:'Ir para o parque',exact:true})).toBeVisible();
 });
 
 test('formulário continua utilizável quando a área visível diminui com o teclado', async ({ page }) => {
@@ -58,7 +58,7 @@ test('formulário continua utilizável quando a área visível diminui com o tec
   await expect.poll(async () => {
     const campo = (await page.getByLabel('Apelido da criança').boundingBox())!;
     const form = (await page.locator('form').boundingBox())!;
-    return campo.y >= form.y && campo.y + campo.height <= form.y + form.height;
+    return campo.y>=0&&campo.y+campo.height<=320&&campo.y >= form.y && campo.y + campo.height <= form.y + form.height;
   }).toBe(true);
   const entrada = (await page.getByLabel('Apelido da criança').boundingBox())!;
   expect(entrada.y).toBeGreaterThanOrEqual(0); expect(entrada.y + entrada.height).toBeLessThanOrEqual(320);
@@ -77,10 +77,10 @@ test('formulário continua utilizável quando a área visível diminui com o tec
   await page.screenshot({ path: 'docs/screenshots/mobile/9-conta-area-teclado.png' });
   await page.setViewportSize({ width: 390, height: 844 });
   await clicar(page, 'Jogar sem conta');
-  await expect.poll(() => temTexto(page, 'Crie o seu visual')).toBe(true);
+  await expect(page.getByRole('button',{name:'Ir para o parque',exact:true})).toBeVisible();
 });
 
-test('conta no parque pequeno mantém apelido, saldo e sair sem sobrepor controles', async ({ page }) => {
+test('conta no parque pequeno mostra saldo no celular e sai após confirmação', async ({ page }) => {
   await page.setViewportSize({ width: 298, height: 567 });
   const usuario = { id: '11111111-1111-4111-8111-111111111111', aud: 'authenticated', role: 'authenticated', email: 'adulto@example.invalid', app_metadata: { provider: 'email' }, user_metadata: {}, created_at: '2026-11-01T00:00:00Z' };
   const codificar = (valor: unknown) => btoa(JSON.stringify(valor)).replace(/\+/g,'-').replace(/\//g,'_').replace(/=/g,'');
@@ -97,11 +97,11 @@ test('conta no parque pequeno mantém apelido, saldo e sair sem sobrepor control
   await page.goto('./');
   await page.getByLabel('E-mail do responsável').fill('adulto@example.invalid');
   await page.getByLabel('Senha', { exact: true }).fill('senha-de-teste-123');
-  await clicar(page, 'Entrar'); await expect.poll(() => temTexto(page, 'Crie o seu visual')).toBe(true);
-  await clicar(page, 'Ir para o parque'); await expect.poll(() => temTexto(page, 'Estrela Lilas 123')).toBe(true);
-  await expect.poll(() => temTexto(page, '15')).toBe(true);
+  await clicar(page, 'Entrar'); await expect(page.getByRole('button',{name:'Ir para o parque',exact:true})).toBeVisible();
+  await clicar(page, 'Ir para o parque'); await expect(page.getByRole('button',{name:'Celular',exact:true})).toBeVisible();
+  await saldoVisivel(page,15);
   await page.screenshot({ path: 'docs/screenshots/mobile/10-conta-parque-pequeno.png' });
-  await clicar(page, 'Sair'); await page.getByLabel('E-mail do responsável').waitFor();
+  await clicar(page, 'Sair');await clicar(page,'Confirmar saída'); await page.getByLabel('E-mail do responsável').waitFor();
 });
 
 test('pedido no celular fica isolado e oferece somente comunicação pronta', async ({ page }) => {
@@ -124,7 +124,7 @@ test('pedido no celular fica isolado e oferece somente comunicação pronta', as
   await page.goto('./');
   await page.getByLabel('E-mail do responsável').fill('adulto@example.invalid');
   await page.getByLabel('Senha', { exact: true }).fill('senha-de-teste-123');
-  await clicar(page, 'Entrar'); await expect.poll(() => temTexto(page, 'Crie o seu visual')).toBe(true);
+  await clicar(page, 'Entrar'); await expect(page.getByRole('button',{name:'Ir para o parque',exact:true})).toBeVisible();
   await clicar(page, 'Ir para o parque'); await clicar(page, 'Amigos');
   const painel = page.getByRole('region', { name: 'Amigos', exact: true });
   await expect(painel).toBeVisible();
@@ -172,14 +172,13 @@ test('cuidados do Bolinha chegam à RPC em ordem e saldo só muda após confirma
   await page.getByLabel('E-mail do responsável').fill('adulto@example.invalid');
   await page.getByLabel('Senha',{exact:true}).fill('senha-de-teste-123');
   await clicar(page,'Entrar');await clicar(page,'Ir para o parque');
-  await destino(page,'Mapa da cidade');await clicar(page,'>');await clicar(page,'Pet Shop');
+  await destino(page,'Mapa da cidade');await clicar(page,'Pet Shop');
   await clicar(page,'Cuidar do Bolinha');
   const painel=page.getByRole('region',{name:'Cuidar do Bolinha',exact:true});
   for(const acao of ['Dar água','Dar comida','Fazer carinho'])await painel.getByRole('button',{name:acao,exact:true}).click();
   await expect.poll(()=>chamadas.length).toBe(1);
   expect(chamadas[0]).toEqual({p_mission_id:'pet-bolinha',p_escolhas:['agua','comida','carinho']});
-  const saldo=await page.evaluate(()=>(window.__jogo.scene.getScene('LugarInterface') as unknown as {moedas:{text:string}}).moedas.text);
-  expect(saldo).toBe('0 moedas');confirmar();
+  expect(await page.evaluate(()=>JSON.parse(localStorage.getItem('mtmw:conta:v1:11111111-1111-4111-8111-111111111111')!).moedas)).toBe(0);confirmar();
   await painel.getByRole('button',{name:'Voltar a brincar',exact:true}).click();
-  await expect.poll(()=>textos(page)).toContain('10 moedas');
+  await saldoVisivel(page,10);
 });

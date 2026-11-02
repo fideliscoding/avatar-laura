@@ -10,7 +10,7 @@ export class ObjetoInterativo {
   this.imagem=cena.add.image(x,y,definicao.sprite.padrao??Object.values(definicao.sprite)[0]).setOrigin(...definicao.origem);
   const [ax,ay,w,h]=definicao.area;this.zona=cena.add.zone(x+ax,y+ay,Math.max(64,w),Math.max(64,h)).setOrigin(0).setInteractive({useHandCursor:true}).setDepth(y+2);
   this.zona.on('pointerdown',(_p:unknown,_x:unknown,_y:unknown,ev:Phaser.Types.Input.EventData)=>{
-   ev.stopPropagation();this.inicioToque=cena.time.now;this.aviso=cena.time.delayedCall(500,()=>{
+   ev.stopPropagation();this.inicioToque=cena.time.now;this.aviso=cena.time.delayedCall(500,()=>{if(!import.meta.env.DEV)return;
     const texto=cena.add.text(x,y-110,definicao.nome,{fontFamily:FONTE,fontSize:`${Math.max(22,22/cena.cameras.main.zoom)}px`,color:'#5a2fa8',backgroundColor:'#ffffff'}).setOrigin(.5).setDepth(7000);cena.time.delayedCall(1600,()=>texto.destroy());
    });
   });

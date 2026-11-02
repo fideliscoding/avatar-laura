@@ -15,10 +15,10 @@ test('banco, mochila, três mordidas e água funcionam por toque no celular',asy
  await expect.poll(()=>page.evaluate(()=>(window.__jogo.scene.getScene('Parque') as unknown as Parque).interacoes.inventario().mao)).toBe('sorvete-parque');
  const profundidade=await page.evaluate(()=>{const p=window.__jogo.scene.getScene('Parque') as unknown as Parque;return {avatar:p.L.img.depth,item:p.interacoes.objetos.get('sorvete-parque')!.imagem.depth}});
  expect(profundidade.item).toBeCloseTo(profundidade.avatar+1);
- await page.getByRole('button',{name:'Mochila',exact:true}).click();
+ await botao(page,'Mochila');
  const mochila=page.getByRole('region',{name:'Mochila',exact:true});await expect(mochila).toContainText('Na mão: Sorvete');
  await mochila.getByRole('button',{name:'Guardar na mochila',exact:true}).click();
- await page.getByRole('button',{name:'Mochila',exact:true}).click();await expect(mochila).toContainText('Espaços na mochila: 1/6');
+ await botao(page,'Mochila');await expect(mochila).toContainText('Espaços na mochila: 1/6');
  await page.screenshot({path:'docs/screenshots/interacoes/2-mochila-mobile.png'});
  await mochila.getByRole('button',{name:'Sorvete',exact:true}).click();
   await expect(mochila).not.toBeVisible();

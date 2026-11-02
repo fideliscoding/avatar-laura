@@ -1,9 +1,8 @@
 /** Medidas de interface em pixels visíveis; o mundo mantém suas coordenadas 1280x720. */
-export function layoutParque(largura: number, altura: number, conta = false) {
+export function layoutParque(largura: number, altura: number, _conta = false) {
   const retrato = largura < 600 && altura >= largura;
-  const cabecalho = retrato ? (conta ? 162 : 112) : altura < 500 ? (largura < 700 ? 104 : 88) : 90;
-  const rodape = altura < 500 ? 72 : 92;
-  const alturaMundo = Math.max(100, altura - cabecalho - rodape);
+  const cabecalho = 0, rodape = 0;
+  const alturaMundo = Math.max(100, altura);
   return { largura, altura, retrato, cabecalho, rodape, alturaMundo,
     zoom: Math.max(0.65, largura / 1280, alturaMundo / 720),
     porPagina: Math.max(1, Math.min(8, Math.floor((largura - 88) / 132))) };

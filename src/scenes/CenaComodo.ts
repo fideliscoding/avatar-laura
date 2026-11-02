@@ -1,3 +1,5 @@
+import {instalarCelular} from '../ui/instalarCelular';
+import {botaoIcone} from '../ui/Icones';
 import Phaser from 'phaser';
 import {nomePreparado} from '../game/casa/receitas';
 import {COMODOS,CATALOGO_CASA} from '../game/casa/catalogo';
@@ -25,7 +27,7 @@ export class CenaComodo extends Phaser.Scene{
  readonly amigas=new Map<string,{img:Phaser.GameObjects.Image;rig:AvatarAnimado;nome:Phaser.GameObjects.Text;saindo:boolean}>();
  comodo:IdComodo='sala';transporte!:ObjetosSync;avatar!:Phaser.GameObjects.Image;
  private geracao=0;private ui!:Phaser.Scene;private rig!:AvatarAnimado;private efeitos!:Efeitos;private adaptador!:Avatar;private visuais=new Map<string,ObjetoInterativo>();private nomes=new Map<string,Phaser.GameObjects.Text>();
- private fundo:Phaser.GameObjects.GameObject[]=[];private hud!:HTMLElement;private rodape!:HTMLElement;private doms:Phaser.GameObjects.DOMElement[]=[];private painel?:PainelCidade;private assinatura='';private selecionado='';private aviso!:HTMLElement;
+ private fundo:Phaser.GameObjects.GameObject[]=[];private hud!:HTMLElement;private doms:Phaser.GameObjects.DOMElement[]=[];private painel?:PainelCidade;private assinatura='';private aviso!:HTMLElement;
  private x=640;private y=620;private tx=640;private ty=620;private chegada?:()=>void;private trocando=false;private comendo=0;private sombra!:Phaser.GameObjects.Rectangle;private cobertor!:Phaser.GameObjects.Rectangle;private flores!:Phaser.GameObjects.Graphics;private surpresas!:Phaser.GameObjects.Graphics;private vidro!:Phaser.GameObjects.Rectangle;private assentoBalanco!:Phaser.GameObjects.Image;
  constructor(chave='Casa'){super(chave)}
  init(dados:{comodo?:unknown}={}):void{this.comodo=ehComodo(dados.comodo)?dados.comodo:'sala'}
@@ -49,16 +51,17 @@ export class CenaComodo extends Phaser.Scene{
  }
  criarInterface(ui:Phaser.Scene):void{
   this.ui=ui;
-  this.hud=document.createElement('header');this.rodape=document.createElement('footer');
-  for(const root of [this.hud,this.rodape]){root.style.cssText='box-sizing:border-box;padding:8px;background:#eee5fc;color:#5a2fa8;font:22px Fredoka,sans-serif;display:flex;flex-wrap:wrap;gap:6px;align-items:center;justify-content:center;';root.addEventListener('pointerdown',e=>e.stopPropagation());this.doms.push(this.ui.add.dom(0,0,root).setOrigin(.5,0).setScrollFactor(0).setDepth(9000))}
-  this.botao(this.hud,T.cidade,()=>{this.scene.start('Cidade')});this.botao(this.hud,T.comodos,()=>this.minimapa());this.botao(this.hud,T.mochila,()=>this.mochila());
-  this.aviso=document.createElement('div');this.aviso.setAttribute('role','status');this.aviso.style.cssText='width:100%;text-align:center;font-size:20px;';this.hud.append(this.aviso);this.montarComodo();this.ajustarCamera();
+  this.hud=document.createElement('header');this.aviso=document.createElement('div');
+  instalarCelular(ui,this,{
+   bloquear:aberto=>{if(aberto){this.fecharPainel();this.chegada=undefined}},
+   personagens:()=>[{nome:T.mochila,icone:'mochila',acao:()=>this.mochila()},{nome:T.levantar,icone:'mao',acao:()=>this.levantar()},...this.transporte.ler().filter(s=>s.comodo===this.comodo&&s.local==='chao').map(s=>({nome:`Usar ${this.nome(s.id)}`,acao:()=>this.usar(s.id)}))],
+   mapa:()=>[{nome:T.cidade,icone:'mapa',acao:()=>this.scene.start('Cidade')},{nome:T.comodos,icone:'casa',acao:()=>this.minimapa()},...COMODOS.map(c=>({nome:c.nome,icone:'casa' as const,acao:()=>this.navegar(c.id)}))],
+  });this.montarComodo();this.ajustarCamera();
  }
- private botao(root:HTMLElement,texto:string,acao:()=>void):HTMLButtonElement{const b=document.createElement('button');b.type='button';b.textContent=texto;b.style.cssText='min-height:64px;min-width:64px;border:0;border-radius:15px;background:#8b55e6;color:white;padding:10px;font:600 22px Fredoka,sans-serif;touch-action:manipulation;';b.onclick=acao;root.append(b);return b}
+ private botao(root:HTMLElement,texto:string,acao:()=>void):HTMLButtonElement{const b=botaoIcone(texto,acao);root.append(b);return b}
  private ajustarCamera():void{
-  if(!this.hud)return;const w=this.scale.width,h=this.scale.height;for(const root of [this.hud,this.rodape])root.style.width=`${w}px`;
-  this.doms[0]?.updateSize().setPosition(w/2,0);this.doms[1]?.updateSize().setPosition(w/2,h-this.rodape.offsetHeight);
-  const topo=this.hud.offsetHeight,baixo=this.rodape.offsetHeight;this.cameras.main.setViewport(0,topo,w,Math.max(100,h-topo-baixo)).setBounds(0,0,1280,720).setZoom(Math.max(.65,w/1280,(h-topo-baixo)/720)).startFollow(this.avatar,true,.2,.2,0,20);
+  if(!this.hud)return;const w=this.scale.width,h=this.scale.height;
+  this.cameras.main.setViewport(0,0,w,h).setBounds(0,0,1280,720).setZoom(Math.max(.65,w/1280,h/720)).startFollow(this.avatar,true,.2,.2,0,20);
  }
  private montarComodo():void{
   for(const o of this.fundo)o.destroy();this.fundo=[];const c=COMODOS.find(c=>c.id===this.comodo)!;
@@ -66,16 +69,11 @@ export class CenaComodo extends Phaser.Scene{
   const chao=this.add.rectangle(0,390,1280,330,Phaser.Display.Color.HexStringToColor(c.fundo.chao).color).setOrigin(0).setDepth(-19).setInteractive();
   chao.on('pointerdown',(p:Phaser.Input.Pointer)=>{if(this.painel)return;const pt=this.cameras.main.getWorldPoint(p.x,p.y);this.levantar();this.andar(pt.x,pt.y,()=>{const id=this.inventario().mao;if(id)void this.solicitar(id,'soltar',{ponto:{x:this.x,y:this.y}})})});this.fundo.push(chao);
   if(c.adulto){const v=this.add.image(c.adulto.x,c.adulto.y,'vovo').setOrigin(.5,1).setDepth(c.adulto.y);v.setScale(150/v.height);this.fundo.push(v)}
-  for(const p of c.portas){const d=COMODOS.find(c=>c.id===p.destino)!;const porta=this.add.rectangle(p.x,p.y,70,85,0xf1ccf5).setDepth(5).setStrokeStyle(3,0x8b55e6).setInteractive();const t=this.add.text(p.x,p.y-55,d.nome,{fontFamily:FONTE,fontSize:'22px',color:'#5a2fa8',backgroundColor:'#fff9ff'}).setOrigin(.5).setDepth(6);porta.on('pointerdown',(_p:unknown,_x:unknown,_y:unknown,e:Phaser.Types.Input.EventData)=>{e.stopPropagation();this.navegar(p.destino,p.chegada)});this.fundo.push(porta,t)}
+  for(const p of c.portas){const d=COMODOS.find(c=>c.id===p.destino)!;const porta=this.add.rectangle(p.x,p.y,70,85,0xf1ccf5).setDepth(5).setStrokeStyle(3,0x8b55e6).setInteractive();const t=this.add.text(p.x,p.y-55,d.nome,{fontFamily:FONTE,fontSize:'22px',color:'#5a2fa8',backgroundColor:'#fff9ff'}).setOrigin(.5).setDepth(6);porta.on('pointerdown',(_p:unknown,_x:unknown,_y:unknown,e:Phaser.Types.Input.EventData)=>{e.stopPropagation();this.navegar(p.destino,p.chegada)});t.setVisible(import.meta.env.DEV);this.fundo.push(porta,t)}
   this.x=c.entrada.x;this.y=c.entrada.y;this.tx=this.x;this.ty=this.y;this.chegada=undefined;this.avatar.setPosition(this.x,this.y);this.aviso.textContent=c.nome;
-  this.selecionado=c.objetos.find(o=>CATALOGO_CASA.find(d=>d.id===o.id)?.tipo!=='pegavel')?.id??'';this.atualizarRodape();this.assinatura='';
+  this.atualizarRodape();this.assinatura='';
  }
- private atualizarRodape():void{
-  this.rodape.replaceChildren();const select=document.createElement('select');select.setAttribute('aria-label',T.objetos);select.style.cssText='width:100%;min-height:56px;font:22px Fredoka,sans-serif;color:#5a2fa8;';
-  for(const s of this.transporte.ler().filter(s=>s.comodo===this.comodo&&s.local==='chao')){const o=document.createElement('option');o.value=s.id;o.textContent=this.nome(s.id);select.append(o)}
-  if([...select.options].some(o=>o.value===this.selecionado))select.value=this.selecionado;else this.selecionado=select.value;select.onchange=()=>{this.selecionado=select.value};this.rodape.append(select);
-  this.botao(this.rodape,T.usar,()=>this.usar(this.selecionado));this.botao(this.rodape,T.opcoes,()=>this.opcoes(this.selecionado));this.botao(this.rodape,T.levantar,()=>this.levantar());this.ajustarCamera();
- }
+ private atualizarRodape():void{this.ajustarCamera()}
  navegar(id:IdComodo,chegada?:{x:number;y:number}):void{
   if(this.trocando||id===this.comodo)return;this.fecharPainel();this.levantar();this.trocando=true;this.cameras.main.fadeOut(250,43,31,69);
   this.time.delayedCall(250,()=>{this.comodo=id;this.montarComodo();if(chegada){this.x=chegada.x;this.y=chegada.y;this.tx=this.x;this.ty=this.y}this.cameras.main.fadeIn(250,43,31,69);this.trocando=false});
@@ -95,7 +93,7 @@ export class CenaComodo extends Phaser.Scene{
   if(id==='guarda-roupa')for(const c of CABELOS)this.botao(p.root,c.nome,()=>{progresso.cabelo=CABELOS.indexOf(c);this.avatar.setTexture(c.key).setScale(172/this.avatar.height);this.fecharPainel()});
   this.botao(p.root,T.fechar,()=>this.fecharPainel());p.reorganizar();
  }
- usar(id:string):void{if(this.painel||this.trocando)return;const s=this.transporte.ler().find(s=>s.id===id);if(!s)return;this.selecionado=id;this.levantar();this.andar(s.x,s.y+(s.id==='chuveiro'?5:60),()=>{void this.solicitar(id,'tocar').then(aceita=>{if(aceita&&s.tipo!=='pegavel')this.opcoes(id)})})}
+ usar(id:string):void{if(this.painel||this.trocando)return;const s=this.transporte.ler().find(s=>s.id===id);if(!s)return;this.levantar();this.andar(s.x,s.y+(s.id==='chuveiro'?5:60),()=>{void this.solicitar(id,'tocar').then(aceita=>{if(aceita&&s.tipo!=='pegavel')this.opcoes(id)})})}
  private andar(x:number,y:number,chegada?:()=>void):void{this.tx=Phaser.Math.Clamp(x,40,1240);this.ty=Phaser.Math.Clamp(y,250,690);this.chegada=chegada}
  private levantar():void{for(const s of this.transporte.ler())if(s.ocupantes.some(o=>daInstancia(o,this.transporte.usuario,this.transporte.instancia)))void this.solicitar(s.id,'levantar');this.avatar.setAngle(0).setOrigin(.5,1)}
  async solicitar(id:string,tipo:PedidoInteracao['tipo'],extra:Partial<PedidoInteracao>={}):Promise<boolean>{
@@ -120,7 +118,7 @@ export class CenaComodo extends Phaser.Scene{
   for(const [id,dados] of amigos.remotos){const a=dados.estado;if(a.lugar!==this.comodo)continue;let v=this.amigas.get(id);const cabelo=CABELOS.find(c=>c.id===a.cabelo)??CABELOS[0];if(!v){const img=this.add.image(a.x,a.y,cabelo.key);v={img,rig:new AvatarAnimado(img),nome:this.add.text(a.x,a.y-190,dados.membro.apelido,{fontFamily:FONTE,fontSize:'22px',color:'#5a2fa8',backgroundColor:'#fff9ff'}).setOrigin(.5),saindo:false};this.amigas.set(id,v);v.img.setAlpha(0);this.tweens.add({targets:v.img,alpha:1,duration:250})}else if(v.saindo){this.tweens.killTweensOf(v.img);v.saindo=false;v.img.setAlpha(1)}
    v.img.setTexture(cabelo.key).setPosition(interpolar(v.img.x,a.x,delta/1000),interpolar(v.img.y,a.y,delta/1000)).setScale(172/v.img.height*a.sx,172/v.img.height*a.sy).setAngle(a.angulo).setOrigin(.5,a.origemY).setDepth(a.z);v.rig.atualizar(a.estado==='andar'?'andar':a.estado==='sentado'?'sentar':a.estado==='danca'?'dancar':'parada',time/1000);v.nome.setScale(1/this.cameras.main.zoom).setPosition(v.img.x,v.img.y-190).setDepth(a.z+2);
   }
-  for(const s of estados){const o=this.visuais.get(s.id)!,d=CATALOGO_CASA.find(d=>d.id===s.id)!;o.desenhar(s);const noChao=s.comodo===this.comodo&&s.local==='chao';o.imagem.setVisible(noChao).setTint(s.ligado?0xffed9f:0xffffff);o.imagem.setAngle(s.id==='tapete'&&s.modo===2?-8:0);if(s.aberto&&s.tipo==='recipiente')o.imagem.x+=20;if(s.id==='sanitario'&&s.aberto)o.imagem.setDisplaySize(170,170).setDepth(s.y+100).setAlpha(.85);else o.imagem.setAlpha(1);if(s.id==='tv'&&s.ligado)o.imagem.setTint([0xffe39f,0x8fdfe8,0xf4a6d3][s.modo]);o.zona.setVisible(noChao);if(o.zona.input)o.zona.input.enabled=noChao;this.nomes.get(s.id)!.setScale(1/this.cameras.main.zoom).setVisible(noChao).setText(this.nome(s.id)).setPosition(s.x,s.y+18).setDepth(s.y+3);
+  for(const s of estados){const o=this.visuais.get(s.id)!,d=CATALOGO_CASA.find(d=>d.id===s.id)!;o.desenhar(s);const noChao=s.comodo===this.comodo&&s.local==='chao';o.imagem.setVisible(noChao).setTint(s.ligado?0xffed9f:0xffffff);o.imagem.setAngle(s.id==='tapete'&&s.modo===2?-8:0);if(s.aberto&&s.tipo==='recipiente')o.imagem.x+=20;if(s.id==='sanitario'&&s.aberto)o.imagem.setDisplaySize(170,170).setDepth(s.y+100).setAlpha(.85);else o.imagem.setAlpha(1);if(s.id==='tv'&&s.ligado)o.imagem.setTint([0xffe39f,0x8fdfe8,0xf4a6d3][s.modo]);o.zona.setVisible(noChao);if(o.zona.input)o.zona.input.enabled=noChao;this.nomes.get(s.id)!.setScale(1/this.cameras.main.zoom).setVisible(import.meta.env.DEV&&noChao).setText(this.nome(s.id)).setPosition(s.x,s.y+18).setDepth(s.y+3);
    if(s.local==='mao'&&s.trava){const img=daInstancia(s.trava,this.transporte.usuario,this.transporte.instancia)?this.avatar:this.amigas.get(s.trava.jogador)?.img;if(img){const mao=new Avatar(img).mao();o.imagem.setVisible(true).setPosition(mao.x,mao.y).setDisplaySize(32,32).setDepth(img.depth+1)}}
    if(noChao&&s.ligado&&s.id==='radio'&&time%800<delta)this.efeitos.particulas('notas',s.x,s.y-100);if(noChao&&s.ligado&&s.tipo==='agua'&&time%500<delta)this.efeitos.particulas(d.particulas??'gotas',s.x,s.y-90);
   }

@@ -1,10 +1,10 @@
 import { expect, test } from '@playwright/test';
 import type Phaser from 'phaser';
 import { CABELOS } from '../../src/config/assets';
-import { botao, textos } from '../apoio/jogo';
+import { botao } from '../apoio/jogo';
 
 test('seis cabelos conservam a silhueta e as peças cobrem todos os pixels opacos', async ({ page }) => {
-  await page.goto('./'); await expect.poll(()=>textos(page)).toContain('Crie o seu visual');
+  await page.goto('./'); await expect(page.getByRole('button',{name:'Ir para o parque',exact:true})).toBeVisible();
   await botao(page,'Ir para o parque');
   const resultados = await page.evaluate(chaves => {
     type Rig = { partes: Phaser.GameObjects.Image[]; atualizar(pose: 'parada' | 'sentar' | 'acenar', tempo: number): void };

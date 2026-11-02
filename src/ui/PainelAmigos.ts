@@ -1,3 +1,4 @@
+import {botaoIcone} from './Icones';
 import Phaser from 'phaser';
 import { amigos } from '../net/sala';
 import { FRASES } from '../game/frases';
@@ -25,6 +26,7 @@ export class PainelAmigos {
     this.bloqueio = cena.add.zone(0,0,1,1).setOrigin(0).setInteractive().setDepth(9000).setVisible(false);
     this.bloqueio.on('pointerdown', (_p: unknown,_x: unknown,_y: unknown,event: Phaser.Types.Input.EventData) => event.stopPropagation());
     this.root = document.createElement('section'); this.root.setAttribute('aria-label',T.titulo);
+    for(const e of ['pointerdown','pointerup','mousedown','mouseup','touchstart','touchend'])this.root.addEventListener(e,v=>v.stopPropagation());
     this.root.style.cssText = 'box-sizing:border-box;overflow:auto;overscroll-behavior:contain;touch-action:pan-y;background:#fff9ff;color:#5a2fa8;border:4px solid #b58cf5;border-radius:24px;padding:16px;font:17px Fredoka,sans-serif;box-shadow:0 10px 35px #3d247060;';
     const titulo = document.createElement('h2'); titulo.textContent = T.titulo; titulo.style.cssText='margin:0 0 8px;font-size:28px'; this.root.append(titulo);
     const guia = document.createElement('p'); guia.textContent=T.explicacao; guia.style.margin='0 0 12px'; this.root.append(guia);
@@ -34,7 +36,7 @@ export class PainelAmigos {
     this.estado=document.createElement('p'); this.estado.setAttribute('role','status'); this.root.append(this.estado);
     this.codigo=document.createElement('input'); this.codigo.setAttribute('aria-label',T.codigo); this.codigo.placeholder=T.codigo;
     this.codigo.maxLength=6; this.codigo.autocomplete='off'; this.codigo.autocapitalize='characters';
-    this.codigo.style.cssText='box-sizing:border-box;width:100%;min-height:48px;border:2px solid #b58cf5;border-radius:12px;font:22px Fredoka,sans-serif;padding:8px;letter-spacing:4px;text-transform:uppercase;';
+    this.codigo.style.cssText='box-sizing:border-box;width:100%;min-height:64px;border:2px solid #b58cf5;border-radius:12px;font:22px Fredoka,sans-serif;padding:8px;letter-spacing:4px;text-transform:uppercase;';
     this.codigo.addEventListener('input', () => { this.codigo.value=this.codigo.value.replace(/[^a-z]/gi,'').toUpperCase() });
     this.root.append(this.codigo);
     this.lista=document.createElement('div'); this.lista.style.cssText='display:grid;gap:10px;margin:12px 0;'; this.root.append(this.lista);
@@ -43,8 +45,8 @@ export class PainelAmigos {
     this.elemento=cena.add.dom(0,0,this.root).setDepth(9001).setVisible(false);
   }
   private botao(texto: string, aoClicar: () => void, permitirOcupado = false): HTMLButtonElement {
-    const botao=document.createElement('button'); botao.type='button'; botao.textContent=texto;
-    botao.style.cssText='min-height:46px;border:0;border-radius:16px;padding:9px 14px;font:600 16px Fredoka,sans-serif;color:white;background:#8b55e6;cursor:pointer;touch-action:manipulation;';
+    const botao=botaoIcone(texto,()=>{});
+    botao.style.cssText='min-height:64px;min-width:64px;border:0;border-radius:16px;padding:9px 14px;font:600 16px Fredoka,sans-serif;color:white;background:#8b55e6;cursor:pointer;touch-action:manipulation;';
     botao.addEventListener('click', () => { if (!this.ocupado || permitirOcupado) aoClicar() }); return botao;
   }
   private async executar(acao: () => Promise<void>): Promise<void> {

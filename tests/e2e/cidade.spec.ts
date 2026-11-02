@@ -1,5 +1,5 @@
 import { expect, test } from '@playwright/test';
-import { botao, destino, textos, tocar } from '../apoio/jogo';
+import { botao, destino, tocar, saldoVisivel } from '../apoio/jogo';
 
 test('cidade, novas missões, conselhos, diário e recompensa única no celular',async({page})=>{
   const erros:string[]=[];page.on('pageerror',e=>erros.push(e.message));
@@ -22,17 +22,17 @@ test('cidade, novas missões, conselhos, diário e recompensa única no celular'
   await painel.getByRole('button',{name:'Brincar de novo',exact:true}).click();
   await painel.getByRole('button',{name:'B) Avisar e devolver',exact:true}).click();
   await painel.getByRole('button',{name:'Voltar a brincar',exact:true}).click();
-  await expect.poll(()=>textos(page)).toContain('10 moedas');
-  await botao(page,'Cidade');await botao(page,'>');await botao(page,'Pet Shop');
+  await saldoVisivel(page,10);
+  await botao(page,'Cidade');await botao(page,'Pet Shop');
   await expect.poll(()=>page.evaluate(()=>window.__jogo.scene.isActive('PetShop'))).toBe(true);
   await page.screenshot({path:'docs/screenshots/cidade/3-pet-mobile.png'});
   await botao(page,'Cuidar do Bolinha');
   const pet=page.getByRole('region',{name:'Cuidar do Bolinha',exact:true});
   for(const acao of ['Dar água','Dar comida','Fazer carinho'])await pet.getByRole('button',{name:acao,exact:true}).click();
   await expect(pet).toContainText('Missão concluída');await pet.getByRole('button',{name:'Voltar a brincar',exact:true}).click();
-  await expect.poll(()=>textos(page)).toContain('20 moedas');
-  await botao(page,'Cidade');await botao(page,'>');await botao(page,'Casa');
-  await expect(page.getByRole('button',{name:'Cômodos',exact:true})).toBeVisible();await page.screenshot({path:'docs/screenshots/cidade/6-casa-mobile.png'});await botao(page,'Cidade');await botao(page,'Parque');
+  await saldoVisivel(page,20);
+  await botao(page,'Cidade');await botao(page,'Casa');await expect.poll(()=>page.evaluate(()=>window.__jogo.scene.isActive('Casa'))).toBe(true);
+  await expect(page.getByRole('button',{name:'Celular',exact:true})).toBeVisible();await page.screenshot({path:'docs/screenshots/cidade/6-casa-mobile.png'});await botao(page,'Cidade');await botao(page,'Parque');
   await destino(page,'Esperar a vez');
   const bia=page.getByRole('region',{name:'Esperar a vez',exact:true});
   await bia.getByRole('button',{name:'A) Passar na frente',exact:true}).click();await expect(bia).toContainText('Esperar a vez');
