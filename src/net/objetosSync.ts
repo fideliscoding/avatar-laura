@@ -176,7 +176,7 @@ export class ObjetosSync implements TransporteInteracao{
  }
  private receberConfirmacao(autor:string,valor:unknown):void{
   if(!this.ativa||!this.compartilhado||autor!==this.dono||!valor||typeof valor!=='object')return;
-  if((valor as {mundo?:unknown}).mundo!==undefined&&(valor as {mundo?:unknown}).mundo!==this.mundo.lugar)return;
+  const mundo=(valor as {mundo?:unknown}).mundo;if(mundo!==this.mundo.lugar&&!(mundo===undefined&&this.mundo.lugar==='Parque'))return;
   const c=valor as {pedido?:unknown;instancia?:unknown;aceita?:unknown};
   if(typeof c.pedido!=='string'||typeof c.instancia!=='string'||typeof c.aceita!=='boolean'||!this.receber(valor))return;
   if(c.instancia!==this.instancia)return;const p=this.pedidos.get(c.pedido);if(!p)return;this.pedidos.delete(c.pedido);

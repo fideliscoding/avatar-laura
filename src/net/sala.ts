@@ -190,7 +190,7 @@ export class AmigosSala {
   }
 
   publicar(estado: EstadoCompartilhado, agora: number): void {
-    const cabeloMudou = estado.cabelo !== this.local.cabelo;
+    const cabeloMudou = estado.cabelo !== this.local.cabelo||estado.lugar!==this.local.lugar;
     this.local = estado;
     if (this.fase !== 'conectado' || !this.usuario) return;
     const canal = this.canais.get(this.usuario); if (!canal || canal.state !== 'joined') return;

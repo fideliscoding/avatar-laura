@@ -29,6 +29,7 @@ export function aplicarCasa(estados:EstadoObjeto[],a:AcaoInteracao):ConfirmacaoI
 
 
 
+ if(a.tipo==='acao2'&&['tapete','estrelas','banheira'].includes(d.funcao)){if(a.versao!==s.versao)return negar();return {...alterar([{...s,modo:2,...(d.funcao==='estrelas'?{ligado:false}:{})}]),efeitos:[{tipo:'particulas',nome:'brilho'}]}}
  if(d.funcao==='plantar'&&a.tipo==='tocar'){
   if(!s.aberto&&mao?.id==='sementes')return alterar([{...s,aberto:true,modo:0},{...mao,local:'consumido',trava:null,aberto:true}]);
   if(!s.aberto)return negar();return alterar([{...s,ligado:!s.ligado}]);

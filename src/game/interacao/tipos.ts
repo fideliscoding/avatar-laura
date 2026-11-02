@@ -21,7 +21,7 @@ export interface AcaoInteracao {tipo:TipoAcao;jogador:string;instancia:string;ag
 export type EfeitoInteracao=
  |{tipo:'pose';pose:PoseInteracao;ponto?:Ponto;virado?:1|-1}
  |{tipo:'anim';nome:'toque'|'pegar'|'soltar'|'comer'|'abrir'|'fechar'|'ligar'|'desligar'}
- |{tipo:'particulas';nome:'gotas'|'vapor'|'bolhas'|'brilho'|'sono'|'coracoes'|'migalhas'}
+ |{tipo:'particulas';nome:'gotas'|'vapor'|'bolhas'|'brilho'|'sono'|'coracoes'|'migalhas'|'notas'}
  |{tipo:'fala';codigo:'ocupado'|'mudou'|'cheio'|'vazio'|'sem-posse'|'agua';jogador?:string}
  |{tipo:'porta';destino:string};
 export interface ResultadoInteracao {estado:EstadoObjeto;efeitos:EfeitoInteracao[];aceita:boolean}

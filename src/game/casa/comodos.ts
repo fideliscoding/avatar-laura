@@ -12,6 +12,7 @@ export function validarComodo(v:unknown,ids:readonly string[]):Comodo{
  if(new Set(c.objetos.map(o=>o.id)).size!==c.objetos.length||c.objetos.some(o=>!ids.includes(o.id)||!ponto(o)))return erro();
  if(c.objetos.some(o=>o.estadoInicial&&(typeof o.estadoInicial!=='object'||Object.keys(o.estadoInicial).some(k=>!['aberto','ligado','modo','itens'].includes(k)))))return erro();
  if(c.adulto&&(!ponto(c.adulto)||typeof c.adulto.nome!=='string'))return erro();
+ for(const o of c.objetos){const e=o.estadoInicial;if(!e)continue;for(const k of ['aberto','ligado'] as const)if(e[k]!==undefined&&typeof e[k]!=='boolean')return erro();if(e.modo!==undefined&&(!Number.isInteger(e.modo)||e.modo<0||e.modo>2))return erro();if(e.itens!==undefined&&(!Array.isArray(e.itens)||e.itens.length>6||e.itens.some(id=>!ids.includes(id))))return erro()}
  if(c.portas.some(p=>!ehComodo(p.destino)||p.destino===c.id||!ponto(p)||!ponto(p.chegada)))return erro();
  return c;
 }

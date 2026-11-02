@@ -51,7 +51,7 @@ describe('banheiro e lavanderia',()=>{
  it('escova na mão ativa espuma e o ferro só está disponível junto da Vovó',()=>{
   let e=acao(estadosIniciaisCasa(),'armarinho','tocar').estados;e=acao(e,'armarinho','retirar',{item:'escova'}).estados;
   expect(acao(e,'pia-banheiro','tocar').estados.find(s=>s.id==='escova')!.modo).toBe(1);
-  expect(acao(estadosIniciaisCasa(),'ferro','tocar').aceita).toBe(true);
+  expect(acao(estadosIniciaisCasa(),'ferro','tocar').aceita).toBe(true);const semAdulto=estadosIniciaisCasa().map(s=>s.id==='ferro'?{...s,comodo:'quintal'}:s);expect(acao(semAdulto,'ferro','tocar').aceita).toBe(false);
  });
 });
 describe('quintal',()=>{
@@ -60,5 +60,12 @@ describe('quintal',()=>{
   e=acao(e,'bau','tocar').estados;e=acao(e,'bau','retirar',{item:'sementes'}).estados;e=acao(e,'canteiro','tocar').estados;
   expect(e.find(s=>s.id==='canteiro')).toMatchObject({aberto:true,modo:0});
   for(let i=1;i<=3;i++){e=acao(e,'mangueira','tocar').estados;expect(e.find(s=>s.id==='canteiro')!.modo).toBe(Math.min(i,2))}
+ });
+});
+describe('arrumação e segredos',()=>{
+ it.each(['tapete','luz-quarto','banheira'])('segunda ação revela %s e mantém o segredo no estado',id=>{const r=acao(estadosIniciaisCasa(),id,'acao2');expect(r.estados.find(s=>s.id===id)!.modo).toBe(2);expect(r.efeitos).toContainEqual({tipo:'particulas',nome:'brilho'})});
+ it('arrumar devolve à origem, fecha objetos e libera mão e snaps num único lote',()=>{
+  let e=acao(estadosIniciaisCasa(),'pao','pegar').estados;e=acao(e,'pao','soltar',{comodo:'banheiro',ponto:{x:600,y:550}}).estados;e=acao(e,'sofa','tocar').estados;
+  const r=acao(e,'tapete','arrumar');expect(r.aceita).toBe(true);expect(r.estados.find(s=>s.id==='pao')).toMatchObject({x:220,y:640,local:'chao',comodo:'cozinha'});expect(r.estados.every(s=>!s.trava&&s.ocupantes.length===0)).toBe(true);
  });
 });
