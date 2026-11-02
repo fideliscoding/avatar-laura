@@ -18,6 +18,11 @@ export function validarCatalogo(valor:unknown):DefinicaoObjeto[]{
   if(!numeros(d.origem,2)||d.origem.some(n=>n<0||n>1)||!numeros(d.area,4)||d.area[2]<64||d.area[3]<64||!numeros(d.pontoUso,2)||!Number.isFinite(d.largura)||d.largura<=0)return falha(`${d.id}: origem, area, largura ou pontoUso`);
   if(!d.estadoInicial||typeof d.estadoInicial!=='object'||Array.isArray(d.estadoInicial))return falha(`${d.id}: estadoInicial`);
   if(Object.keys(d.estadoInicial).some(k=>!['aberto','ligado','modo','itens','mordidas','noite'].includes(k)))return falha(`${d.id}: campo inicial reservado`);
+  for(const chave of ['aberto','ligado','noite'] as const)if(d.estadoInicial[chave]!==undefined && typeof d.estadoInicial[chave]!=='boolean')return falha(`${d.id}: estadoInicial.${chave}`);
+  for(const chave of ['modo','mordidas'] as const)if(d.estadoInicial[chave]!==undefined && (!Number.isInteger(d.estadoInicial[chave])||d.estadoInicial[chave]!<0||d.estadoInicial[chave]!>(chave==='modo'?2:3)))return falha(`${d.id}: estadoInicial.${chave}`);
+  if(d.estadoInicial.itens!==undefined && (!Array.isArray(d.estadoInicial.itens)||d.estadoInicial.itens.length>6||!d.estadoInicial.itens.every(idValido)))return falha(`${d.id}: estadoInicial.itens`);
+  for(const chave of ['comestivel','bebivel'] as const)if(d[chave]!==undefined&&typeof d[chave]!=='boolean')return falha(`${d.id}: ${chave}`);
+  if(d.aceita!==undefined&&(!Array.isArray(d.aceita)||!d.aceita.every(idValido)))return falha(`${d.id}: aceita`);
   if(['assento','cama'].includes(d.tipo)&&(!Array.isArray(d.snaps)||!d.snaps.length||d.snaps.some(s=>!s||!Number.isFinite(s.x)||!Number.isFinite(s.y)||!['sentado','deitado'].includes(s.pose))))return falha(`${d.id}: snaps`);
   if(d.tipo==='porta'&&(typeof d.destino!=='string'||!d.destino))return falha(`${d.id}: destino`);
   if(d.capacidade!==undefined&&(!Number.isInteger(d.capacidade)||d.capacidade<1||d.capacidade>6))return falha(`${d.id}: capacidade`);

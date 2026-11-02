@@ -1,5 +1,6 @@
+import {ObjetosSync} from '../net/objetosSync';
 import {Avatar} from './interacao/Avatar';
-import {GerenteInteracao,TransporteLocal} from './interacao/GerenteInteracao';
+import {GerenteInteracao} from './interacao/GerenteInteracao';
 import { abrirPainelMissao } from './CenaMissao';
 import Phaser from 'phaser';
 import { PROPS, BAL, GANG, PEDRO, AREIA, CURVA_ESC, VEL_LAURA, VEL_BIA, MOVIMENTO, PARADAS, PASSEIO_BIA, ANIMACOES, FALAS_PARQUE } from '../config/parque';
@@ -136,7 +137,7 @@ export class CenaParque extends Phaser.Scene {
     this.animadores = { marta: new AvatarAnimado(this.vovo.img, true), pedro: new AvatarAnimado(this.pedro.img), bia: new AvatarAnimado(this.bia.img), laura: new AvatarAnimado(this.L.img) };
     this.configurarCamera();
     this.scale.on('resize', this.configurarCamera, this);
-    this.interacoes=new GerenteInteracao(this,new Avatar(this.L.img),new TransporteLocal(),{
+    this.interacoes=new GerenteInteracao(this,new Avatar(this.L.img),new ObjetosSync(sessao.usuario),{
       andar:(x,y,acao)=>{this.interacoes.levantar();this.andarAte(x,y,acao)},
       pode:()=>!this.dialogo?.aberto&&!this.socialAberto&&this.L.estado!=='danca',
       notificar:texto=>this.interface?.notificarSocial(texto),

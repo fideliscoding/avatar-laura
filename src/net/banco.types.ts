@@ -97,12 +97,48 @@ export type Database = {
         }
         Relationships: []
       }
+      objetos_estado: {
+        Row: {
+          atualizado_em: string
+          dono: string
+          estado: Json
+          lugar: string
+          objeto_id: string
+          versao: number
+        }
+        Insert: {
+          atualizado_em?: string
+          dono: string
+          estado: Json
+          lugar: string
+          objeto_id: string
+          versao?: number
+        }
+        Update: {
+          atualizado_em?: string
+          dono?: string
+          estado?: Json
+          lugar?: string
+          objeto_id?: string
+          versao?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "objetos_estado_dono_fkey"
+            columns: ["dono"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           apelido: string
           atualizado_em: string
           criado_em: string
           id: string
+          inventario: Json
           moedas: number
           papel: string
           responsavel_id: string | null
@@ -112,6 +148,7 @@ export type Database = {
           atualizado_em?: string
           criado_em?: string
           id: string
+          inventario?: Json
           moedas?: number
           papel?: string
           responsavel_id?: string | null
@@ -121,6 +158,7 @@ export type Database = {
           atualizado_em?: string
           criado_em?: string
           id?: string
+          inventario?: Json
           moedas?: number
           papel?: string
           responsavel_id?: string | null
@@ -313,6 +351,11 @@ export type Database = {
           isSetofReturn: false
         }
       }
+      guardar_objetos: {
+        Args: { p_estados: Json; p_lugar: string }
+        Returns: Json
+      }
+      ler_objetos: { Args: { p_dono: string; p_lugar: string }; Returns: Json }
       listar_membros_sala: {
         Args: { p_sala: string }
         Returns: {

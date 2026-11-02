@@ -1,3 +1,4 @@
+import {encerrarObjetos} from './objetosSync';
 import type { Database } from './banco.types';
 import type { SupabaseClient, User } from '@supabase/supabase-js';
 import { carregar, persistir, progresso, usarProgresso, type Armazenamento } from '../game/estado';
@@ -56,7 +57,7 @@ export function criarPorta(cliente: SupabaseClient<Database>, usuario: string): 
 }
 
 function limpar(): void {
-  amigos.esquecer();
+  encerrarObjetos();amigos.esquecer();
   geracao++; fila?.parar(); fila = null;
   if (repeticao) clearInterval(repeticao);
   repeticao = null;

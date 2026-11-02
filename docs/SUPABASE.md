@@ -214,3 +214,28 @@ SECURITY DEFINER e a proteção contra senhas vazadas desabilitada, já explicad
 com links acima. Não surgiram novos avisos de RLS ausente ou search_path mutável.
 Para cadastrar outra missão online, use o gerador descrito no GDD e uma migração
 nova; a recompensa e o percurso aceitos sempre vêm do banco, nunca do cliente.
+
+## Objetos interativos (etapa 06)
+
+A migração `0007_objetos_interativos.sql` está aplicada. `objetos_estado` usa a
+chave `(dono,lugar,objeto_id)`, estado JSON, versão e horário do servidor. A RLS
+permite ler o próprio mundo ou o de um dono com sala ativa em que o leitor foi
+aprovado. Pedidos pendentes não leem os objetos. Escrever exige ser o dono; a
+API restringe a escrita à RPC `guardar_objetos`, para não contornar versões.
+
+A RPC serializa lotes pelo perfil do dono, compara a versão confirmada e grava
+todas as mudanças ou nenhuma. Ela limita uma mão e seis espaços de mochila,
+confere a aprovação de quem segura/senta e fixa o prazo no relógio do servidor
+em oito segundos. `ler_objetos` é SECURITY INVOKER, respeita RLS e devolve o
+relógio junto dos estados, evitando depender do horário do aparelho.
+
+O cache local é separado por dono e usuário. Alterações livres usam debounce de
+um segundo; pegar/soltar/comer/sentar/renovar exigem confirmação imediata para
+preservar exclusividade. A coluna real é `profiles.inventario` (o rascunho chamava
+perfis), com atualização apenas dessa coluna e validação de mão/mochila. O cache
+de inventário não concede posse: a interface deriva os itens das travas ativas.
+
+A simulação local e uma transação no projeto real verificaram versão repetida
+recusada, prazo de oito segundos, leitura negada ao pendente e permitida após
+aprovação, escrita direta negada e moedas protegidas. A transação terminou com
+ROLLBACK e não deixou contas ou estados de teste persistidos.

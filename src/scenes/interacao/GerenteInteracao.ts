@@ -12,6 +12,7 @@ import {Efeitos} from './Efeitos';
 export class TransporteLocal implements TransporteInteracao {
  private estados=OBJETOS_PARQUE.map(o=>criarEstado(definicaoObjeto(o.id),'Parque',o.x,o.y));private ouvintes=new Set<()=>void>();
  readonly instancia=crypto.randomUUID();readonly usuario='local';
+ agora():number{return Date.now()}
  ler():EstadoObjeto[]{return this.estados}
  async pedir(p:PedidoInteracao):Promise<ConfirmacaoInteracao>{const r=aplicarNoMundo(this.estados,{...p,tipo:p.tipo,jogador:this.usuario,instancia:this.instancia,agora:Date.now(),definicao:definicaoObjeto(p.objeto)},CATALOGO_OBJETOS);if(r.aceita){this.estados=r.estados;this.ouvintes.forEach(o=>o())}return r}
  observar(fn:()=>void):()=>void{this.ouvintes.add(fn);return()=>this.ouvintes.delete(fn)}
@@ -19,14 +20,14 @@ export class TransporteLocal implements TransporteInteracao {
 }
 interface AcoesCena {andar(x:number,y:number,acao:()=>void):void;pode():boolean;notificar(texto:string):void;sentar(x:number,y:number,virado:1|-1):void;nome(jogador:string):string|undefined;remotos():Map<string,Phaser.GameObjects.Image>}
 export class GerenteInteracao {
- readonly objetos=new Map<string,ObjetoInterativo>();private efeitos:Efeitos;private assentoDesejado=false;private comendoAte=0;private renovando=new Set<string>();private timer:ReturnType<typeof setInterval>;private ultimaAgua=0;
+ readonly objetos=new Map<string,ObjetoInterativo>();private efeitos:Efeitos;private ativa=true;private assentoDesejado=false;private comendoAte=0;private renovando=new Set<string>();private timer:ReturnType<typeof setInterval>;private ultimaAgua=0;
  constructor(private cena:Phaser.Scene,readonly avatar:Avatar,readonly transporte:TransporteInteracao,private acoes:AcoesCena){
   this.efeitos=new Efeitos(cena);
   for(const o of OBJETOS_PARQUE)this.objetos.set(o.id,new ObjetoInterativo(cena,definicaoObjeto(o.id),o.x,o.y,()=>this.interagir(o.id)));
   this.timer=setInterval(()=>this.renovar(),2000);
  }
- estados():EstadoObjeto[]{return this.transporte.ler().map(s=>estadoEfetivo(s,Date.now()))}
- inventario(){return inventarioDoMundo(this.estados(),this.transporte.usuario,this.transporte.instancia,Date.now())}
+ estados():EstadoObjeto[]{return this.transporte.ler().map(s=>estadoEfetivo(s,this.transporte.agora()))}
+ inventario(){return inventarioDoMundo(this.estados(),this.transporte.usuario,this.transporte.instancia,this.transporte.agora())}
  interagir(id:string):void{
   if(!this.acoes.pode())return;const s=this.estados().find(s=>s.id===id);if(!s)return;const d=definicaoObjeto(id),o=this.objetos.get(id)!;this.efeitos.tocar(o.imagem);
   const snap=d.snaps?.find(p=>!s.ocupantes.some(o=>d.snaps?.[o.snap]===p));
@@ -36,6 +37,7 @@ export class GerenteInteracao {
  async solicitar(objeto:string,tipo:PedidoInteracao['tipo'],ponto?:{x:number;y:number}):Promise<ConfirmacaoInteracao>{
   const s=this.transporte.ler().find(s=>s.id===objeto)!;
   const r=await this.transporte.pedir({objeto,tipo,versao:s.versao,ponto});
+  if(!this.ativa)return r;
   if(r.aceita&&['assento','cama'].includes(s.tipo)&&tipo==='tocar')this.assentoDesejado=true;
   for(const e of r.efeitos){
    if(e.tipo==='fala'){const nome=e.jogador?this.acoes.nome(e.jogador):undefined;this.acoes.notificar(e.codigo==='ocupado'&&nome?`Já está com ${nome}. Vamos esperar um pouquinho?`:e.codigo==='agua'?T.fresquinha:e.codigo==='sem-posse'?T.semPosse:T[e.codigo])}
@@ -71,5 +73,5 @@ export class GerenteInteracao {
    if(s.tipo==='agua'&&s.ligado&&this.cena.time.now-this.ultimaAgua>400){this.ultimaAgua=this.cena.time.now;this.efeitos.particulas('gotas',s.x-5,s.y-75)}
   }
  }
- destruir():void{clearInterval(this.timer);this.transporte.encerrar();for(const o of this.objetos.values())o.destruir();this.objetos.clear()}
+ destruir():void{this.ativa=false;clearInterval(this.timer);this.transporte.encerrar();for(const o of this.objetos.values())o.destruir();this.objetos.clear()}
 }
