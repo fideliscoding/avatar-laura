@@ -1,3 +1,6 @@
+import { MISSOES } from '../game/missoes/catalogo';
+import { abrirPainelMissao } from './CenaMissao';
+import { TEXTOS_CIDADE } from '../config/cidade';
 import Phaser from 'phaser';
 import { CORES, FONTE } from '../config/assets';
 import { TEXTOS_CONTAS } from '../config/contas';
@@ -11,11 +14,12 @@ import { TEXTOS_AMIGOS } from '../config/amigos';
 import { Dialogo } from '../ui/Dialogo';
 import type { CenaParque, Alvo } from './CenaParque';
 
-const DESTINOS: { alvo: Alvo; nome: string }[] = [
+const DESTINOS: { alvo: Alvo | 'cidade' | 'diario' | 'missao'; nome: string; missao?: string }[] = [
   { alvo: 'balanco', nome: 'Balanço' }, { alvo: 'escorregador', nome: 'Escorregador' },
   { alvo: 'gangorra', nome: 'Gangorra' }, { alvo: 'carrossel', nome: 'Carrossel' },
   { alvo: 'sorvete', nome: 'Sorvete' }, { alvo: 'vovo', nome: 'Dona Marta' },
   { alvo: 'pedro', nome: 'Pedrinho' }, { alvo: 'areia', nome: 'Areia' },
+  ...MISSOES.filter(m=>m.lugar==='Parque' && m.id!=='pedrinho-carrinho').map(m=>({alvo:'missao' as const,nome:m.titulo,missao:m.id})), { alvo: 'cidade', nome: TEXTOS_CIDADE.mapa }, { alvo: 'diario', nome: TEXTOS_CIDADE.diario },
 ];
 
 /** Interface em pixels visíveis, independente da câmera que acompanha a Laura. */
@@ -94,7 +98,13 @@ export class CenaInterface extends Phaser.Scene {
     const itens = DESTINOS.slice(this.pagina * l.porPagina, (this.pagina + 1) * l.porPagina);
     const passo = (w - margem * 2) / itens.length;
     itens.forEach((item, i) => this.hud.add(new Botao(this, margem + passo * (i + 0.5), y, item.nome,
-      () => this.parque.irPara(item.alvo), { tamanho: 16, largura: passo - 8 })));
+      () => {
+        if(this.dialogo.aberto || this.painelAmigos.aberto)return;
+        if(item.alvo==='cidade')this.parque.scene.start('Cidade');
+        else if(item.alvo==='diario')abrirPainelMissao(this.parque);
+        else if(item.alvo==='missao'){if(item.missao==='parque-esperar')this.parque.conversarBia();else abrirPainelMissao(this.parque,item.missao)}
+        else this.parque.irPara(item.alvo);
+      }, { tamanho: 16, largura: passo - 8 })));
     this.aviso = this.add.text(w / 2, h - l.rodape - 10, '', { fontFamily: FONTE, fontSize: '15px', color: CORES.textoRoxo, backgroundColor: '#ffffff', wordWrap: { width: w - 32 }, align: 'center', padding: { x: 8, y: 6 } }).setOrigin(0.5, 1);
     this.hud.add(this.aviso);
     this.dialogo.reorganizar(); this.painelAmigos?.reorganizar();

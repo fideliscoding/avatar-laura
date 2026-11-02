@@ -1,3 +1,4 @@
+import { abrirPainelMissao } from './CenaMissao';
 import Phaser from 'phaser';
 import { PROPS, BAL, GANG, PEDRO, AREIA, CURVA_ESC, VEL_LAURA, VEL_BIA, MOVIMENTO, PARADAS, PASSEIO_BIA, ANIMACOES, FALAS_PARQUE } from '../config/parque';
 import { CABELOS, CORES, FONTE } from '../config/assets';
@@ -115,6 +116,7 @@ export class CenaParque extends Phaser.Scene {
     const bImg = this.add.image(470, 440, 'bia').setOrigin(0.5, 1);
     this.bia = { img: bImg, x: 470, y: 440, h: 148, w: 111, lado: 1, t: 0, estado: 'andar', tx: 560, ty: 352 };
     this.ajustar(this.bia);
+    bImg.setInteractive({useHandCursor:true}).on('pointerdown',(_p:unknown,_x:unknown,_y:unknown,ev:Phaser.Types.Input.EventData)=>{ev.stopPropagation();this.conversarBia()});
 
     // Laura
     const lImg = this.add.image(470, 640, CABELOS[progresso.cabelo].key).setOrigin(0.5, 1);
@@ -328,6 +330,11 @@ export class CenaParque extends Phaser.Scene {
     this.pedro.feliz = false; this.pedro.img.setTexture('pedro-triste'); this.pedro.w = this.pedro.h * 0.66; this.ajustar(this.pedro);
     this.balao.setVisible(true); this.tweens.killTweensOf(this.carrinho); this.carrinho.setVisible(false);
     this.definirObjetivo(TEXTOS.objetivoInicial);
+  }
+
+  conversarBia():void {
+    if(this.dialogo?.aberto || this.socialAberto || this.L.estado==='danca')return;
+    this.pararBrinquedo();this.andarAte(this.bia.x-65,this.bia.y+25,()=>abrirPainelMissao(this,'parque-esperar'));
   }
 
   bloquearSocial(aberto: boolean): void { this.socialAberto = aberto }

@@ -14,6 +14,7 @@ export class CenaBoot extends Phaser.Scene {
     const barra = this.add.graphics();
     this.load.on('progress', (v: number) => { barra.clear(); barra.fillStyle(CORES.lilas, 1); barra.fillRoundedRect(w / 2 - larguraBarra / 2 + 4, h / 2 + 14, Math.max(12, (larguraBarra - 8) * v), 20, 10) });
     this.load.setBaseURL(import.meta.env.BASE_URL);
+    this.load.tilemapTiledJSON('cidade','assets/mapas/cidade.tmj');
     for (const c of CABELOS) this.load.image(c.key, c.arquivo);
     for (const [k, v] of Object.entries(IMAGENS)) this.load.image(k, v);
   }

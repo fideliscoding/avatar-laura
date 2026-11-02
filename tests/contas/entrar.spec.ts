@@ -1,6 +1,6 @@
 import { expect, test, type Page } from '@playwright/test';
 
-import { botao as clicar, textos } from '../apoio/jogo';
+import { botao as clicar, destino, textos } from '../apoio/jogo';
 async function temTexto(page: Page, texto: string): Promise<boolean> { return (await textos(page)).includes(texto) }
 
 test('cadastro validado, orientação de confirmação e falha de login em pt-BR', async ({ page }) => {
@@ -146,4 +146,40 @@ test('pedido no celular fica isolado e oferece somente comunicação pronta', as
   expect(sockets).toEqual([]);
   await page.getByRole('button', { name: 'Voltar ao parque', exact: true }).click();
   await expect(painel).toBeHidden();
+});
+
+test('cuidados do Bolinha chegam à RPC em ordem e saldo só muda após confirmação',async({page})=>{
+  await page.setViewportSize({width:390,height:844});
+  const chamadas:Record<string,unknown>[]=[];let confirmar!:()=>void;
+  const confirmacao=new Promise<void>(resolve=>{confirmar=resolve});
+  const usuario = { id: '11111111-1111-4111-8111-111111111111', aud: 'authenticated', role: 'authenticated', email: 'adulto@example.invalid', app_metadata: { provider: 'email' }, user_metadata: {}, created_at: '2026-11-01T00:00:00Z' };
+  const codificar = (valor: unknown) => btoa(JSON.stringify(valor)).replace(/\+/g,'-').replace(/\//g,'_').replace(/=/g,'');
+  const token = `${codificar({ alg: 'HS256', typ: 'JWT' })}.${codificar({ sub: usuario.id, exp: Math.floor(Date.now()/1000)+3600, role: 'authenticated' })}.assinatura-de-teste`;
+  await page.route('https://supabase-teste.invalid/**', async rota => {
+    const url = rota.request().url();
+    if (url.includes('/rpc/concluir_missao')) {
+      chamadas.push(rota.request().postDataJSON() as Record<string,unknown>);
+      await confirmacao; await rota.fulfill({json:10});
+    }
+    else if (url.includes('/token')) await rota.fulfill({ json: { access_token: token, token_type: 'bearer', expires_in: 3600, refresh_token: 'refresh-de-teste', user: usuario } });
+    else if (url.includes('/profiles')) await rota.fulfill({ json: { moedas: 0, apelido: 'Estrela Lilas 123' } });
+    else if (url.includes('/avatars')) await rota.fulfill({ json: { cabelo: 'cacheado' } });
+    else if (url.includes('/progress')) await rota.fulfill({ json: url.includes('select=status') ? null : [] });
+    else if (url.includes('/logout')) await rota.fulfill({ status: 204 });
+    else await rota.fulfill({ json: usuario });
+  });
+  await page.goto('./');
+  await page.getByLabel('E-mail do responsável').fill('adulto@example.invalid');
+  await page.getByLabel('Senha',{exact:true}).fill('senha-de-teste-123');
+  await clicar(page,'Entrar');await clicar(page,'Ir para o parque');
+  await destino(page,'Mapa da cidade');await clicar(page,'>');await clicar(page,'Pet Shop');
+  await clicar(page,'Cuidar do Bolinha');
+  const painel=page.getByRole('region',{name:'Cuidar do Bolinha',exact:true});
+  for(const acao of ['Dar água','Dar comida','Fazer carinho'])await painel.getByRole('button',{name:acao,exact:true}).click();
+  await expect.poll(()=>chamadas.length).toBe(1);
+  expect(chamadas[0]).toEqual({p_mission_id:'pet-bolinha',p_escolhas:['agua','comida','carinho']});
+  const saldo=await page.evaluate(()=>(window.__jogo.scene.getScene('LugarInterface') as unknown as {moedas:{text:string}}).moedas.text);
+  expect(saldo).toBe('0 moedas');confirmar();
+  await painel.getByRole('button',{name:'Voltar a brincar',exact:true}).click();
+  await expect.poll(()=>textos(page)).toContain('10 moedas');
 });

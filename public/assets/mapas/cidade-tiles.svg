@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="216" height="28" viewBox="0 0 216 28">
+<g transform="translate(2,2)"><path fill="#c7e8ad" d="M-2-2h36v28H-2z"/><path stroke="#b2d990" stroke-width="2" fill="none" d="m5 18 2-4 2 4m13-9 2-3 2 3"/></g>
+<g transform="translate(38,2)"><path fill="#ecdfcd" d="M-2-2h36v28H-2z"/><path stroke="#e0cfb9" d="M0 12h32M8 0v12m16 0v12"/></g>
+<g transform="translate(74,2)"><path fill="#b58cf5" d="M-2-2h36v28H-2z"/><path stroke="#d9c5ff" stroke-width="2" d="M0 22h32"/></g>
+<g transform="translate(110,2)"><path fill="#c7e8ad" d="M-2-2h36v28H-2z"/><circle fill="#f6b5d7" cx="12" cy="12" r="5"/><circle fill="#fff4ab" cx="12" cy="12" r="2"/></g>
+<g transform="translate(146,2)"><path fill="#b9e4ed" d="M-2-2h36v28H-2z"/><path stroke="#effbff" fill="none" d="M2 8q6-5 12 0t12 0m-22 9q6-5 12 0t12 0"/></g>
+<g transform="translate(182,2)"><path fill="#e7d8ff" d="M-2-2h36v28H-2z"/></g>
+</svg>

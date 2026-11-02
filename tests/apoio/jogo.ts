@@ -49,7 +49,7 @@ export async function botao(page: Page, texto: string): Promise<void> {
       }
       return null;
     };
-    for (const cena of window.__jogo.scene.getScenes(true)) { const achado = buscar(cena.children.list); if (achado) return achado }
+    for (const cena of window.__jogo.scene.getScenes(true).slice().reverse()) { const achado = buscar(cena.children.list); if (achado) return achado }
     return null;
   }, texto);
   if (!ponto) throw new Error(`Botão ausente: ${texto}`);

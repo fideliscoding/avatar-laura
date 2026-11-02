@@ -13,6 +13,7 @@ export const CABELOS: readonly Cabelo[] = [
 ];
 
 export const IMAGENS: Record<string, string> = {
+  'cidade-tiles': 'assets/mapas/cidade-tiles.svg',
   'parque': 'assets/cenarios/parque.jpg',
   'laura-lado-liso': 'assets/personagens/laura/laura-lado-liso.png',
   'bia': 'assets/personagens/npcs/bia.png',
