@@ -1,0 +1,72 @@
+# Casa e lugares
+
+Cada cômodo é uma cena 1280x720 (ou uma `CenaComodo` genérica que lê `comodos/<id>.json`). Ações usam os tipos de `INTERACOES.md`.
+
+## Casa da Laura
+
+### Sala
+| Objeto | Tipo | Ação | Animação esperada |
+|---|---|---|---|
+| sofá (3 snaps) | assento | sentar | pose sentado, almofada afunda 4 px |
+| TV | aparelho | liga/desliga, 2o toque troca canal | tela com 3 quadros coloridos, notas musicais |
+| abajur | aparelho | luz | halo amarelo, cômodo escurece ao desligar |
+| rádio | aparelho | música; avatar perto dança | pose dançando, notas |
+| estante | recipiente | abre gaveta: livro, controle, quebra-cabeça | gaveta desliza 20 px |
+| tapete | segredo | levantar ponta revela moeda | brilho |
+| porta para cozinha, quarto, banheiro, quintal | porta | trocar cômodo | fade 250 ms |
+
+### Cozinha
+| Objeto | Tipo | Ação | Animação |
+|---|---|---|---|
+| geladeira | recipiente | abre: suco, leite, maçã, queijo, ovo | porta abre, luz fria interna |
+| fogão | aparelho + aceita panela | liga; panela com ovo vira ovo frito | chama, vapor, chiado |
+| micro-ondas | aparelho + aceita comida | aquece em 3 s | luz girando, "plim" |
+| torradeira | combinação | pão -> torrada | torrada pula |
+| pia | água | lavar louça suja -> limpa | gotas, bolhas |
+| mesa e cadeiras | assento | sentar e comer | pose comendo, migalhas |
+| lixeira | recipiente | joga casca | tampa abre |
+
+Comer/beber: com item comestível na mão, tocar no avatar -> 3 mordidas (item diminui em 3 sprites ou máscara), corações. Sem barras de fome (brincadeira livre, como na referência).
+
+### Quarto
+| Objeto | Tipo | Ação | Animação |
+|---|---|---|---|
+| cama (2 snaps) | cama | deitar; 2o toque dorme | cobertor por cima, zZz, janela vira noite |
+| guarda-roupa | recipiente | abre roupas (liga ao criador) | portas abrem |
+| escrivaninha | assento + recipiente | sentar, gaveta com lápis e caderno | pose sentado escrevendo |
+| baú de brinquedos | recipiente | ursinho, bola, boneca | tampa |
+| luz do quarto | aparelho | interruptor | escurece, estrelas no teto |
+
+### Banheiro
+| Objeto | Tipo | Ação | Animação |
+|---|---|---|---|
+| chuveiro | água | banho (avatar entra no box) | gotas, vapor, bolhas na cabeça, vidro embaça |
+| banheira | água + cama-like snap | deitar no banho, patinho | bolhas subindo |
+| sanitário | assento | sentar; descarga ao levantar | som de descarga, porta do box fecha (privacidade) |
+| pia + espelho | água | lavar mãos; com escova na mão: escovar dentes | espuma, brilho no sorriso |
+| armarinho | recipiente | escova, pasta, toalha, sabonete | porta |
+
+### Quintal
+balanço (reaproveita o do parque), mangueira (água, rega flores que crescem em 3 estágios), casinha do pet, churrasqueira (aparelho, sem fogo forte), canteiro (pegar sementes do baú e plantar).
+
+### Lavanderia
+máquina de lavar (aceita roupa suja; liga: tambor gira 5 s; roupa limpa e dobrada), varal (pendurar roupa), cesto (recipiente), ferro (aparelho, só com adulto NPC por perto: conselho de segurança).
+
+## Lugares (cada um com interior e missões de virtudes)
+
+| Lugar | Ambientes | Objetos-chave | Missões de virtude |
+|---|---|---|---|
+| Escola | sala de aula, pátio, biblioteca | carteiras (assento), lousa (desenhar), mochilas, bebedouro | Empatia: sentar com a colega nova sozinha; Honestidade: achar estojo de outro e devolver; Paciência: esperar a vez no bebedouro |
+| Padaria/mercado | balcão, prateleiras, caixa | pães (pegáveis), forno, cesta, balança | Honestidade: troco a mais; Gratidão: agradecer o padeiro; Responsabilidade: lista de compras da mãe |
+| Clínica | recepção, consultório | maca (cama), estetoscópio, curativo | Cuidado: levar Pedrinho com joelho ralado; Coragem: tomar vacina com a mão de uma amiga |
+| Salão de beleza | cadeiras, espelhos, lavatório | secador, escova, esmaltes | Respeito: elogiar o estilo da amiga diferente do seu; Paciência |
+| Estúdio de dança | sala com espelho, vestiário | rádio, barra, fitas | Perdão: amiga pisou no pé sem querer; Coragem: apresentar |
+| Centro comunitário/igreja | salão, cozinha solidária | caixas de doação, bancos, mural | Gentileza: separar brinquedos para doar; Gratidão: cartão de obrigado |
+| Pet shop/adoção | vitrine, área de banho, quintal | ração, potes, banheira do pet, coleira | Responsabilidade: rotina de cuidar do pet adotado (água, comida, passeio) |
+
+## Navegação
+- **Mapa da cidade** (Tiled, etapa 05): toque no prédio -> caminha até a porta -> fade -> interior. Ícone de casa no canto leva de volta.
+- **Dentro da casa**: planta em "casa de bonecas" (vista frontal, cômodos lado a lado), setas/portas nas bordas; minimapa com os 6 cômodos em botões lilases.
+- Transição: fade 250 ms, avatar aparece no `pontoChegada` da porta de destino, itens na mão vão junto.
+- Lugares com 2+ ambientes usam portas internas iguais às da casa.
+- Multiplayer: todas na mesma sala de convite veem o mesmo cômodo; quem muda de cômodo some com fade para as outras e aparece no destino.
