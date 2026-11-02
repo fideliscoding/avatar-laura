@@ -259,3 +259,45 @@ escrita e versão) e a proteção contra senhas vazadas ainda desabilitada. Não
 novos avisos de RLS ausente ou `search_path` mutável. Referências:
 [RPCs autenticadas](https://supabase.com/docs/guides/database/database-linter?lint=0029_authenticated_security_definer_function_executable)
 e [proteção de senhas](https://supabase.com/docs/guides/auth/password-security#password-strength-and-leaked-password-protection).
+
+## Casa com seis cômodos (etapa 07)
+
+A migração `0008_casa_comodos.sql` está aplicada no projeto Avatar Laura.
+`casa_catalogo` guarda os 55 estados iniciais confiáveis, tem RLS ligada e concede
+apenas leitura autenticada. `guardar_objetos` mantém a mesma assinatura e as
+proteções da etapa 06; aceita lote de até 256 estados e valida `comodo` e
+`prontoEm`. Para Casa, só aceita IDs/tipos do catálogo. A versão continua sendo
+comparada e a escrita permanece exclusiva do dono do mundo. Migrações anteriores
+não foram editadas. A CLI gerou o arquivo novo, numerado como 0008 conforme AGENTS.
+
+`recompensar_casa(dono,evento)` concede exatamente uma moeda ao jogador autenticado,
+sem receber quantidade do cliente. O mundo precisa ser próprio ou de convite
+aprovado. Arrumação exige todos os objetos persistidos na origem e usa um registro
+por dia (America/Sao_Paulo); segredos exigem o estado descoberto e usam registro
+único. `private.premios_casa` tem RLS e nenhuma permissão para o cliente. Bloqueios
+de perfil em ordem de UUID e a chave única do ledger impedem duplicação concorrente.
+O gatilho anterior de proteção de moedas continua ativo, inclusive para este fluxo.
+
+A simulação SQL local verificou lote completo, transferência para outro cômodo,
+leitura aprovada, escrita direta negada, recompensa fixa/idempotente e saldo
+protegido. Uma transação no projeto real repetiu a arrumação, confirmou saldo 1,
+moveu pão para o banheiro e recusou escrita direta de moedas. Ao final houve
+ROLLBACK; esse teste não deixou usuário ou estado persistido.
+
+Dois navegadores reutilizaram as contas sintéticas da etapa 06: avatares apareceram
+apenas no mesmo cômodo, um único pedido retirou o ursinho do baú e a posse expirou
+em 7.889 ms após fechar a aba vencedora. Nenhum erro de JavaScript. As sessões
+foram encerradas globalmente e as senhas temporárias locais foram apagadas;
+nenhuma conta nova foi criada para esse QA. A exclusão dos dois registros de Auth
+continua sendo a limpeza pendente já registrada no PR da etapa 06.
+
+A migração complementar `0009_restringe_premios_casa.sql` explicita uma política
+`using(false)/with check(false)` no ledger privado, mantendo o bloqueio anterior
+por padrão e removendo o aviso informativo de RLS sem política. A consulta final
+confirmou ausência de SELECT/INSERT diretos para authenticated. O advisor ficou
+com nove RPCs autenticadas SECURITY DEFINER (oito anteriores e a recompensa fixa)
+e a proteção de senhas vazadas já desabilitada. Não há avisos de RLS ausente,
+RLS sem política ou search_path mutável. Referências de remediação:
+[RPCs autenticadas](https://supabase.com/docs/guides/database/database-linter?lint=0029_authenticated_security_definer_function_executable),
+[políticas explícitas](https://supabase.com/docs/guides/database/database-linter?lint=0008_rls_enabled_no_policy)
+e [proteção de senhas](https://supabase.com/docs/guides/auth/password-security#password-strength-and-leaked-password-protection).

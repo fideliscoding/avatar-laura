@@ -198,3 +198,31 @@ novas poses devem fornecer seus próprios pontos. O item fica em profundidade
 PNG e sem alterar as pernas ou o cabelo aprovados.
 
 Capturas: [interações no parque](screenshots/interacoes/README.md).
+
+## Casa com seis cômodos (etapa 07)
+
+### Assets que faltam para a casa
+
+- [ ] Fundos sem mobiliário de sala, cozinha, quarto, banheiro, quintal e lavanderia, 1280x720.
+- [ ] Móveis separados do catálogo `casa-objetos.json`, com estados aberto/fechado e ligado/desligado.
+- [ ] Cama e banheira com cobertor/água em camadas, porta fosca do box e tela de privacidade do sanitário.
+- [ ] Roupas em camadas e itens de mão: livro, controle, quebra-cabeça, brinquedos, sementes, alimentos, utensílios e higiene.
+- [ ] Quadros de alimento preparado, roupa limpa, flores em três estágios e patinho da banheira.
+- [ ] Animações definitivas de sentar, deitar, tomar banho, comer e dançar, preservando os seis cabelos.
+- [ ] Sons suaves de TV, rádio, cozinha, água, descarga, máquina e descobertas.
+
+Todos esses elementos usam placeholders Graphics lilases com rótulos legíveis.
+Não foram baixadas imagens. As chaves geradas ficam em `TEXTURAS_CASA`, no
+catálogo central de assets. Os móveis têm origem (0,5; 1); as posições, larguras,
+zonas e snaps vêm dos JSONs. O balanço reutiliza estrutura e assento aprovados;
+a Vovó acompanha o ferro com o PNG existente. O fundo ilustrado antigo da casa
+continua preservado, mas não serve de base aos móveis separados porque já traz
+mobiliário desenhado na imagem.
+
+Laura e as amigas usam o rig aprovado, sem novo recorte de cabelo ou pernas.
+O sono usa giro de 90 graus e cobertura provisória; banho mantém o avatar vestido
+com vidro translúcido. Esses movimentos são provisórios até receber as poses
+indicadas acima. A mão usa o mesmo ponto normalizado da etapa 06, com item em
+profundidade do avatar +1. Estrelas, moeda, patinho, notas e flores são desenhados.
+
+Capturas dos seis ambientes: [casa](screenshots/casa/README.md).

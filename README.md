@@ -144,7 +144,7 @@ em [docs/ARTE.md](docs/ARTE.md#correção-das-juntas-e-do-cabelo-dos-avatares).
 
 No rodapé do parque, use as setas até **Mapa da cidade**. Laura pode andar pelo
 mapa e entrar pelas portas, ou usar os atalhos do rodapé. A cidade tem Parque,
-Padaria, Pet Shop e Casa da Laura (quarto ilustrado com Em breve).
+Padaria, Pet Shop e Casa da Laura (seis cômodos interativos).
 
 Na Padaria, avise sobre o troco a mais; no Pet Shop, dê água, comida e carinho ao
 Bolinha. No parque, **Esperar a vez** leva Laura até Bia para praticar paciência.
@@ -174,3 +174,21 @@ que segura o sorvete, ele volta à origem em até oito segundos. Sem conta,
 as interações funcionam individualmente com cache local. A migração
 `0007_objetos_interativos.sql` está aplicada. Veja [detalhes](docs/INTERACOES.md)
 e [capturas](docs/screenshots/interacoes/README.md).
+
+## Casa da Laura
+
+A porta **Casa** no mapa abre seis cômodos: sala, cozinha, quarto, banheiro,
+quintal e lavanderia. **Cômodos** abre o minimapa; **Usar** aproxima Laura do
+objeto escolhido e **Opções** mostra suas ações. Tudo funciona por toque.
+
+Abra móveis para pegar itens, leve-os na mão ou na mochila e solte em outro
+ambiente. Prepare comida na cozinha, lave roupa, plante as sementes do baú e
+regue as flores. A segunda ação revela três surpresas. **Arrumar tudo**, na
+mochila, devolve os objetos e oferece uma moeda de responsabilidade por dia.
+Não há barras de necessidade nem punição; o ferro fica perto da Vovó.
+
+Nas salas aprovadas, as amigas veem a mesma casa e aparecem apenas no mesmo
+cômodo. O dono precisa estar na casa para confirmar ações. A migração
+`0008_casa_comodos.sql` já está aplicada. Móveis e fundos usam placeholders
+Graphics, com as artes pendentes registradas em [ARTE.md](docs/ARTE.md).
+Veja [as capturas dos seis cômodos](docs/screenshots/casa/README.md).

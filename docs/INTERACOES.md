@@ -135,3 +135,23 @@ em oito segundos, mesmo se a aba do dono fechar. Renovações ocorrem a cada doi
 segundos, inclusive com a mochila aberta. Sem renovação, o item volta à origem;
 novas ações compartilhadas aguardam a volta do dono. Cache offline é separado
 por dono/leitor e nunca concede posse compartilhada sem confirmação.
+
+## 11. Casa (etapa 07)
+
+`ObjetosSync` agora recebe uma configuração de mundo (`Parque` por padrão ou
+`MUNDO_CASA`): catálogo, estados iniciais, transação pura e ações automáticas.
+Pedidos e confirmações têm namespace de mundo para não misturar versões.
+`aplicarCasa` estende as regras com movimentação atômica entre recipientes e mão,
+receitas, lavagem, cultivo, segredos e arrumação. O estado opcional `comodo`
+identifica o ambiente e `prontoEm` guarda o prazo de receitas. Lotes/quadro admitem
+até 256 estados; a casa cabe em um único lote, sem reset parcial.
+
+Itens guardados em móveis usam `local: consumido` e `aberto: false`; o inventário
+do recipiente identifica o item disponível. Um item retirado tem `aberto: true`,
+e um alimento comido não reaparece no recipiente. A arrumação restaura o catálogo
+inicial. Os campos continuam validados tanto no cliente quanto na RPC.
+
+A zona acompanha a nova posição do objeto solto. `CasaInterface` mantém controles
+sem o zoom do mundo, e `PainelCidade.destruir` remove DOM e ouvintes ao fechar.
+A assinatura visual ignora renovações de lease, evitando reconstruir o seletor
+sem necessidade. A Presence anuncia o cômodo; o parque ignora avatares da casa.
