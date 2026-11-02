@@ -10,14 +10,14 @@ export async function tocarTela(page: Page, x: number, y: number): Promise<void>
   else await page.mouse.click(px, py);
   await page.waitForTimeout(80);
 }
-export async function projetar(page: Page, x: number, y: number): Promise<{ x: number; y: number }> {
-  return page.evaluate(({ x, y }) => {
-    const camera = window.__jogo.scene.getScene('Parque').cameras.main;
+export async function projetar(page: Page, x: number, y: number, cena='Parque'): Promise<{ x: number; y: number }> {
+  return page.evaluate(({ x, y, cena }) => {
+    const camera = window.__jogo.scene.getScene(cena).cameras.main;
     return { x: camera.x + (x - camera.worldView.x) * camera.zoom, y: camera.y + (y - camera.worldView.y) * camera.zoom };
-  }, { x, y });
+  }, { x, y, cena });
 }
-export async function tocar(page: Page, x: number, y: number): Promise<void> {
-  const ponto = await projetar(page, x, y); await tocarTela(page, ponto.x, ponto.y);
+export async function tocar(page: Page, x: number, y: number, cena='Parque'): Promise<void> {
+  const ponto = await projetar(page, x, y, cena); await tocarTela(page, ponto.x, ponto.y);
 }
 export async function textos(page: Page): Promise<string[]> {
   return page.evaluate(() => {

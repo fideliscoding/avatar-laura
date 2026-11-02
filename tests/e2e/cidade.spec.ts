@@ -1,5 +1,5 @@
 import { expect, test } from '@playwright/test';
-import { botao, destino, textos } from '../apoio/jogo';
+import { botao, destino, textos, tocar } from '../apoio/jogo';
 
 test('cidade, novas missões, conselhos, diário e recompensa única no celular',async({page})=>{
   const erros:string[]=[];page.on('pageerror',e=>erros.push(e.message));
@@ -32,7 +32,7 @@ test('cidade, novas missões, conselhos, diário e recompensa única no celular'
   await expect(pet).toContainText('Missão concluída');await pet.getByRole('button',{name:'Voltar a brincar',exact:true}).click();
   await expect.poll(()=>textos(page)).toContain('20 moedas');
   await botao(page,'Cidade');await botao(page,'>');await botao(page,'Casa');
-  await expect.poll(()=>textos(page)).toContain('Em breve');await botao(page,'Cidade');await botao(page,'Parque');
+  await expect.poll(()=>textos(page)).toContain('Em breve');await page.screenshot({path:'docs/screenshots/cidade/6-casa-mobile.png'});await botao(page,'Cidade');await botao(page,'Parque');
   await destino(page,'Esperar a vez');
   const bia=page.getByRole('region',{name:'Esperar a vez',exact:true});
   await bia.getByRole('button',{name:'A) Passar na frente',exact:true}).click();await expect(bia).toContainText('Esperar a vez');
@@ -43,9 +43,20 @@ test('cidade, novas missões, conselhos, diário e recompensa única no celular'
   await expect(diario.getByLabel('Valor aprendido')).toHaveCount(3);expect(await diario.getByLabel('Vamos aprender').count()).toBeGreaterThanOrEqual(1);
   await page.screenshot({path:'docs/screenshots/cidade/4-diario-mobile.png'});
   await page.setViewportSize({width:844,height:390});await expect(diario).toBeVisible();
-  const caixa=(await diario.boundingBox())!;expect(caixa.x).toBeGreaterThanOrEqual(0);expect(caixa.y).toBeGreaterThanOrEqual(0);expect(caixa.y+caixa.height).toBeLessThanOrEqual(390);
+  await expect.poll(async()=>{const caixa=(await diario.boundingBox())!;return caixa.x>=0 && caixa.y>=0 && caixa.y+caixa.height<=390}).toBe(true);
   await diario.getByRole('button',{name:'Voltar a brincar',exact:true}).click();
   await page.reload();await botao(page,'Ir para o parque');await destino(page,'Meu diário');
   await expect(page.getByRole('region',{name:'Meu diário'}).getByLabel('Valor aprendido')).toHaveCount(3);
   expect(erros).toEqual([]);
+});
+
+test('cada porta ilustrada abre o lugar correto por toque no mapa',async({page})=>{
+  await page.goto('./');await botao(page,'Ir para o parque');await destino(page,'Mapa da cidade');
+  for(const [cena,x,y] of [['Parque',405,305],['Padaria',1020,310],['PetShop',1130,655],['Casa',340,650]] as const){
+    await expect.poll(()=>page.evaluate(()=>window.__jogo.scene.isActive('Cidade'))).toBe(true);
+    await page.evaluate(()=>new Promise<void>(resolve=>requestAnimationFrame(()=>requestAnimationFrame(()=>resolve()))));
+    await tocar(page,x,y,'Cidade');
+    await expect.poll(()=>page.evaluate(cena=>window.__jogo.scene.isActive(cena),cena)).toBe(true);
+    if(cena==='Parque')await destino(page,'Mapa da cidade');else await botao(page,'Cidade');
+  }
 });

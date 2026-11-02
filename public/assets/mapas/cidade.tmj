@@ -1236,10 +1236,10 @@
           "id": 1,
           "name": "Parque",
           "type": "porta",
-          "x": 430,
-          "y": 245,
+          "x": 330,
+          "y": 215,
           "width": 150,
-          "height": 130,
+          "height": 110,
           "rotation": 0,
           "visible": true,
           "properties": [
@@ -1247,6 +1247,16 @@
               "name": "cena",
               "type": "string",
               "value": "Parque"
+            },
+            {
+              "name": "entradaX",
+              "type": "float",
+              "value": 405
+            },
+            {
+              "name": "entradaY",
+              "type": "float",
+              "value": 305
             }
           ]
         },
@@ -1254,10 +1264,10 @@
           "id": 2,
           "name": "Padaria",
           "type": "porta",
-          "x": 700,
-          "y": 245,
+          "x": 945,
+          "y": 220,
           "width": 150,
-          "height": 130,
+          "height": 110,
           "rotation": 0,
           "visible": true,
           "properties": [
@@ -1265,6 +1275,16 @@
               "name": "cena",
               "type": "string",
               "value": "Padaria"
+            },
+            {
+              "name": "entradaX",
+              "type": "float",
+              "value": 1020
+            },
+            {
+              "name": "entradaY",
+              "type": "float",
+              "value": 310
             }
           ]
         },
@@ -1272,10 +1292,10 @@
           "id": 3,
           "name": "Pet Shop",
           "type": "porta",
-          "x": 700,
-          "y": 480,
+          "x": 1055,
+          "y": 565,
           "width": 150,
-          "height": 130,
+          "height": 110,
           "rotation": 0,
           "visible": true,
           "properties": [
@@ -1283,6 +1303,16 @@
               "name": "cena",
               "type": "string",
               "value": "PetShop"
+            },
+            {
+              "name": "entradaX",
+              "type": "float",
+              "value": 1130
+            },
+            {
+              "name": "entradaY",
+              "type": "float",
+              "value": 655
             }
           ]
         },
@@ -1290,10 +1320,10 @@
           "id": 4,
           "name": "Casa da Laura",
           "type": "porta",
-          "x": 430,
-          "y": 480,
+          "x": 265,
+          "y": 560,
           "width": 150,
-          "height": 130,
+          "height": 110,
           "rotation": 0,
           "visible": true,
           "properties": [
@@ -1301,6 +1331,16 @@
               "name": "cena",
               "type": "string",
               "value": "Casa"
+            },
+            {
+              "name": "entradaX",
+              "type": "float",
+              "value": 340
+            },
+            {
+              "name": "entradaY",
+              "type": "float",
+              "value": 650
             }
           ]
         }
