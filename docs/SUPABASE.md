@@ -239,3 +239,23 @@ A simulação local e uma transação no projeto real verificaram versão repeti
 recusada, prazo de oito segundos, leitura negada ao pendente e permitida após
 aprovação, escrita direta negada e moedas protegidas. A transação terminou com
 ROLLBACK e não deixou contas ou estados de teste persistidos.
+
+Na sala de convite, a autoridade grava inclusive as mudanças livres antes de
+confirmar por broadcast, para não anunciar versões ainda ausentes no banco.
+O debounce de um segundo continua para ações livres individuais e inventário.
+Os canais privados por autor da etapa 04 transportam `pedido/confirma`; nenhuma
+política permite que uma amiga escreva no tópico do dono. A menor instância
+Presence do dono é a autoridade; a comparação de versão da RPC protege disputas
+entre abas. Detalhes em [INTERACOES.md](INTERACOES.md#autoridade-versões-e-desconexão).
+
+A conferência com duas contas sintéticas aprovadas em navegadores separados
+confirmou um único vencedor para a mesma versão, item visível na mão remota com
+`depth = avatar + 1`, água restaurada após recarregar e retorno do sorvete à
+origem em 7.688 ms após fechar a aba que o segurava. Sem erros de JavaScript.
+
+O advisor de segurança após a migração informou oito RPCs autenticadas
+SECURITY DEFINER (sete anteriores e `guardar_objetos`, intencional para validar
+escrita e versão) e a proteção contra senhas vazadas ainda desabilitada. Não há
+novos avisos de RLS ausente ou `search_path` mutável. Referências:
+[RPCs autenticadas](https://supabase.com/docs/guides/database/database-linter?lint=0029_authenticated_security_definer_function_executable)
+e [proteção de senhas](https://supabase.com/docs/guides/auth/password-security#password-strength-and-leaked-password-protection).

@@ -57,7 +57,7 @@ export function aplicarAcao(original:EstadoObjeto,acao:AcaoInteracao):ResultadoI
   }
   if(s.tipo==='aparelho'||s.tipo==='agua'){
     if(tipo==='acao2'&&s.tipo==='aparelho')return concluir({...s,modo:(s.modo+1)%3});
-    if(tipo!=='tocar')return negar('sem-posse');const ligado=!s.ligado;efeitos.push({tipo:'anim',nome:ligado?'ligar':'desligar'});
+    if(tipo!=='tocar')return negar('sem-posse');const ligado=acao.ligado??!s.ligado;efeitos.push({tipo:'anim',nome:ligado?'ligar':'desligar'});
     if(ligado&&s.tipo==='agua')efeitos.push({tipo:'particulas',nome:d.particulas??'gotas'},{tipo:'pose',pose:d.pose??'em-pe'},{tipo:'fala',codigo:'agua'});
     return concluir({...s,ligado});
   }

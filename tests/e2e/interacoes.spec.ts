@@ -21,6 +21,8 @@ test('banco, mochila, três mordidas e água funcionam por toque no celular',asy
  await page.getByRole('button',{name:'Mochila',exact:true}).click();await expect(mochila).toContainText('Espaços na mochila: 1/6');
  await page.screenshot({path:'docs/screenshots/interacoes/2-mochila-mobile.png'});
  await mochila.getByRole('button',{name:'Sorvete',exact:true}).click();
+  await expect(mochila).not.toBeVisible();
+  await expect.poll(()=>page.evaluate(()=>(window.__jogo.scene.getScene('Parque') as unknown as Parque).interacoes.inventario().mao)).toBe('sorvete-parque');
  for(let i=1;i<=3;i++){
   const pos=await page.evaluate(()=>{const l=(window.__jogo.scene.getScene('Parque') as unknown as Parque).L;return {x:l.x,y:l.y-90}});
   await tocar(page,pos.x,pos.y);

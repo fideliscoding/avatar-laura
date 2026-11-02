@@ -1,7 +1,6 @@
 import Phaser from 'phaser';
-import {CATALOGO_OBJETOS,OBJETOS_PARQUE,definicaoObjeto} from '../../game/interacao/catalogo';
-import {criarEstado} from '../../game/interacao/regras';
-import {aplicarNoMundo,inventarioDoMundo} from '../../game/interacao/mundo';
+import {OBJETOS_PARQUE,definicaoObjeto} from '../../game/interacao/catalogo';
+import {inventarioDoMundo} from '../../game/interacao/mundo';
 import {daInstancia,estadoEfetivo} from '../../game/interacao/travas';
 import type {ConfirmacaoInteracao,EstadoObjeto,PedidoInteracao,TransporteInteracao,PoseInteracao} from '../../game/interacao/tipos';
 import {TEXTOS_INTERACAO as T} from '../../config/interacoes';
@@ -9,18 +8,9 @@ import {ObjetoInterativo} from './ObjetoInterativo';
 import {Avatar} from './Avatar';
 import {Efeitos} from './Efeitos';
 
-export class TransporteLocal implements TransporteInteracao {
- private estados=OBJETOS_PARQUE.map(o=>criarEstado(definicaoObjeto(o.id),'Parque',o.x,o.y));private ouvintes=new Set<()=>void>();
- readonly instancia=crypto.randomUUID();readonly usuario='local';
- agora():number{return Date.now()}
- ler():EstadoObjeto[]{return this.estados}
- async pedir(p:PedidoInteracao):Promise<ConfirmacaoInteracao>{const r=aplicarNoMundo(this.estados,{...p,tipo:p.tipo,jogador:this.usuario,instancia:this.instancia,agora:Date.now(),definicao:definicaoObjeto(p.objeto)},CATALOGO_OBJETOS);if(r.aceita){this.estados=r.estados;this.ouvintes.forEach(o=>o())}return r}
- observar(fn:()=>void):()=>void{this.ouvintes.add(fn);return()=>this.ouvintes.delete(fn)}
- encerrar():void{this.ouvintes.clear()}
-}
 interface AcoesCena {andar(x:number,y:number,acao:()=>void):void;pode():boolean;notificar(texto:string):void;sentar(x:number,y:number,virado:1|-1):void;nome(jogador:string):string|undefined;remotos():Map<string,Phaser.GameObjects.Image>}
 export class GerenteInteracao {
- readonly objetos=new Map<string,ObjetoInterativo>();private efeitos:Efeitos;private ativa=true;private assentoDesejado=false;private comendoAte=0;private renovando=new Set<string>();private timer:ReturnType<typeof setInterval>;private ultimaAgua=0;
+ readonly objetos=new Map<string,ObjetoInterativo>();private efeitos:Efeitos;private ativa=true;private assentoDesejado=false;private comendoAte=0;private mordendo=false;private renovando=new Set<string>();private timer:ReturnType<typeof setInterval>;private ultimaAgua=0;
  constructor(private cena:Phaser.Scene,readonly avatar:Avatar,readonly transporte:TransporteInteracao,private acoes:AcoesCena){
   this.efeitos=new Efeitos(cena);
   for(const o of OBJETOS_PARQUE)this.objetos.set(o.id,new ObjetoInterativo(cena,definicaoObjeto(o.id),o.x,o.y,()=>this.interagir(o.id)));
@@ -36,7 +26,7 @@ export class GerenteInteracao {
  }
  async solicitar(objeto:string,tipo:PedidoInteracao['tipo'],ponto?:{x:number;y:number}):Promise<ConfirmacaoInteracao>{
   const s=this.transporte.ler().find(s=>s.id===objeto)!;
-  const r=await this.transporte.pedir({objeto,tipo,versao:s.versao,ponto});
+  const r=await this.transporte.pedir({objeto,tipo,versao:s.versao,ponto,mordidas:s.mordidas,ligado:s.tipo==='agua'||s.tipo==='aparelho'?!s.ligado:undefined});
   if(!this.ativa)return r;
   if(r.aceita&&['assento','cama'].includes(s.tipo)&&tipo==='tocar')this.assentoDesejado=true;
   for(const e of r.efeitos){
@@ -46,7 +36,7 @@ export class GerenteInteracao {
   }
   return r;
  }
- comer():void{const id=this.inventario().mao;if(id)void this.solicitar(id,'comer')}
+ comer():void{const id=this.inventario().mao;if(id&&!this.mordendo){this.mordendo=true;void this.solicitar(id,'comer').finally(()=>{this.mordendo=false})}}
  guardar():void{const id=this.inventario().mao;if(id)void this.solicitar(id,'guardar')}
  soltar(ponto?:{x:number;y:number}):void{const id=this.inventario().mao;if(id)void this.solicitar(id,'soltar',ponto??{x:this.avatar.imagem.x,y:this.avatar.imagem.y})}
  levantar():void{this.assentoDesejado=false;for(const s of this.estados())if(s.ocupantes.some(o=>daInstancia(o,this.transporte.usuario,this.transporte.instancia)))void this.solicitar(s.id,'levantar')}

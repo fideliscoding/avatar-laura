@@ -9,6 +9,7 @@ export interface Sala { id: string; codigo: string; dono_id: string; ativa: bool
 export interface Membro { user_id: string; apelido: string; cabelo: string; aprovado: boolean }
 export interface Remoto { membro: Membro; estado: EstadoCompartilhado }
 export type EventoSocial = { tipo: 'frase'; id: string } | { tipo: 'aceno'; aceno: Aceno };
+export type EventoObjetoSala='pedido'|'confirma';
 export type FaseSala = 'sozinho' | 'aguardando' | 'conectando' | 'conectado' | 'reconectando';
 
 function salaValida(dados: unknown): Sala {
@@ -28,6 +29,8 @@ export class AmigosSala {
   aviso = '';
   usuario: string | null = null;
   aoEvento?: (usuario: string, evento: EventoSocial) => void;
+  private instanciaInteracao='';
+  private ouvintesObjetos=new Set<(autor:string,event:EventoObjetoSala,dados:unknown)=>void>();
   private canais = new Map<string, RealtimeChannel>();
   private controle?: RealtimeChannel;
   private prontos = new Set<string>();
@@ -43,6 +46,21 @@ export class AmigosSala {
   private nome = '';
   private local: EstadoCompartilhado = { x: 470, y: 640, cabelo: 'liso', estado: 'parada', angulo: 0, origemY: 1, sx: 1, sy: 1, z: 640 };
 
+  registrarInstanciaInteracao(instancia:string):void{
+    this.instanciaInteracao=instancia;
+    const canal=this.usuario?this.canais.get(this.usuario):undefined;
+    if(canal?.state==='joined')void canal.track(this.presenca());
+  }
+  instanciasInteracao(usuario:string):string[]{
+    const canal=this.canais.get(usuario);if(!canal)return [];
+    return [...new Set(Object.values(canal.presenceState()).flat().map(p=>(p as unknown as {instanciaInteracao?:unknown}).instanciaInteracao).filter((v):v is string=>typeof v==='string'&&/^[0-9a-f-]{36}$/.test(v)))].sort();
+  }
+  observarInteracoes(fn:(autor:string,event:EventoObjetoSala,dados:unknown)=>void):()=>void{this.ouvintesObjetos.add(fn);return()=>this.ouvintesObjetos.delete(fn)}
+  enviarInteracao(event:EventoObjetoSala,payload:unknown):boolean{
+    if(this.fase!=='conectado'||!this.usuario)return false;const canal=this.canais.get(this.usuario);
+    if(canal?.state!=='joined')return false;void canal.send({type:'broadcast',event,payload});return true;
+  }
+  private presenca(){return {...this.local,user_id:this.usuario,apelido:this.nome,instanciaInteracao:this.instanciaInteracao}}
   configurar(usuario: string | null, nome: string): void {
     if (usuario !== this.usuario) this.esquecer();
     this.usuario = usuario; this.nome = nome; this.ativa = true;
@@ -161,9 +179,11 @@ export class AmigosSala {
           if (frase && atual()) this.receberEvento(membro.user_id, { tipo: 'frase', id: frase.id });
         }).on('broadcast', { event: 'aceno' }, ({ payload }) => {
           if (acenoValido(payload?.tipo) && atual()) this.receberEvento(membro.user_id, { tipo: 'aceno', aceno: payload.tipo });
-        }).subscribe(valor => {
+        }).on('broadcast',{event:'pedido'},({payload})=>{if(atual())for(const fn of this.ouvintesObjetos)fn(membro.user_id,'pedido',payload)})
+        .on('broadcast',{event:'confirma'},({payload})=>{if(atual())for(const fn of this.ouvintesObjetos)fn(membro.user_id,'confirma',payload)})
+        .subscribe(valor => {
           status(membro.user_id, valor);
-          if (atual() && valor === 'SUBSCRIBED' && membro.user_id === usuario) void canal.track({ ...this.local, user_id: usuario, apelido: this.nome });
+          if (atual() && valor === 'SUBSCRIBED' && membro.user_id === usuario) void canal.track(this.presenca());
         });
       this.canais.set(membro.user_id, canal);
     }
@@ -180,7 +200,7 @@ export class AmigosSala {
       void canal.send({ type: 'broadcast', event: estado.estado !== this.ultimoEstadoEnviado && ['balanco','escorregador','gangorra','carrossel'].includes(estado.estado) ? 'brinquedo' : 'mover', payload: estado });
     }
     if (this.ultimo?.assinatura === assinatura) this.ultimoEstadoEnviado = estado.estado;
-    if (cabeloMudou) void canal.track({ ...estado, user_id: this.usuario, apelido: this.nome });
+    if (cabeloMudou) void canal.track(this.presenca());
   }
   enviarFrase(id: unknown): boolean { const frase = obterFrase(id); return frase ? this.enviarEvento({ tipo: 'frase', id: frase.id }) : false }
   enviarAceno(tipo: unknown): boolean { return acenoValido(tipo) ? this.enviarEvento({ tipo: 'aceno', aceno: tipo }) : false }

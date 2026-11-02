@@ -29,7 +29,7 @@ export class ObjetoInterativo {
     g.fillStyle(0xf1bc7e);g.fillTriangle(18,22,42,22,30,62);g.lineStyle(2,0xb9804b);g.strokeTriangle(18,22,42,22,30,62);
     const etapa=chave.endsWith('-2')?2:chave.endsWith('-1')?1:0;g.fillStyle(0xf6a8cf);g.fillCircle(30,20,etapa===2?8:etapa===1?11:15);g.lineStyle(2,0xa66a97);g.strokeCircle(30,20,etapa===2?8:etapa===1?11:15);g.generateTexture(chave,60,64);
    }else if(chave==='interacao-banco'){
-    g.fillStyle(0x69438f);g.fillRoundedRect(26,50,10,48,4);g.fillRoundedRect(140,50,10,48,4);g.fillStyle(0xb58cf5);g.fillRoundedRect(5,10,170,45,10);g.fillStyle(0xd7b8f3);g.fillRoundedRect(0,54,180,15,6);g.lineStyle(3,0x8b55e6);g.strokeRoundedRect(5,10,170,45,10);g.generateTexture(chave,180,100);
+    g.fillStyle(0x69438f);g.fillRoundedRect(26,75,10,25,4);g.fillRoundedRect(140,75,10,25,4);g.fillStyle(0xb58cf5);g.fillRoundedRect(5,10,170,60,10);g.fillStyle(0xd7b8f3);g.fillRoundedRect(0,70,180,15,6);g.lineStyle(3,0x8b55e6);g.strokeRoundedRect(5,10,170,60,10);g.generateTexture(chave,180,100);
    }else{
     g.fillStyle(0x88d5c5);g.fillRoundedRect(18,16,45,80,9);g.fillStyle(0xd2fff4);g.fillEllipse(40,20,65,25);g.lineStyle(5,0x7c8ca3);g.lineBetween(53,19,53,7);g.lineBetween(53,7,35,7);if(chave.endsWith('ligado')){g.lineStyle(3,0x8fcbed);g.lineBetween(35,9,35,26)}g.generateTexture(chave,80,100);
    }g.destroy();
