@@ -24,3 +24,6 @@ export type EfeitoInteracao=
  |{tipo:'fala';codigo:'ocupado'|'mudou'|'cheio'|'vazio'|'sem-posse'|'agua';jogador?:string}
  |{tipo:'porta';destino:string};
 export interface ResultadoInteracao {estado:EstadoObjeto;efeitos:EfeitoInteracao[];aceita:boolean}
+export interface PedidoInteracao {objeto:string;tipo:TipoAcao;versao:number;ponto?:Ponto;snap?:number;item?:string;mochila?:boolean}
+export interface ConfirmacaoInteracao {aceita:boolean;estados:EstadoObjeto[];efeitos:EfeitoInteracao[]}
+export interface TransporteInteracao {readonly usuario:string;readonly instancia:string;ler():EstadoObjeto[];pedir(pedido:PedidoInteracao):Promise<ConfirmacaoInteracao>;observar(ouvinte:()=>void):()=>void;encerrar():void}
