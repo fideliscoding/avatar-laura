@@ -37,5 +37,7 @@ export function validarEstadoObjeto(valor:unknown,def:DefinicaoObjeto):valor is 
  if(!valor||typeof valor!=='object')return false;const s=valor as EstadoObjeto;
  const ponto=(p:unknown):boolean=>!!p&&typeof p==='object'&&Number.isFinite((p as {x:number}).x)&&Number.isFinite((p as {y:number}).y);
  const trava=(t:unknown):boolean=>!!t&&typeof t==='object'&&typeof (t as {jogador:string}).jogador==='string'&&typeof (t as {instancia:string}).instancia==='string'&&Number.isFinite((t as {ate:number}).ate);
+ if(s.comodo!==undefined&&!['sala','quarto','cozinha','banheiro','quintal','lavanderia'].includes(s.comodo))return false;
+ if(s.prontoEm!==undefined&&(!Number.isFinite(s.prontoEm)||s.prontoEm<0))return false;
  return s.id===def.id&&s.tipo===def.tipo&&Number.isInteger(s.versao)&&s.versao>=0&&['chao','mao','mochila','consumido'].includes(s.local)&&typeof s.lugar==='string'&&Number.isFinite(s.x)&&s.x>=0&&s.x<=1280&&Number.isFinite(s.y)&&s.y>=0&&s.y<=720&&ponto(s.origem)&&(s.trava===null||trava(s.trava))&&Array.isArray(s.ocupantes)&&s.ocupantes.length<=(def.snaps?.length??0)&&s.ocupantes.every(o=>trava(o)&&Number.isInteger(o.snap)&&o.snap>=0&&o.snap<(def.snaps?.length??0))&&['aberto','ligado','noite'].every(k=>typeof (s as unknown as Record<string,unknown>)[k]==='boolean')&&Number.isInteger(s.modo)&&s.modo>=0&&s.modo<=2&&Number.isInteger(s.mordidas)&&s.mordidas>=0&&s.mordidas<=3&&Array.isArray(s.itens)&&s.itens.length<=6&&s.itens.every(idValido);
 }

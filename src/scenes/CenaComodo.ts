@@ -6,6 +6,7 @@ import {aplicarCasa} from '../game/casa/regras';
 import {daInstancia,estadoEfetivo} from '../game/interacao/travas';
 import {inventarioDoMundo} from '../game/interacao/mundo';
 import type {PedidoInteracao} from '../game/interacao/tipos';
+import {premiarCasa} from '../net/premiosCasa';
 import {ObjetosSync} from '../net/objetosSync';
 import {sessao} from '../net/sessao';
 import {amigos} from '../net/sala';
@@ -101,7 +102,7 @@ export class CenaComodo extends Phaser.Scene{
   if(!r.aceita){this.aviso.textContent=T.aguardar;return false}
   if(tipo==='renovar')return true;this.efeitos.tocar(this.visuais.get(id)!.imagem);this.efeitos.particulas(s.tipo==='agua'?'gotas':'brilho',s.x,s.y-80);
   for(const e of r.efeitos)if(e.tipo==='particulas')this.efeitos.particulas(e.nome,this.x,this.y-60);else if(e.tipo==='pose'&&e.pose==='comendo')this.comendo=this.time.now+700;
-  if(id==='ferro')this.aviso.textContent=T.adulto;if(id==='pia-banheiro'&&this.inventario().mao==='escova')this.aviso.textContent=T.escovar;this.assinatura='';return true;
+  if(tipo==='arrumar'){this.aviso.textContent=T.arrumada;void premiarCasa(this.transporte.dono,'arrumar').then(r=>{if(this.scene.isActive())this.aviso.textContent=r==='premiada'?T.premio:T.arrumada})}if(id==='ferro')this.aviso.textContent=T.adulto;if(id==='pia-banheiro'&&this.inventario().mao==='escova')this.aviso.textContent=T.escovar;this.assinatura='';return true;
  }
  update(time:number,delta:number):void{
   if(!this.transporte||!this.hud)return;const dx=this.tx-this.x,dy=this.ty-this.y,dist=Math.hypot(dx,dy),andando=dist>3;
