@@ -244,4 +244,20 @@ sair do parque, o avatar deixa o Realtime do parque, e volta a entrar ao retorna
 Use identificadores de opção com letras, números e hífen, no máximo 64 passos
 por percurso e recompensa inteira entre 1 e 100. Não adicione campos de chat,
 dados pessoais ou links. O selo do diário é desenhado por código SVG, sem emoji.
-Artes provisórias e capturas estão em `docs/ARTE.md` e `docs/screenshots/cidade/`.
+Artes e capturas estão em `docs/ARTE.md` e `docs/screenshots/cidade/`.
+
+### Direção visual dos cenários
+
+A cidade usa uma ilustração panorâmica em vista elevada, com fachadas, ruas,
+jardins e uma praça central. As referências fornecidas pelo responsável orientam
+o nível de detalhe, a leitura dos lugares e o acabamento de jogo infantil. O
+bairro, as construções e os elementos visuais foram criados para este projeto,
+com lilás, rosa, menta e tons quentes, mantendo o estilo dos avatares e do parque.
+Padaria, Pet Shop e quarto da Laura têm interiores ilustrados no mesmo padrão.
+Dona Rosa e Bolinha são sprites independentes; os textos e botões ficam na interface.
+
+O Tiled conserva as áreas de interação e as propriedades `cena`, `entradaX` e
+`entradaY`, para alinhar o destino da caminhada às portas da ilustração. A camada
+de chão em tiles continua como referência técnica, oculta sob a arte panorâmica.
+A câmera segue Laura no celular; os atalhos mantêm acesso aos locais fora do
+quadro. Casa tem arte de quarto, mas continua com a função Em breve nesta etapa.

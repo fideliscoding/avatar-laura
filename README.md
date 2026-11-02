@@ -144,7 +144,7 @@ em [docs/ARTE.md](docs/ARTE.md#correção-das-juntas-e-do-cabelo-dos-avatares).
 
 No rodapé do parque, use as setas até **Mapa da cidade**. Laura pode andar pelo
 mapa e entrar pelas portas, ou usar os atalhos do rodapé. A cidade tem Parque,
-Padaria, Pet Shop e Casa da Laura (quarto provisório com Em breve).
+Padaria, Pet Shop e Casa da Laura (quarto ilustrado com Em breve).
 
 Na Padaria, avise sobre o troco a mais; no Pet Shop, dê água, comida e carinho ao
 Bolinha. No parque, **Esperar a vez** leva Laura até Bia para praticar paciência.
@@ -155,3 +155,7 @@ Os dados ficam em `public/data/missoes/`. O motor e o catálogo são independent
 do Phaser; novos JSONs são descobertos automaticamente. Consulte
 [como criar uma missão](docs/GDD.md#criar-uma-missão-por-json) e as
 [capturas da cidade](docs/screenshots/cidade/README.md).
+
+A cidade e os interiores usam ilustrações originais com ruas, jardins, fachadas e
+ambientes detalhados em pastel. As imagens de referência orientam o acabamento;
+as construções e os personagens pertencem ao universo da Laura.
