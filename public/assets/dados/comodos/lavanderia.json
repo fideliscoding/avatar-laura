@@ -1,0 +1,86 @@
+{
+  "id": "lavanderia",
+  "nome": "Lavanderia",
+  "fundo": {
+    "parede": "#e9dcff",
+    "chao": "#d6bee8"
+  },
+  "entrada": {
+    "x": 640,
+    "y": 620
+  },
+  "objetos": [
+    {
+      "id": "maquina",
+      "x": 260,
+      "y": 335
+    },
+    {
+      "id": "varal",
+      "x": 510,
+      "y": 335
+    },
+    {
+      "id": "cesto",
+      "x": 760,
+      "y": 335
+    },
+    {
+      "id": "roupa-suja",
+      "x": 710,
+      "y": 360
+    },
+    {
+      "id": "ferro",
+      "x": 1010,
+      "y": 335
+    }
+  ],
+  "portas": [
+    {
+      "destino": "sala",
+      "x": 80,
+      "y": 230,
+      "chegada": {
+        "x": 640,
+        "y": 620
+      }
+    },
+    {
+      "destino": "quarto",
+      "x": 1200,
+      "y": 315,
+      "chegada": {
+        "x": 640,
+        "y": 620
+      }
+    },
+    {
+      "destino": "cozinha",
+      "x": 80,
+      "y": 400,
+      "chegada": {
+        "x": 640,
+        "y": 620
+      }
+    },
+    {
+      "destino": "banheiro",
+      "x": 1200,
+      "y": 485,
+      "chegada": {
+        "x": 640,
+        "y": 620
+      }
+    },
+    {
+      "destino": "quintal",
+      "x": 80,
+      "y": 570,
+      "chegada": {
+        "x": 640,
+        "y": 620
+      }
+    }
+  ]
+}

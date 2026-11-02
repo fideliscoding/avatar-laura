@@ -14,6 +14,7 @@ export interface EstadoObjeto {
   id:string;tipo:TipoObjeto;versao:number;local:'chao'|'mao'|'mochila'|'consumido';lugar:string;
   x:number;y:number;origem:Ponto;trava:Trava|null;ocupantes:Ocupante[];
   aberto:boolean;ligado:boolean;modo:number;itens:string[];mordidas:number;noite:boolean;
+  comodo?:string;prontoEm?:number;
 }
 export type TipoAcao='tocar'|'pegar'|'soltar'|'guardar'|'retirar'|'comer'|'renovar'|'levantar'|'acao2'|'expirar';
 export interface AcaoInteracao {tipo:TipoAcao;jogador:string;instancia:string;agora:number;versao?:number;ponto?:Ponto;snap?:number;item?:string;mochila?:boolean;ligado?:boolean;mordidas?:number;definicao:DefinicaoObjeto}
