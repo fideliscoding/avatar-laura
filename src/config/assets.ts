@@ -49,3 +49,6 @@ export const CORES = {
   branco: 0xffffff,
   confete: [0xff6fb5, 0xffd23f, 0x7bdff2, 0xa274f5, 0x7be08a, 0xff9f5a, 0xffffff],
 } as const;
+
+// Texturas provisórias geradas em Graphics para a etapa de interações.
+export const TEXTURAS_INTERACAO=['interacao-banco','interacao-sorvete','interacao-sorvete-1','interacao-sorvete-2','interacao-bebedouro','interacao-bebedouro-ligado'] as const;

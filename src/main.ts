@@ -1,3 +1,4 @@
+import {CenaMochila} from './scenes/CenaMochila';
 import { CenaCidade } from './scenes/CenaCidade';
 import { CenaPadaria } from './scenes/CenaPadaria';
 import { CenaPetShop } from './scenes/CenaPetShop';
@@ -27,7 +28,7 @@ const config: Phaser.Types.Core.GameConfig = {
   input: { activePointers: 2 },
   dom: { createContainer: true },
   render: { antialias: true, pixelArt: false },
-  scene: [CenaBoot, CenaEntrar, CenaCriador, CenaParque, CenaInterface, CenaCidade, CenaPadaria, CenaPetShop, CenaCasa, CenaLugarInterface, CenaMissao],
+  scene: [CenaBoot, CenaEntrar, CenaCriador, CenaParque, CenaInterface, CenaCidade, CenaPadaria, CenaPetShop, CenaCasa, CenaLugarInterface, CenaMissao, CenaMochila],
 };
 
 const jogo = new Phaser.Game(config);

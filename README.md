@@ -159,3 +159,18 @@ do Phaser; novos JSONs são descobertos automaticamente. Consulte
 A cidade e os interiores usam ilustrações originais com ruas, jardins, fachadas e
 ambientes detalhados em pastel. As imagens de referência orientam o acabamento;
 as construções e os personagens pertencem ao universo da Laura.
+
+## Objetos e mochila
+
+No parque, toque no banco para sentar, no sorvete para pegá-lo e no bebedouro para
+ligar a água. Os mesmos destinos aparecem nas setas do rodapé. Toque no avatar
+com o sorvete para comer em três mordidas. **Mochila**, no canto inferior direito,
+permite guardar, pegar e soltar itens; há uma mão e seis espaços. **Levantar** ou
+tocar no chão libera o banco.
+
+Em uma sala aprovada, as amigas veem o item na mão de quem pegou primeiro.
+O dono do convite confirma as ações e precisa estar no parque. Ao fechar a aba
+que segura o sorvete, ele volta à origem em até oito segundos. Sem conta,
+as interações funcionam individualmente com cache local. A migração
+`0007_objetos_interativos.sql` está aplicada. Veja [detalhes](docs/INTERACOES.md)
+e [capturas](docs/screenshots/interacoes/README.md).

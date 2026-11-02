@@ -89,3 +89,49 @@ Tabela `objetos_estado(dono uuid, lugar text, objeto_id text, estado jsonb, atua
 - Sem toque duplo obrigatório: o "segundo toque" é só para segredos.
 - Prioridade quando objetos se sobrepõem: o de maior `depth`; segurar 0,5 s mostra o nome do objeto em texto grande.
 - Textos curtos, fonte Fredoka mínimo 22 px, ícones desenhados nos botões.
+
+## 10. Implementação da etapa 06
+
+O catálogo validado demonstra três objetos no parque: banco com dois snaps,
+sorvete com três mordidas e bebedouro com gotas. As regras dos sete tipos têm
+testes puros. Os móveis e ambientes de [Casa e lugares](CASA-E-LUGARES) são o
+planejamento de expansão; receitas, bandejas de recipientes, transições com itens
+e os demais interiores não estão habilitados nesta etapa. `receitas.json` começa
+vazio. O carregamento rejeita campos ausentes e estados iniciais reservados.
+
+Toque no objeto ou use os atalhos do rodapé. O avatar caminha até o ponto de uso.
+A mochila tem botão de 64 px, uma mão e seis espaços, com ações por toque para
+pegar, guardar, comer e soltar. Tocar no avatar com o sorvete dá uma mordida;
+a terceira consome o item. Chão e Levantar liberam o banco. Segurar um objeto
+por 0,5 s mostra seu nome. As zonas dos objetos têm pelo menos 64x64 no mundo.
+A mochila usa HTML acessível para continuar legível em telas pequenas.
+
+Os sprites novos são placeholders Graphics lilases; a articulação existente
+preserva cabelos e pernas. O banco prende a base da saia ao snap, mantendo a
+profundidade dos pés virtuais. A mão segue o avatar local/remoto com rotação e
+espelhamento e fica em `avatar.depth + 1`. Gotas, migalhas e corações são desenhados.
+As poses definitivas e os sons opcionais aguardam arte, conforme [ARTE.md](ARTE.md).
+
+### Autoridade, versões e desconexão
+
+O mundo compartilhado pertence ao dono do convite. O dono precisa estar no parque
+para confirmar novas ações. Se abrir mais de uma aba, a menor instância UUID
+anunciada em Presence atua como autoridade. A RPC do banco continua comparando
+versões, protegendo também a transição entre autoridades. Cada aba tem sua própria
+instância: duas abas da mesma conta não podem ocupar simultaneamente o mesmo item.
+
+`pedido` e `confirma` trafegam pelos canais privados existentes
+`sala:<id>:<versao>:<autor>`. A autorização do servidor vincula o tópico ao autor;
+o canal de controle `sala:<id>` permanece reservado às notificações do servidor.
+Só membros aprovados pedem; só confirmações do dono são aceitas. Não há texto
+livre: objeto, ação, versão e argumentos são validados, e as falas são constantes
+locais com apelidos dos membros aprovados. Pedidos repetidos são deduplicados.
+
+A posse só aparece depois da confirmação persistida, evitando duas mãos exibindo
+o mesmo sorvete. O feedback de toque é imediato. Na sala, todas as ações são
+gravadas antes do broadcast; fora dela, água usa debounce de um segundo. A
+confirmação inclui o horário do servidor; leitores projetam o vencimento da trava
+em oito segundos, mesmo se a aba do dono fechar. Renovações ocorrem a cada dois
+segundos, inclusive com a mochila aberta. Sem renovação, o item volta à origem;
+novas ações compartilhadas aguardam a volta do dono. Cache offline é separado
+por dono/leitor e nunca concede posse compartilhada sem confirmação.

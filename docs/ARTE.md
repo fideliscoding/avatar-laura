@@ -172,3 +172,29 @@ a cabeça e o chapéu ficam inteiros. Bolinha tem altura de referência 145 px e
 movimento suave sobre a cama. Os avatares continuam usando o rig corrigido.
 
 Capturas atualizadas em [screenshots/cidade](screenshots/cidade/README.md).
+
+## Interações por dados (etapa 06)
+
+Assets que faltam para substituir os placeholders:
+
+- [ ] Banco independente com dois lugares, PNG transparente, largura de mundo 170 px.
+- [ ] Sorvete inteiro e com uma/duas mordidas, PNGs transparentes, largura 36 px.
+- [ ] Bebedouro desligado/ligado, PNG transparente, largura 70 px.
+- [ ] Poses segurando, comendo, deitada e dormindo para os seis cabelos; poses de lado sentadas continuam pendentes acima.
+- [ ] Sons suaves de água, mastigar e abrir/fechar a mochila; áudio é opcional nesta etapa.
+
+Até essa entrega, `ObjetoInterativo.garantirTexturas` gera seis texturas em
+Graphics, centralizadas em `TEXTURAS_INTERACAO` no catálogo de assets. Banco,
+sorvete e bebedouro usam origem (0,5; 1), com posições, áreas e snaps definidos
+em `public/assets/dados/`. Mochila usa ícone SVG desenhado no próprio botão.
+As partículas também são formas desenhadas; não há imagens externas novas.
+
+O ponto provisório `mao` nos PNGs frontais é **(0,27 × largura, 0,70 × altura)**,
+medido a partir do canto superior esquerdo da textura usada pelo avatar. A origem
+dos pés e a transformação de rotação/espelhamento são descontadas no adaptador
+`Avatar.mao()`. Vale para os seis cabelos e suas margens transparentes do rig;
+novas poses devem fornecer seus próprios pontos. O item fica em profundidade
+`avatar.depth + 1`. O banco usa a articulação existente, sem cortar novamente o
+PNG e sem alterar as pernas ou o cabelo aprovados.
+
+Capturas: [interações no parque](screenshots/interacoes/README.md).

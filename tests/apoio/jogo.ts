@@ -56,7 +56,7 @@ export async function botao(page: Page, texto: string): Promise<void> {
   await tocarTela(page, ponto.x, ponto.y);
 }
 export async function destino(page: Page, nome: string): Promise<void> {
-  for (let pagina = 0; pagina < 8; pagina++) {
+  for (let pagina = 0; pagina < 32; pagina++) {
     if ((await textos(page)).includes(nome)) { await botao(page, nome); return }
     await botao(page, '>');
   }
