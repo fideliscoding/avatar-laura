@@ -381,11 +381,12 @@ export class CenaParque extends Phaser.Scene {
     if (gesto?.tipo === 'pulo') { const k = (tempo-gesto.inicio)/700; if (k>=0 && k<1) img.y -= Math.sin(k*Math.PI)*40 }
   }
   private atualizarAmigos(dt: number, tempo: number): void {
-    for (const [usuario,visual] of this.amigosVisuais) if (!amigos.remotos.has(usuario)) {
+    for (const [usuario,visual] of this.amigosVisuais) if (!amigos.remotos.has(usuario)||amigos.remotos.get(usuario)?.estado.lugar&&amigos.remotos.get(usuario)?.estado.lugar!=='Parque') {
       if (this.amigoFocado === usuario) { this.amigoFocado = null; this.cameras.main.startFollow(this.L.img, true, 0.16, 0.16, 0, 86) }
       visual.img.destroy(); visual.etiqueta.destroy(); visual.fala?.destroy(); this.amigosVisuais.delete(usuario);
     }
     for (const [usuario,dados] of amigos.remotos) {
+      if(dados.estado.lugar&&dados.estado.lugar!=='Parque')continue;
       const alvo = dados.estado, cabelo = CABELOS.find(c => c.id === alvo.cabelo) ?? CABELOS[0];
       let visual = this.amigosVisuais.get(usuario);
       if (!visual) {

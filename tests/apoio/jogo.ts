@@ -34,6 +34,7 @@ export async function textos(page: Page): Promise<string[]> {
   });
 }
 export async function botao(page: Page, texto: string): Promise<void> {
+  const nativo=page.getByRole('button',{name:texto,exact:true});if(await nativo.count()===1&&await nativo.isVisible()){await nativo.click();return}
   // Aguarda a apresentação do novo viewport antes de tocar após rotação/teclado.
   await page.evaluate(() => new Promise<void>(resolve => requestAnimationFrame(() => requestAnimationFrame(() => resolve()))));
   await expect.poll(() => textos(page)).toContain(texto);

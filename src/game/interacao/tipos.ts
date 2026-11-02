@@ -14,16 +14,17 @@ export interface EstadoObjeto {
   id:string;tipo:TipoObjeto;versao:number;local:'chao'|'mao'|'mochila'|'consumido';lugar:string;
   x:number;y:number;origem:Ponto;trava:Trava|null;ocupantes:Ocupante[];
   aberto:boolean;ligado:boolean;modo:number;itens:string[];mordidas:number;noite:boolean;
+  comodo?:string;prontoEm?:number;
 }
-export type TipoAcao='tocar'|'pegar'|'soltar'|'guardar'|'retirar'|'comer'|'renovar'|'levantar'|'acao2'|'expirar';
-export interface AcaoInteracao {tipo:TipoAcao;jogador:string;instancia:string;agora:number;versao?:number;ponto?:Ponto;snap?:number;item?:string;mochila?:boolean;ligado?:boolean;mordidas?:number;definicao:DefinicaoObjeto}
+export type TipoAcao='tocar'|'pegar'|'soltar'|'guardar'|'retirar'|'comer'|'renovar'|'levantar'|'acao2'|'expirar'|'arrumar';
+export interface AcaoInteracao {tipo:TipoAcao;jogador:string;instancia:string;agora:number;versao?:number;ponto?:Ponto;snap?:number;item?:string;mochila?:boolean;ligado?:boolean;mordidas?:number;comodo?:string;definicao:DefinicaoObjeto}
 export type EfeitoInteracao=
  |{tipo:'pose';pose:PoseInteracao;ponto?:Ponto;virado?:1|-1}
  |{tipo:'anim';nome:'toque'|'pegar'|'soltar'|'comer'|'abrir'|'fechar'|'ligar'|'desligar'}
- |{tipo:'particulas';nome:'gotas'|'vapor'|'bolhas'|'brilho'|'sono'|'coracoes'|'migalhas'}
+ |{tipo:'particulas';nome:'gotas'|'vapor'|'bolhas'|'brilho'|'sono'|'coracoes'|'migalhas'|'notas'}
  |{tipo:'fala';codigo:'ocupado'|'mudou'|'cheio'|'vazio'|'sem-posse'|'agua';jogador?:string}
  |{tipo:'porta';destino:string};
 export interface ResultadoInteracao {estado:EstadoObjeto;efeitos:EfeitoInteracao[];aceita:boolean}
-export interface PedidoInteracao {objeto:string;tipo:TipoAcao;versao:number;ponto?:Ponto;snap?:number;item?:string;mochila?:boolean;ligado?:boolean;mordidas?:number}
+export interface PedidoInteracao {objeto:string;tipo:TipoAcao;versao:number;ponto?:Ponto;snap?:number;item?:string;mochila?:boolean;ligado?:boolean;mordidas?:number;comodo?:string}
 export interface ConfirmacaoInteracao {aceita:boolean;estados:EstadoObjeto[];efeitos:EfeitoInteracao[]}
 export interface TransporteInteracao {readonly usuario:string;readonly instancia:string;agora():number;ler():EstadoObjeto[];pedir(pedido:PedidoInteracao):Promise<ConfirmacaoInteracao>;observar(ouvinte:()=>void):()=>void;encerrar():void}

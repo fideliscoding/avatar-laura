@@ -1,0 +1,136 @@
+{
+  "id": "cozinha",
+  "nome": "Cozinha",
+  "fundo": {
+    "parede": "#e9dcff",
+    "chao": "#d6bee8"
+  },
+  "entrada": {
+    "x": 640,
+    "y": 620
+  },
+  "objetos": [
+    {
+      "id": "geladeira",
+      "x": 260,
+      "y": 335
+    },
+    {
+      "id": "suco",
+      "x": 210,
+      "y": 360
+    },
+    {
+      "id": "leite",
+      "x": 230,
+      "y": 360
+    },
+    {
+      "id": "maca",
+      "x": 250,
+      "y": 360
+    },
+    {
+      "id": "queijo",
+      "x": 270,
+      "y": 360
+    },
+    {
+      "id": "ovo",
+      "x": 290,
+      "y": 360
+    },
+    {
+      "id": "fogao",
+      "x": 510,
+      "y": 335
+    },
+    {
+      "id": "micro-ondas",
+      "x": 760,
+      "y": 335
+    },
+    {
+      "id": "torradeira",
+      "x": 1010,
+      "y": 335
+    },
+    {
+      "id": "pia-cozinha",
+      "x": 260,
+      "y": 545
+    },
+    {
+      "id": "mesa",
+      "x": 510,
+      "y": 545
+    },
+    {
+      "id": "lixeira",
+      "x": 760,
+      "y": 545
+    },
+    {
+      "id": "pao",
+      "x": 220,
+      "y": 640
+    },
+    {
+      "id": "panela",
+      "x": 350,
+      "y": 640
+    },
+    {
+      "id": "prato",
+      "x": 480,
+      "y": 640
+    }
+  ],
+  "portas": [
+    {
+      "destino": "sala",
+      "x": 80,
+      "y": 230,
+      "chegada": {
+        "x": 640,
+        "y": 620
+      }
+    },
+    {
+      "destino": "quarto",
+      "x": 1200,
+      "y": 315,
+      "chegada": {
+        "x": 640,
+        "y": 620
+      }
+    },
+    {
+      "destino": "banheiro",
+      "x": 80,
+      "y": 400,
+      "chegada": {
+        "x": 640,
+        "y": 620
+      }
+    },
+    {
+      "destino": "quintal",
+      "x": 1200,
+      "y": 485,
+      "chegada": {
+        "x": 640,
+        "y": 620
+      }
+    },
+    {
+      "destino": "lavanderia",
+      "x": 80,
+      "y": 570,
+      "chegada": {
+        "x": 640,
+        "y": 620
+      }
+    }
+  ]
+}

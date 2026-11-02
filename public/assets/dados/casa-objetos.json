@@ -1,0 +1,1587 @@
+{
+  "versao": 1,
+  "objetos": [
+    {
+      "id": "sofa",
+      "nome": "Sofá",
+      "tipo": "assento",
+      "funcao": "sentar",
+      "sprite": {
+        "padrao": "casa-sofa"
+      },
+      "origem": [
+        0.5,
+        1
+      ],
+      "largura": 180,
+      "area": [
+        -80,
+        -120,
+        160,
+        130
+      ],
+      "pontoUso": [
+        0,
+        60
+      ],
+      "estadoInicial": {
+        "ligado": false
+      },
+      "snaps": [
+        {
+          "x": -50,
+          "y": -25,
+          "pose": "sentado"
+        },
+        {
+          "x": 0,
+          "y": -25,
+          "pose": "sentado"
+        },
+        {
+          "x": 50,
+          "y": -25,
+          "pose": "sentado"
+        }
+      ]
+    },
+    {
+      "id": "tv",
+      "nome": "TV",
+      "tipo": "aparelho",
+      "funcao": "tv",
+      "sprite": {
+        "padrao": "casa-tv"
+      },
+      "origem": [
+        0.5,
+        1
+      ],
+      "largura": 120,
+      "area": [
+        -80,
+        -120,
+        160,
+        130
+      ],
+      "pontoUso": [
+        0,
+        60
+      ],
+      "estadoInicial": {
+        "ligado": false
+      }
+    },
+    {
+      "id": "abajur",
+      "nome": "Abajur",
+      "tipo": "aparelho",
+      "funcao": "luz",
+      "sprite": {
+        "padrao": "casa-abajur"
+      },
+      "origem": [
+        0.5,
+        1
+      ],
+      "largura": 120,
+      "area": [
+        -80,
+        -120,
+        160,
+        130
+      ],
+      "pontoUso": [
+        0,
+        60
+      ],
+      "estadoInicial": {
+        "ligado": true
+      }
+    },
+    {
+      "id": "radio",
+      "nome": "Rádio",
+      "tipo": "aparelho",
+      "funcao": "radio",
+      "sprite": {
+        "padrao": "casa-radio"
+      },
+      "origem": [
+        0.5,
+        1
+      ],
+      "largura": 120,
+      "area": [
+        -80,
+        -120,
+        160,
+        130
+      ],
+      "pontoUso": [
+        0,
+        60
+      ],
+      "estadoInicial": {
+        "ligado": false
+      }
+    },
+    {
+      "id": "estante",
+      "nome": "Estante",
+      "tipo": "recipiente",
+      "funcao": "guardar",
+      "sprite": {
+        "padrao": "casa-estante"
+      },
+      "origem": [
+        0.5,
+        1
+      ],
+      "largura": 120,
+      "area": [
+        -80,
+        -120,
+        160,
+        130
+      ],
+      "pontoUso": [
+        0,
+        60
+      ],
+      "estadoInicial": {
+        "ligado": false,
+        "itens": [
+          "livro",
+          "controle",
+          "quebra-cabeca"
+        ]
+      },
+      "capacidade": 6
+    },
+    {
+      "id": "livro",
+      "nome": "Livro",
+      "tipo": "pegavel",
+      "funcao": "item",
+      "sprite": {
+        "padrao": "casa-livro"
+      },
+      "origem": [
+        0.5,
+        1
+      ],
+      "largura": 42,
+      "area": [
+        -32,
+        -64,
+        64,
+        64
+      ],
+      "pontoUso": [
+        0,
+        20
+      ],
+      "estadoInicial": {},
+      "comestivel": false
+    },
+    {
+      "id": "controle",
+      "nome": "Controle",
+      "tipo": "pegavel",
+      "funcao": "item",
+      "sprite": {
+        "padrao": "casa-controle"
+      },
+      "origem": [
+        0.5,
+        1
+      ],
+      "largura": 42,
+      "area": [
+        -32,
+        -64,
+        64,
+        64
+      ],
+      "pontoUso": [
+        0,
+        20
+      ],
+      "estadoInicial": {},
+      "comestivel": false
+    },
+    {
+      "id": "quebra-cabeca",
+      "nome": "Quebra-cabeça",
+      "tipo": "pegavel",
+      "funcao": "item",
+      "sprite": {
+        "padrao": "casa-quebra-cabeca"
+      },
+      "origem": [
+        0.5,
+        1
+      ],
+      "largura": 42,
+      "area": [
+        -32,
+        -64,
+        64,
+        64
+      ],
+      "pontoUso": [
+        0,
+        20
+      ],
+      "estadoInicial": {},
+      "comestivel": false
+    },
+    {
+      "id": "tapete",
+      "nome": "Tapete",
+      "tipo": "aparelho",
+      "funcao": "tapete",
+      "sprite": {
+        "padrao": "casa-tapete"
+      },
+      "origem": [
+        0.5,
+        1
+      ],
+      "largura": 120,
+      "area": [
+        -80,
+        -120,
+        160,
+        130
+      ],
+      "pontoUso": [
+        0,
+        60
+      ],
+      "estadoInicial": {
+        "ligado": false
+      }
+    },
+    {
+      "id": "cama",
+      "nome": "Cama",
+      "tipo": "cama",
+      "funcao": "dormir",
+      "sprite": {
+        "padrao": "casa-cama"
+      },
+      "origem": [
+        0.5,
+        1
+      ],
+      "largura": 180,
+      "area": [
+        -80,
+        -120,
+        160,
+        130
+      ],
+      "pontoUso": [
+        0,
+        60
+      ],
+      "estadoInicial": {
+        "ligado": false
+      },
+      "snaps": [
+        {
+          "x": -25.0,
+          "y": -25,
+          "pose": "deitado"
+        },
+        {
+          "x": 25.0,
+          "y": -25,
+          "pose": "deitado"
+        }
+      ]
+    },
+    {
+      "id": "guarda-roupa",
+      "nome": "Guarda-roupa",
+      "tipo": "recipiente",
+      "funcao": "roupas",
+      "sprite": {
+        "padrao": "casa-guarda-roupa"
+      },
+      "origem": [
+        0.5,
+        1
+      ],
+      "largura": 120,
+      "area": [
+        -80,
+        -120,
+        160,
+        130
+      ],
+      "pontoUso": [
+        0,
+        60
+      ],
+      "estadoInicial": {
+        "ligado": false,
+        "itens": [
+          "vestido"
+        ]
+      },
+      "capacidade": 6
+    },
+    {
+      "id": "vestido",
+      "nome": "Vestido",
+      "tipo": "pegavel",
+      "funcao": "item",
+      "sprite": {
+        "padrao": "casa-vestido"
+      },
+      "origem": [
+        0.5,
+        1
+      ],
+      "largura": 42,
+      "area": [
+        -32,
+        -64,
+        64,
+        64
+      ],
+      "pontoUso": [
+        0,
+        20
+      ],
+      "estadoInicial": {},
+      "comestivel": false
+    },
+    {
+      "id": "escrivaninha",
+      "nome": "Escrivaninha",
+      "tipo": "assento",
+      "funcao": "escrever",
+      "sprite": {
+        "padrao": "casa-escrivaninha"
+      },
+      "origem": [
+        0.5,
+        1
+      ],
+      "largura": 180,
+      "area": [
+        -80,
+        -120,
+        160,
+        130
+      ],
+      "pontoUso": [
+        0,
+        60
+      ],
+      "estadoInicial": {
+        "ligado": false,
+        "itens": [
+          "lapis",
+          "caderno"
+        ]
+      },
+      "snaps": [
+        {
+          "x": 0,
+          "y": -25,
+          "pose": "sentado"
+        }
+      ],
+      "capacidade": 6
+    },
+    {
+      "id": "lapis",
+      "nome": "Lápis",
+      "tipo": "pegavel",
+      "funcao": "item",
+      "sprite": {
+        "padrao": "casa-lapis"
+      },
+      "origem": [
+        0.5,
+        1
+      ],
+      "largura": 42,
+      "area": [
+        -32,
+        -64,
+        64,
+        64
+      ],
+      "pontoUso": [
+        0,
+        20
+      ],
+      "estadoInicial": {},
+      "comestivel": false
+    },
+    {
+      "id": "caderno",
+      "nome": "Caderno",
+      "tipo": "pegavel",
+      "funcao": "item",
+      "sprite": {
+        "padrao": "casa-caderno"
+      },
+      "origem": [
+        0.5,
+        1
+      ],
+      "largura": 42,
+      "area": [
+        -32,
+        -64,
+        64,
+        64
+      ],
+      "pontoUso": [
+        0,
+        20
+      ],
+      "estadoInicial": {},
+      "comestivel": false
+    },
+    {
+      "id": "bau",
+      "nome": "Baú de brinquedos",
+      "tipo": "recipiente",
+      "funcao": "guardar",
+      "sprite": {
+        "padrao": "casa-bau"
+      },
+      "origem": [
+        0.5,
+        1
+      ],
+      "largura": 120,
+      "area": [
+        -80,
+        -120,
+        160,
+        130
+      ],
+      "pontoUso": [
+        0,
+        60
+      ],
+      "estadoInicial": {
+        "ligado": false,
+        "itens": [
+          "ursinho",
+          "bola",
+          "boneca",
+          "sementes"
+        ]
+      },
+      "capacidade": 6
+    },
+    {
+      "id": "ursinho",
+      "nome": "Ursinho",
+      "tipo": "pegavel",
+      "funcao": "item",
+      "sprite": {
+        "padrao": "casa-ursinho"
+      },
+      "origem": [
+        0.5,
+        1
+      ],
+      "largura": 42,
+      "area": [
+        -32,
+        -64,
+        64,
+        64
+      ],
+      "pontoUso": [
+        0,
+        20
+      ],
+      "estadoInicial": {},
+      "comestivel": false
+    },
+    {
+      "id": "bola",
+      "nome": "Bola",
+      "tipo": "pegavel",
+      "funcao": "item",
+      "sprite": {
+        "padrao": "casa-bola"
+      },
+      "origem": [
+        0.5,
+        1
+      ],
+      "largura": 42,
+      "area": [
+        -32,
+        -64,
+        64,
+        64
+      ],
+      "pontoUso": [
+        0,
+        20
+      ],
+      "estadoInicial": {},
+      "comestivel": false
+    },
+    {
+      "id": "boneca",
+      "nome": "Boneca",
+      "tipo": "pegavel",
+      "funcao": "item",
+      "sprite": {
+        "padrao": "casa-boneca"
+      },
+      "origem": [
+        0.5,
+        1
+      ],
+      "largura": 42,
+      "area": [
+        -32,
+        -64,
+        64,
+        64
+      ],
+      "pontoUso": [
+        0,
+        20
+      ],
+      "estadoInicial": {},
+      "comestivel": false
+    },
+    {
+      "id": "sementes",
+      "nome": "Sementes",
+      "tipo": "pegavel",
+      "funcao": "item",
+      "sprite": {
+        "padrao": "casa-sementes"
+      },
+      "origem": [
+        0.5,
+        1
+      ],
+      "largura": 42,
+      "area": [
+        -32,
+        -64,
+        64,
+        64
+      ],
+      "pontoUso": [
+        0,
+        20
+      ],
+      "estadoInicial": {},
+      "comestivel": false
+    },
+    {
+      "id": "luz-quarto",
+      "nome": "Luz do quarto",
+      "tipo": "aparelho",
+      "funcao": "estrelas",
+      "sprite": {
+        "padrao": "casa-luz-quarto"
+      },
+      "origem": [
+        0.5,
+        1
+      ],
+      "largura": 120,
+      "area": [
+        -80,
+        -120,
+        160,
+        130
+      ],
+      "pontoUso": [
+        0,
+        60
+      ],
+      "estadoInicial": {
+        "ligado": true
+      }
+    },
+    {
+      "id": "geladeira",
+      "nome": "Geladeira",
+      "tipo": "recipiente",
+      "funcao": "guardar",
+      "sprite": {
+        "padrao": "casa-geladeira"
+      },
+      "origem": [
+        0.5,
+        1
+      ],
+      "largura": 120,
+      "area": [
+        -80,
+        -120,
+        160,
+        130
+      ],
+      "pontoUso": [
+        0,
+        60
+      ],
+      "estadoInicial": {
+        "ligado": false,
+        "itens": [
+          "suco",
+          "leite",
+          "maca",
+          "queijo",
+          "ovo"
+        ]
+      },
+      "capacidade": 6
+    },
+    {
+      "id": "suco",
+      "nome": "Suco",
+      "tipo": "pegavel",
+      "funcao": "item",
+      "sprite": {
+        "padrao": "casa-suco"
+      },
+      "origem": [
+        0.5,
+        1
+      ],
+      "largura": 42,
+      "area": [
+        -32,
+        -64,
+        64,
+        64
+      ],
+      "pontoUso": [
+        0,
+        20
+      ],
+      "estadoInicial": {},
+      "comestivel": true
+    },
+    {
+      "id": "leite",
+      "nome": "Leite",
+      "tipo": "pegavel",
+      "funcao": "item",
+      "sprite": {
+        "padrao": "casa-leite"
+      },
+      "origem": [
+        0.5,
+        1
+      ],
+      "largura": 42,
+      "area": [
+        -32,
+        -64,
+        64,
+        64
+      ],
+      "pontoUso": [
+        0,
+        20
+      ],
+      "estadoInicial": {},
+      "comestivel": true
+    },
+    {
+      "id": "maca",
+      "nome": "Maçã",
+      "tipo": "pegavel",
+      "funcao": "item",
+      "sprite": {
+        "padrao": "casa-maca"
+      },
+      "origem": [
+        0.5,
+        1
+      ],
+      "largura": 42,
+      "area": [
+        -32,
+        -64,
+        64,
+        64
+      ],
+      "pontoUso": [
+        0,
+        20
+      ],
+      "estadoInicial": {},
+      "comestivel": true
+    },
+    {
+      "id": "queijo",
+      "nome": "Queijo",
+      "tipo": "pegavel",
+      "funcao": "item",
+      "sprite": {
+        "padrao": "casa-queijo"
+      },
+      "origem": [
+        0.5,
+        1
+      ],
+      "largura": 42,
+      "area": [
+        -32,
+        -64,
+        64,
+        64
+      ],
+      "pontoUso": [
+        0,
+        20
+      ],
+      "estadoInicial": {},
+      "comestivel": true
+    },
+    {
+      "id": "ovo",
+      "nome": "Ovo",
+      "tipo": "pegavel",
+      "funcao": "item",
+      "sprite": {
+        "padrao": "casa-ovo"
+      },
+      "origem": [
+        0.5,
+        1
+      ],
+      "largura": 42,
+      "area": [
+        -32,
+        -64,
+        64,
+        64
+      ],
+      "pontoUso": [
+        0,
+        20
+      ],
+      "estadoInicial": {},
+      "comestivel": true
+    },
+    {
+      "id": "fogao",
+      "nome": "Fogão",
+      "tipo": "aparelho",
+      "funcao": "cozinhar",
+      "sprite": {
+        "padrao": "casa-fogao"
+      },
+      "origem": [
+        0.5,
+        1
+      ],
+      "largura": 120,
+      "area": [
+        -80,
+        -120,
+        160,
+        130
+      ],
+      "pontoUso": [
+        0,
+        60
+      ],
+      "estadoInicial": {
+        "ligado": false
+      }
+    },
+    {
+      "id": "micro-ondas",
+      "nome": "Micro-ondas",
+      "tipo": "aparelho",
+      "funcao": "aquecer",
+      "sprite": {
+        "padrao": "casa-micro-ondas"
+      },
+      "origem": [
+        0.5,
+        1
+      ],
+      "largura": 120,
+      "area": [
+        -80,
+        -120,
+        160,
+        130
+      ],
+      "pontoUso": [
+        0,
+        60
+      ],
+      "estadoInicial": {
+        "ligado": false
+      }
+    },
+    {
+      "id": "torradeira",
+      "nome": "Torradeira",
+      "tipo": "aparelho",
+      "funcao": "torrar",
+      "sprite": {
+        "padrao": "casa-torradeira"
+      },
+      "origem": [
+        0.5,
+        1
+      ],
+      "largura": 120,
+      "area": [
+        -80,
+        -120,
+        160,
+        130
+      ],
+      "pontoUso": [
+        0,
+        60
+      ],
+      "estadoInicial": {
+        "ligado": false
+      }
+    },
+    {
+      "id": "pia-cozinha",
+      "nome": "Pia",
+      "tipo": "agua",
+      "funcao": "lavar",
+      "sprite": {
+        "padrao": "casa-pia-cozinha"
+      },
+      "origem": [
+        0.5,
+        1
+      ],
+      "largura": 120,
+      "area": [
+        -80,
+        -120,
+        160,
+        130
+      ],
+      "pontoUso": [
+        0,
+        60
+      ],
+      "estadoInicial": {
+        "ligado": false
+      },
+      "particulas": "gotas"
+    },
+    {
+      "id": "mesa",
+      "nome": "Mesa e cadeiras",
+      "tipo": "assento",
+      "funcao": "sentar",
+      "sprite": {
+        "padrao": "casa-mesa"
+      },
+      "origem": [
+        0.5,
+        1
+      ],
+      "largura": 180,
+      "area": [
+        -80,
+        -120,
+        160,
+        130
+      ],
+      "pontoUso": [
+        0,
+        60
+      ],
+      "estadoInicial": {
+        "ligado": false
+      },
+      "snaps": [
+        {
+          "x": -25.0,
+          "y": -25,
+          "pose": "sentado"
+        },
+        {
+          "x": 25.0,
+          "y": -25,
+          "pose": "sentado"
+        }
+      ]
+    },
+    {
+      "id": "lixeira",
+      "nome": "Lixeira",
+      "tipo": "recipiente",
+      "funcao": "descartar",
+      "sprite": {
+        "padrao": "casa-lixeira"
+      },
+      "origem": [
+        0.5,
+        1
+      ],
+      "largura": 120,
+      "area": [
+        -80,
+        -120,
+        160,
+        130
+      ],
+      "pontoUso": [
+        0,
+        60
+      ],
+      "estadoInicial": {
+        "ligado": false,
+        "itens": []
+      },
+      "capacidade": 6
+    },
+    {
+      "id": "pao",
+      "nome": "Pão",
+      "tipo": "pegavel",
+      "funcao": "item",
+      "sprite": {
+        "padrao": "casa-pao"
+      },
+      "origem": [
+        0.5,
+        1
+      ],
+      "largura": 42,
+      "area": [
+        -32,
+        -64,
+        64,
+        64
+      ],
+      "pontoUso": [
+        0,
+        20
+      ],
+      "estadoInicial": {},
+      "comestivel": true
+    },
+    {
+      "id": "panela",
+      "nome": "Panela",
+      "tipo": "pegavel",
+      "funcao": "item",
+      "sprite": {
+        "padrao": "casa-panela"
+      },
+      "origem": [
+        0.5,
+        1
+      ],
+      "largura": 42,
+      "area": [
+        -32,
+        -64,
+        64,
+        64
+      ],
+      "pontoUso": [
+        0,
+        20
+      ],
+      "estadoInicial": {},
+      "comestivel": false
+    },
+    {
+      "id": "prato",
+      "nome": "Prato",
+      "tipo": "pegavel",
+      "funcao": "item",
+      "sprite": {
+        "padrao": "casa-prato"
+      },
+      "origem": [
+        0.5,
+        1
+      ],
+      "largura": 42,
+      "area": [
+        -32,
+        -64,
+        64,
+        64
+      ],
+      "pontoUso": [
+        0,
+        20
+      ],
+      "estadoInicial": {},
+      "comestivel": false
+    },
+    {
+      "id": "chuveiro",
+      "nome": "Chuveiro",
+      "tipo": "agua",
+      "funcao": "banho",
+      "sprite": {
+        "padrao": "casa-chuveiro"
+      },
+      "origem": [
+        0.5,
+        1
+      ],
+      "largura": 120,
+      "area": [
+        -80,
+        -120,
+        160,
+        130
+      ],
+      "pontoUso": [
+        0,
+        60
+      ],
+      "estadoInicial": {
+        "ligado": false
+      },
+      "particulas": "gotas"
+    },
+    {
+      "id": "banheira",
+      "nome": "Banheira",
+      "tipo": "cama",
+      "funcao": "banheira",
+      "sprite": {
+        "padrao": "casa-banheira"
+      },
+      "origem": [
+        0.5,
+        1
+      ],
+      "largura": 180,
+      "area": [
+        -80,
+        -120,
+        160,
+        130
+      ],
+      "pontoUso": [
+        0,
+        60
+      ],
+      "estadoInicial": {
+        "ligado": false
+      },
+      "snaps": [
+        {
+          "x": 0,
+          "y": -25,
+          "pose": "deitado"
+        }
+      ]
+    },
+    {
+      "id": "sanitario",
+      "nome": "Sanitário",
+      "tipo": "assento",
+      "funcao": "privacidade",
+      "sprite": {
+        "padrao": "casa-sanitario"
+      },
+      "origem": [
+        0.5,
+        1
+      ],
+      "largura": 180,
+      "area": [
+        -80,
+        -120,
+        160,
+        130
+      ],
+      "pontoUso": [
+        0,
+        60
+      ],
+      "estadoInicial": {
+        "ligado": false
+      },
+      "snaps": [
+        {
+          "x": 0,
+          "y": -25,
+          "pose": "sentado"
+        }
+      ]
+    },
+    {
+      "id": "pia-banheiro",
+      "nome": "Pia e espelho",
+      "tipo": "agua",
+      "funcao": "escovar",
+      "sprite": {
+        "padrao": "casa-pia-banheiro"
+      },
+      "origem": [
+        0.5,
+        1
+      ],
+      "largura": 120,
+      "area": [
+        -80,
+        -120,
+        160,
+        130
+      ],
+      "pontoUso": [
+        0,
+        60
+      ],
+      "estadoInicial": {
+        "ligado": false
+      },
+      "particulas": "gotas"
+    },
+    {
+      "id": "armarinho",
+      "nome": "Armarinho",
+      "tipo": "recipiente",
+      "funcao": "guardar",
+      "sprite": {
+        "padrao": "casa-armarinho"
+      },
+      "origem": [
+        0.5,
+        1
+      ],
+      "largura": 120,
+      "area": [
+        -80,
+        -120,
+        160,
+        130
+      ],
+      "pontoUso": [
+        0,
+        60
+      ],
+      "estadoInicial": {
+        "ligado": false,
+        "itens": [
+          "escova",
+          "pasta",
+          "toalha",
+          "sabonete"
+        ]
+      },
+      "capacidade": 6
+    },
+    {
+      "id": "escova",
+      "nome": "Escova de dentes",
+      "tipo": "pegavel",
+      "funcao": "item",
+      "sprite": {
+        "padrao": "casa-escova"
+      },
+      "origem": [
+        0.5,
+        1
+      ],
+      "largura": 42,
+      "area": [
+        -32,
+        -64,
+        64,
+        64
+      ],
+      "pontoUso": [
+        0,
+        20
+      ],
+      "estadoInicial": {},
+      "comestivel": false
+    },
+    {
+      "id": "pasta",
+      "nome": "Pasta de dentes",
+      "tipo": "pegavel",
+      "funcao": "item",
+      "sprite": {
+        "padrao": "casa-pasta"
+      },
+      "origem": [
+        0.5,
+        1
+      ],
+      "largura": 42,
+      "area": [
+        -32,
+        -64,
+        64,
+        64
+      ],
+      "pontoUso": [
+        0,
+        20
+      ],
+      "estadoInicial": {},
+      "comestivel": false
+    },
+    {
+      "id": "toalha",
+      "nome": "Toalha",
+      "tipo": "pegavel",
+      "funcao": "item",
+      "sprite": {
+        "padrao": "casa-toalha"
+      },
+      "origem": [
+        0.5,
+        1
+      ],
+      "largura": 42,
+      "area": [
+        -32,
+        -64,
+        64,
+        64
+      ],
+      "pontoUso": [
+        0,
+        20
+      ],
+      "estadoInicial": {},
+      "comestivel": false
+    },
+    {
+      "id": "sabonete",
+      "nome": "Sabonete",
+      "tipo": "pegavel",
+      "funcao": "item",
+      "sprite": {
+        "padrao": "casa-sabonete"
+      },
+      "origem": [
+        0.5,
+        1
+      ],
+      "largura": 42,
+      "area": [
+        -32,
+        -64,
+        64,
+        64
+      ],
+      "pontoUso": [
+        0,
+        20
+      ],
+      "estadoInicial": {},
+      "comestivel": false
+    },
+    {
+      "id": "balanco-casa",
+      "nome": "Balanço",
+      "tipo": "assento",
+      "funcao": "balanco",
+      "sprite": {
+        "padrao": "balanco-estrutura"
+      },
+      "origem": [
+        0.5,
+        1
+      ],
+      "largura": 180,
+      "area": [
+        -80,
+        -120,
+        160,
+        130
+      ],
+      "pontoUso": [
+        0,
+        60
+      ],
+      "estadoInicial": {
+        "ligado": false
+      },
+      "snaps": [
+        {
+          "x": 0,
+          "y": -25,
+          "pose": "sentado"
+        }
+      ]
+    },
+    {
+      "id": "mangueira",
+      "nome": "Mangueira",
+      "tipo": "agua",
+      "funcao": "regar",
+      "sprite": {
+        "padrao": "casa-mangueira"
+      },
+      "origem": [
+        0.5,
+        1
+      ],
+      "largura": 120,
+      "area": [
+        -80,
+        -120,
+        160,
+        130
+      ],
+      "pontoUso": [
+        0,
+        60
+      ],
+      "estadoInicial": {
+        "ligado": false
+      },
+      "particulas": "gotas"
+    },
+    {
+      "id": "casinha-pet",
+      "nome": "Casinha do pet",
+      "tipo": "recipiente",
+      "funcao": "pet",
+      "sprite": {
+        "padrao": "casa-casinha-pet"
+      },
+      "origem": [
+        0.5,
+        1
+      ],
+      "largura": 120,
+      "area": [
+        -80,
+        -120,
+        160,
+        130
+      ],
+      "pontoUso": [
+        0,
+        60
+      ],
+      "estadoInicial": {
+        "ligado": false,
+        "itens": []
+      },
+      "capacidade": 6
+    },
+    {
+      "id": "churrasqueira",
+      "nome": "Churrasqueira",
+      "tipo": "aparelho",
+      "funcao": "churrasqueira",
+      "sprite": {
+        "padrao": "casa-churrasqueira"
+      },
+      "origem": [
+        0.5,
+        1
+      ],
+      "largura": 120,
+      "area": [
+        -80,
+        -120,
+        160,
+        130
+      ],
+      "pontoUso": [
+        0,
+        60
+      ],
+      "estadoInicial": {
+        "ligado": false
+      }
+    },
+    {
+      "id": "canteiro",
+      "nome": "Canteiro",
+      "tipo": "aparelho",
+      "funcao": "plantar",
+      "sprite": {
+        "padrao": "casa-canteiro"
+      },
+      "origem": [
+        0.5,
+        1
+      ],
+      "largura": 120,
+      "area": [
+        -80,
+        -120,
+        160,
+        130
+      ],
+      "pontoUso": [
+        0,
+        60
+      ],
+      "estadoInicial": {
+        "ligado": false
+      }
+    },
+    {
+      "id": "maquina",
+      "nome": "Máquina de lavar",
+      "tipo": "aparelho",
+      "funcao": "lavar-roupa",
+      "sprite": {
+        "padrao": "casa-maquina"
+      },
+      "origem": [
+        0.5,
+        1
+      ],
+      "largura": 120,
+      "area": [
+        -80,
+        -120,
+        160,
+        130
+      ],
+      "pontoUso": [
+        0,
+        60
+      ],
+      "estadoInicial": {
+        "ligado": false
+      }
+    },
+    {
+      "id": "varal",
+      "nome": "Varal",
+      "tipo": "recipiente",
+      "funcao": "pendurar",
+      "sprite": {
+        "padrao": "casa-varal"
+      },
+      "origem": [
+        0.5,
+        1
+      ],
+      "largura": 120,
+      "area": [
+        -80,
+        -120,
+        160,
+        130
+      ],
+      "pontoUso": [
+        0,
+        60
+      ],
+      "estadoInicial": {
+        "ligado": false,
+        "itens": []
+      },
+      "capacidade": 6
+    },
+    {
+      "id": "cesto",
+      "nome": "Cesto de roupa",
+      "tipo": "recipiente",
+      "funcao": "guardar",
+      "sprite": {
+        "padrao": "casa-cesto"
+      },
+      "origem": [
+        0.5,
+        1
+      ],
+      "largura": 120,
+      "area": [
+        -80,
+        -120,
+        160,
+        130
+      ],
+      "pontoUso": [
+        0,
+        60
+      ],
+      "estadoInicial": {
+        "ligado": false,
+        "itens": [
+          "roupa-suja"
+        ]
+      },
+      "capacidade": 6
+    },
+    {
+      "id": "roupa-suja",
+      "nome": "Roupa",
+      "tipo": "pegavel",
+      "funcao": "item",
+      "sprite": {
+        "padrao": "casa-roupa-suja"
+      },
+      "origem": [
+        0.5,
+        1
+      ],
+      "largura": 42,
+      "area": [
+        -32,
+        -64,
+        64,
+        64
+      ],
+      "pontoUso": [
+        0,
+        20
+      ],
+      "estadoInicial": {},
+      "comestivel": false
+    },
+    {
+      "id": "ferro",
+      "nome": "Ferro",
+      "tipo": "aparelho",
+      "funcao": "adulto",
+      "sprite": {
+        "padrao": "casa-ferro"
+      },
+      "origem": [
+        0.5,
+        1
+      ],
+      "largura": 120,
+      "area": [
+        -80,
+        -120,
+        160,
+        130
+      ],
+      "pontoUso": [
+        0,
+        60
+      ],
+      "estadoInicial": {
+        "ligado": false
+      }
+    }
+  ]
+}

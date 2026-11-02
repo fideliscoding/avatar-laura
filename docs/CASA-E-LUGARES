@@ -70,3 +70,41 @@ máquina de lavar (aceita roupa suja; liga: tambor gira 5 s; roupa limpa e dobra
 - Transição: fade 250 ms, avatar aparece no `pontoChegada` da porta de destino, itens na mão vão junto.
 - Lugares com 2+ ambientes usam portas internas iguais às da casa.
 - Multiplayer: todas na mesma sala de convite veem o mesmo cômodo; quem muda de cômodo some com fade para as outras e aparece no destino.
+
+## Implementação da casa (etapa 07)
+
+A porta Casa no mapa agora abre a sala, com os seis cômodos ativos em
+`CenaComodo`. O botão Cômodos abre o minimapa; portas e minimapa usam fade de
+250 ms. Cidade retorna ao mapa. A interface roda em cena separada, com botões
+DOM de 64 px, painéis roláveis e fonte de 22 px em pixels do viewport.
+
+Usar caminha até o objeto, faz a ação principal e abre suas opções. Recipientes
+abertos mostram o conteúdo; é possível pegar itens ou colocar o que está na mão.
+Mochila mantém uma mão e seis espaços. A gaveta da escrivaninha abre ao sentar;
+o guarda-roupa oferece a personalização de cabelo existente e um vestido
+provisório. As roupas em camadas dependem da arte futura.
+
+As receitas em `assets/dados/receitas.json` preparam ovo com panela no fogão,
+torrada e alimentos mornos no micro-ondas (3 s). A máquina lava roupa em 5 s e
+o varal só aceita roupa limpa. O estado guarda o prazo, de forma que o processo
+continua após recarregar ou mudar de cômodo. Não existem barras de necessidade.
+O ferro só atua na lavanderia, perto da Vovó, com conselho de uso acompanhado.
+
+Pegue sementes no baú do quarto e use o canteiro; a mangueira faz as flores
+passarem por broto, crescimento e floração. O balanço reutiliza os assets do
+parque. Outra ação revela moeda sob o tapete, estrelas com a luz do quarto apagada
+e patinho na banheira. Áudio é opcional; os objetos têm animação e partículas
+provisórias enquanto faltam os assets de ARTE.md.
+
+Arrumar tudo, na mochila, repõe os objetos e itens em seus estados de origem e
+libera mão e assentos. A arrumação concede uma moeda por dia por jogador; cada
+segredo premiado concede uma moeda uma única vez. Repetir continua permitido e
+não retira moedas. Na nuvem, somente a RPC validada altera o saldo. No modo sem
+conta, o registro é local e não é importado para contas do responsável.
+
+O mundo persistido é Casa, com o cômodo em cada objeto. O transporte permanece
+vivo ao navegar; itens da mão/mochila acompanham Laura. No convite aprovado,
+a casa pertence ao dono e todas compartilham os mesmos estados. Cada amiga
+aparece apenas no cômodo em que está; entrada/saída visual tem fade de 250 ms.
+O dono precisa permanecer na casa para confirmar novas ações, podendo navegar
+entre seus cômodos. As travas de oito segundos continuam funcionando.

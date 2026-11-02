@@ -1,0 +1,106 @@
+{
+  "id": "banheiro",
+  "nome": "Banheiro",
+  "fundo": {
+    "parede": "#e9dcff",
+    "chao": "#d6bee8"
+  },
+  "entrada": {
+    "x": 640,
+    "y": 620
+  },
+  "objetos": [
+    {
+      "id": "chuveiro",
+      "x": 260,
+      "y": 335
+    },
+    {
+      "id": "banheira",
+      "x": 510,
+      "y": 335
+    },
+    {
+      "id": "sanitario",
+      "x": 760,
+      "y": 335
+    },
+    {
+      "id": "pia-banheiro",
+      "x": 1010,
+      "y": 335
+    },
+    {
+      "id": "armarinho",
+      "x": 260,
+      "y": 545
+    },
+    {
+      "id": "escova",
+      "x": 210,
+      "y": 570
+    },
+    {
+      "id": "pasta",
+      "x": 230,
+      "y": 570
+    },
+    {
+      "id": "toalha",
+      "x": 250,
+      "y": 570
+    },
+    {
+      "id": "sabonete",
+      "x": 270,
+      "y": 570
+    }
+  ],
+  "portas": [
+    {
+      "destino": "sala",
+      "x": 80,
+      "y": 230,
+      "chegada": {
+        "x": 640,
+        "y": 620
+      }
+    },
+    {
+      "destino": "quarto",
+      "x": 1200,
+      "y": 315,
+      "chegada": {
+        "x": 640,
+        "y": 620
+      }
+    },
+    {
+      "destino": "cozinha",
+      "x": 80,
+      "y": 400,
+      "chegada": {
+        "x": 640,
+        "y": 620
+      }
+    },
+    {
+      "destino": "quintal",
+      "x": 1200,
+      "y": 485,
+      "chegada": {
+        "x": 640,
+        "y": 620
+      }
+    },
+    {
+      "destino": "lavanderia",
+      "x": 80,
+      "y": 570,
+      "chegada": {
+        "x": 640,
+        "y": 620
+      }
+    }
+  ]
+}

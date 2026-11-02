@@ -2,6 +2,7 @@ import {afterEach,beforeEach,describe,expect,it,vi} from 'vitest';
 const api=vi.hoisted(()=>({rpc:vi.fn(),from:vi.fn()}));
 vi.mock('../src/net/supabase',()=>({supabase:api}));
 import {ObjetosSync,encerrarObjetos,validarPedidoRede,type SalaObjetos} from '../src/net/objetosSync';
+import {MUNDO_CASA} from '../src/net/casa';
 import {estadoEfetivo} from '../src/game/interacao/travas';
 import type {EstadoObjeto} from '../src/game/interacao/tipos';
 import type {EventoObjetoSala} from '../src/net/sala';
@@ -75,5 +76,21 @@ describe('autoridade dos objetos na sala de convite',()=>{
   expect((await a.pedir(pedido)).aceita).toBe(true);
   expect((await a.pedir(pedido)).aceita).toBe(true);
   expect(banco.get('sorvete-parque')!.mordidas).toBe(1);
+ });
+});
+
+describe('mundo compartilhado da casa',()=>{
+ it('só uma amiga retira o mesmo item do baú e todas recebem o mesmo estado',async()=>{
+  const a=new ObjetosSync(dono,null,new SalaFake(dono),MUNDO_CASA),b=new ObjetosSync(amigo,null,new SalaFake(amigo),MUNDO_CASA);
+  await a.pedir({objeto:'bau',tipo:'tocar',versao:0,comodo:'quarto'});
+  const r=await Promise.all([a.pedir({objeto:'bau',tipo:'retirar',item:'ursinho',versao:1,comodo:'quarto'}),b.pedir({objeto:'bau',tipo:'retirar',item:'ursinho',versao:1,comodo:'quarto'})]);
+  expect(r.filter(r=>r.aceita)).toHaveLength(1);expect(a.ler()).toEqual(b.ler());expect(a.ler().filter(s=>s.id==='ursinho'&&s.local==='mao')).toHaveLength(1);
+ });
+ it('duas amigas ocupam snaps diferentes e o item solto muda de cômodo para ambas',async()=>{
+  const a=new ObjetosSync(dono,null,new SalaFake(dono),MUNDO_CASA),b=new ObjetosSync(amigo,null,new SalaFake(amigo),MUNDO_CASA);
+  await a.pedir({objeto:'sofa',tipo:'tocar',versao:0,comodo:'sala'});expect((await b.pedir({objeto:'sofa',tipo:'tocar',versao:1,comodo:'sala'})).aceita).toBe(true);
+  expect(a.ler().find(s=>s.id==='sofa')!.ocupantes.map(o=>o.snap)).toEqual([0,1]);
+  await b.pedir({objeto:'pao',tipo:'pegar',versao:0,comodo:'cozinha'});await b.pedir({objeto:'pao',tipo:'soltar',versao:1,comodo:'banheiro',ponto:{x:600,y:600}});
+  expect(a.ler().find(s=>s.id==='pao')).toMatchObject({local:'chao',comodo:'banheiro',x:600,y:600});
  });
 });

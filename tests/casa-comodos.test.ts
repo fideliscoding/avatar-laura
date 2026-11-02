@@ -1,0 +1,16 @@
+import {describe,expect,it} from 'vitest';
+import {validarComodo} from '../src/game/casa/comodos';
+const c={id:'sala',nome:'Sala',fundo:{parede:'#ffffff',chao:'#eeeaff'},entrada:{x:640,y:600},objetos:[{id:'sofa',x:400,y:400}],portas:[{destino:'quarto',x:1200,y:500,chegada:{x:100,y:550}}]};
+describe('carregador de cômodos',()=>{
+ it('carrega fundo, objetos e chegada das portas',()=>{expect(validarComodo(c,['sofa'])).toEqual(c)});
+ it.each([{...c,id:'rua'},{...c,objetos:[{...c.objetos[0],estadoInicial:{modo:Infinity}}]},{...c,objetos:[{id:'desconhecido',x:0,y:0}]},{...c,portas:[{...c.portas[0],chegada:{x:Infinity,y:1}}]},{...c,objetos:[c.objetos[0],c.objetos[0]]},{...c,fundo:{parede:'url(externa)',chao:'#ffffff'}}])('rejeita dados inválidos',v=>{expect(()=>validarComodo(v,['sofa'])).toThrow('Cômodo inválido')});
+});
+
+// A mesma origem precisa existir no servidor para validar a arrumação.
+import sql from '../supabase/migrations/0008_casa_comodos.sql?raw';
+import {estadosIniciaisCasa} from '../src/game/casa/catalogo';
+it('catálogo da migração e estados iniciais do cliente têm o mesmo contrato',()=>{
+
+ const servidor=JSON.parse(sql.split('$casa$')[1]) as {id:string}[];
+ expect(servidor.sort((a,b)=>a.id.localeCompare(b.id))).toEqual(estadosIniciaisCasa().sort((a,b)=>a.id.localeCompare(b.id)));
+});

@@ -261,3 +261,25 @@ O Tiled conserva as áreas de interação e as propriedades `cena`, `entradaX` e
 de chão em tiles continua como referência técnica, oculta sob a arte panorâmica.
 A câmera segue Laura no celular; os atalhos mantêm acesso aos locais fora do
 quadro. Casa tem arte de quarto, mas continua com a função Em breve nesta etapa.
+
+## Casa por dados (etapa 07)
+
+A casa tem seis ambientes de brincadeira livre, sem fome, higiene ou outras
+barras de necessidade. Cada arquivo em `public/assets/dados/comodos/` define
+fundo, instâncias, entrada e portas com destino/ponto de chegada. O carregador
+rejeita destinos inexistentes, IDs repetidos, coordenadas fora do mundo e estados
+iniciais inválidos. `casa-objetos.json` define os 55 objetos; `receitas.json`
+define alimento/utensílio, resultado e duração. Os testes conferem o contrato.
+
+A transação da casa movimenta recipiente e item juntos, preserva mão única e
+mochila de seis espaços, impede receita prematura e faz a limpeza em um único
+lote. O mundo Casa permanece vivo enquanto a cena alterna os ambientes. Na nuvem,
+os novos IDs também precisam entrar no catálogo confiável por migração nova;
+nunca altere a migração já aplicada para ajustar conteúdos.
+
+O ferro exige a Vovó próxima. A arrumação oferece incentivo de uma moeda por dia;
+repetir o cuidado continua permitido e não pune. A moeda sob o tapete só é
+premiada uma vez por jogador. Estrelas e patinho são descobertas visuais. Sem
+conta, recompensas são locais; com conta, moedas dependem da confirmação do
+servidor. Se estiver sem rede, a casa continua pelo cache e o botão permite
+repetir a confirmação quando a conexão voltar, sem duplicar saldo.

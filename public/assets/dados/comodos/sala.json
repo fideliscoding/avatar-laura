@@ -1,0 +1,106 @@
+{
+  "id": "sala",
+  "nome": "Sala",
+  "fundo": {
+    "parede": "#e9dcff",
+    "chao": "#d6bee8"
+  },
+  "entrada": {
+    "x": 640,
+    "y": 620
+  },
+  "objetos": [
+    {
+      "id": "sofa",
+      "x": 260,
+      "y": 335
+    },
+    {
+      "id": "tv",
+      "x": 510,
+      "y": 335
+    },
+    {
+      "id": "abajur",
+      "x": 760,
+      "y": 335
+    },
+    {
+      "id": "radio",
+      "x": 1010,
+      "y": 335
+    },
+    {
+      "id": "estante",
+      "x": 260,
+      "y": 545
+    },
+    {
+      "id": "livro",
+      "x": 210,
+      "y": 570
+    },
+    {
+      "id": "controle",
+      "x": 230,
+      "y": 570
+    },
+    {
+      "id": "quebra-cabeca",
+      "x": 250,
+      "y": 570
+    },
+    {
+      "id": "tapete",
+      "x": 510,
+      "y": 545
+    }
+  ],
+  "portas": [
+    {
+      "destino": "quarto",
+      "x": 80,
+      "y": 230,
+      "chegada": {
+        "x": 640,
+        "y": 620
+      }
+    },
+    {
+      "destino": "cozinha",
+      "x": 1200,
+      "y": 315,
+      "chegada": {
+        "x": 640,
+        "y": 620
+      }
+    },
+    {
+      "destino": "banheiro",
+      "x": 80,
+      "y": 400,
+      "chegada": {
+        "x": 640,
+        "y": 620
+      }
+    },
+    {
+      "destino": "quintal",
+      "x": 1200,
+      "y": 485,
+      "chegada": {
+        "x": 640,
+        "y": 620
+      }
+    },
+    {
+      "destino": "lavanderia",
+      "x": 80,
+      "y": 570,
+      "chegada": {
+        "x": 640,
+        "y": 620
+      }
+    }
+  ]
+}
