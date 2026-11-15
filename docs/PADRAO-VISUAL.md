@@ -31,7 +31,7 @@ Este é o guia obrigatório para qualquer arte do jogo: personagem, roupa, cabel
 - Tint por mapa de luz HSL, com referência de cinza pele 242, cabelo 232 e peças 235. A fórmula está em `docs/ARTE-CAMADAS.md`. Não use multiply puro, porque ele acinzenta as cores claras.
 - Cabelo em duas partes: `cabelo-frente-*` (franja e couro cabeludo, dentro da cabeça) e `cabelo-tras-*` (volume e comprimento, atrás do corpo).
 - Rosto montável: `olhos-*`, `boca-*` e `sobrancelha-*`, sem tint.
-- Peça nova: edite o `corpo-base-gabarito.jpg` com o gerador ("mantenha tudo idêntico, só adicione X"), alinhe com ECC, extraia pela diferença e exporte no canvas fixo (`ferramentas/arte-camadas/`).
+- Peça nova: edite o `corpo-base-gabarito.jpg` com o gerador ("mantenha tudo idêntico, só adicione X"), alinhe com ECC, extraia pela diferença e exporte no canvas fixo (`tools/arte-camadas/`).
 
 ## 4. Imagens de referência aprovadas (`docs/referencias/`)
 | Arquivo | O que mostra |

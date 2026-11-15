@@ -1,5 +1,7 @@
 # Arte necessária (priorizada)
 
+> Regra (AGENTS.md, REGRA DE OURO): quando faltar uma arte, o Codex **não desenha um substituto**. Ele usa um asset aprovado existente e registra o pedido na seção "Pedidos registrados" no fim deste arquivo.
+
 Estilo atual: chibi profissional, pastel, lilás (`#b58cf5`, `#8b55e6`, `#5a2fa8`) com rosa `#f27ab3`, contorno suave, PNG transparente recortado rente, nomes sem acento com hífen, origem (0.5, 1). Nada copiado de outros jogos. Ao entregar, documentar em `docs/ARTE.md` incluindo o ponto `mao` (x, y no PNG).
 
 ## P0 (destrava o sistema de interações)
@@ -24,7 +26,7 @@ Estilo atual: chibi profissional, pastel, lilás (`#b58cf5`, `#8b55e6`, `#5a2fa8
 15. Pets (gato, cachorro, coelho) em 3 poses: em pé, sentado, dormindo; e potes de água/ração.
 16. Pose `dancando` (2 quadros) e NPCs adultos (padeiro, médica, professora).
 
-Placeholders: enquanto não houver arte, usar `Graphics` lilás com o nome do objeto, como manda o `AGENTS.md`.
+Quando faltar arte, use um asset aprovado existente e registre o pedido abaixo, conforme a REGRA DE OURO do `AGENTS.md`. Não use placeholders.
 
 ## P0+ (etapa 09: modelo de toque, sem botões)
 Ver `docs/MODELO-DE-JOGO-AVATAR-WORLD.md` e `prompts/09-modelo-toque-sem-botoes.md`.
@@ -38,3 +40,18 @@ Ver `docs/MODELO-DE-JOGO-AVATAR-WORLD.md` e `prompts/09-modelo-toque-sem-botoes.
 24. Segredos: quadro que vira, tijolo solto, toca no rodapé, estrela no teto, adesivos do álbum.
 25. Brinquedos do parque com encaixe: balanço, escorregador, gangorra.
 26. Versão com contorno grosso (4 a 6 px `#5a2fa8`) dos objetos interativos já existentes.
+
+
+## Feito no pacote criador-camadas-v2 (02/11/2026, pose frente)
+
+Esta seção descreve o pacote original. O upload recebido está incompleto: há 21 PNGs de camadas; consulte [as pendências e os arquivos ausentes](criador-poc/README.md#pendência-do-pacote-recebido).
+- Cabelo em duas partes, frente e trás, com 7 estilos: liso, coquinhos, cacheado, franja reta, rabo, tranças e ondulado.
+- Rosto montável: 9 olhos (incluindo estrela e coração), 8 bocas e 6 sobrancelhas, além dos rostos `feliz` e `triste`.
+- Peças novas: casaco, short, meias, bolsa tiracolo, tiara, colar, 2 brincos e a presilha da Laura.
+- Versão `-cinza` de todas as roupas e acessórios, para escolher a cor de cada peça.
+
+## Pedidos registrados
+Formato: `data | arquivo esperado | pose | tamanho | para que serve | asset usado no lugar`
+- 02/11/2026 | mesmas camadas v2 | lado, sentada, segurando, no ar, deitada | 512x768 (sentada 512x640, deitada 768x512) | criador e interações | pose frente
+- 02/11/2026 | cabelo-frente-*-bone (franja achatada sob o boné) | frente | 512x768 | boné sem volume de cabelo aparecendo por cima | cabelo-frente normal
+- 02/11/2026 | 2 vestidos/conjuntos extras e mais blusas | frente | 512x768 | variedade de roupas | vestido-rosa e blusas atuais com troca de cor
