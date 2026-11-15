@@ -211,4 +211,4 @@ arrasto novo, encaixes e as demais etapas do prompt 09 aguardam aprovação.
 
 ## Referência do criador em camadas
 
-O pacote do novo criador foi organizado em `docs/`, `public/assets/personagens/camadas/frente/` e `tools/arte-camadas/`. Consulte [o mapa de arquivos, o protótipo e as pendências do upload](docs/criador-poc/README.md). As camadas recebidas estão incompletas e ainda não foram integradas ao jogo.
+O pacote do novo criador foi organizado em `docs/`, `public/assets/personagens/camadas/frente/` e `tools/arte-camadas/`. Consulte [o mapa de arquivos, o protótipo e as pendências do upload](docs/criador-poc/README.md). As 81 camadas da pose frente estão completas e o protótipo foi validado; a integração ao jogo continua pendente.

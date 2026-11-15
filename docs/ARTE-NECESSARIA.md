@@ -44,7 +44,7 @@ Ver `docs/MODELO-DE-JOGO-AVATAR-WORLD.md` e `prompts/09-modelo-toque-sem-botoes.
 
 ## Feito no pacote criador-camadas-v2 (02/11/2026, pose frente)
 
-Esta seção descreve o pacote original. O upload recebido está incompleto: há 21 PNGs de camadas; consulte [as pendências e os arquivos ausentes](criador-poc/README.md#pendência-do-pacote-recebido).
+O conjunto da pose frente está completo: 81 PNGs e `ancoras.json`. Consulte [a conferência das camadas e do protótipo](criador-poc/README.md#conferência-do-conjunto-completo). As demais poses e pedidos registrados abaixo continuam pendentes.
 - Cabelo em duas partes, frente e trás, com 7 estilos: liso, coquinhos, cacheado, franja reta, rabo, tranças e ondulado.
 - Rosto montável: 9 olhos (incluindo estrela e coração), 8 bocas e 6 sobrancelhas, além dos rostos `feliz` e `triste`.
 - Peças novas: casaco, short, meias, bolsa tiracolo, tiara, colar, 2 brincos e a presilha da Laura.
