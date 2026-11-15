@@ -2,6 +2,21 @@
 
 Leia este arquivo inteiro antes de qualquer tarefa. Ele vale para todo o repositório.
 
+## REGRA DE OURO: PADRÃO VISUAL PROFISSIONAL
+
+Esta regra vale para toda tarefa e tem prioridade sobre qualquer outra instrução de arte deste arquivo.
+
+1. **Toda arte nova segue o mesmo padrão chibi profissional já aprovado.** Isso vale para personagem, roupa, cabelo, rosto, cenário, objeto, ícone e UI. O guia completo está em `docs/PADRAO-VISUAL.md`, e as imagens aprovadas estão em `docs/referencias/`.
+2. **É proibido:**
+   - emojis;
+   - formas geométricas simples como arte;
+   - placeholders;
+   - desenho programático com `Graphics` do Phaser ou com CSS como arte final;
+   - misturar estilos, por exemplo flat com chibi, pixel art ou fotos.
+3. **Se a arte ainda não existir, não invente uma.** Use um asset existente e aprovado que seja o mais próximo possível e registre o pedido em `docs/ARTE-NECESSARIA.md`, com nome do arquivo, pose, tamanho e para que serve.
+4. **Nunca copie assets, telas ou layout do Avatar World** nem de outro jogo. Inspiração sim, cópia não.
+5. **A tarefa só está pronta depois de conferida visualmente contra as referências.** Rode o jogo, tire um screenshot da tela mexida, compare com `docs/referencias/` usando o checklist de `docs/PADRAO-VISUAL.md` e anexe o screenshot ao PR em `docs/screenshots/`.
+
 ## Projeto
 
 "My Town, My World" (Minha Cidade, Meu Mundo): jogo infantil para a Laura, 9 anos. Visual chibi profissional, paleta lilás. Ensina valores e virtudes do dia a dia (honestidade, empatia, gentileza, paciência, responsabilidade, cuidado, gratidão, coragem, perdão, respeito), não só religiosos. Público: criança. Idioma: **pt-BR** em tudo (interface, código comentado, commits, PRs, docs).
@@ -23,7 +38,7 @@ Referências obrigatórias:
 ## Estrutura e padrões de código
 
 ```
-src/main.ts            configuração do Phaser (Scale.RESIZE; mundo lógico 1280x720)
+src/main.ts            configuração do Phaser (1280x720, Scale.FIT)
 src/config/assets.ts   lista central de assets e cores (toda imagem nova entra aqui)
 src/scenes/            uma classe por cena (CenaBoot, CenaCriador, CenaParque, ...)
 src/game/              lógica pura, sem Phaser (missões, estado, regras). Sempre com teste.
@@ -35,16 +50,17 @@ tests/                 testes Vitest (*.test.ts)
 - Nomes em português (cenas, variáveis de domínio, textos). Termos técnicos do Phaser ficam como são.
 - Lógica de missões fica em `src/game/` como funções puras e testáveis; a cena só chama essas funções e anima.
 - Textos que a criança lê ficam em constantes (ex.: `TEXTOS` em `missaoPedrinho.ts`), nunca espalhados.
-- Mundo e interações mantêm coordenadas de 1280x720; a interface usa pixels do viewport, em cena separada, com layout mobile first. Personagens com origem (0.5, 1) nos pés e profundidade (`depth`) igual ao `y`.
+- Coordenadas no palco de 1280x720. Personagens com origem (0.5, 1) nos pés e profundidade (`depth`) igual ao `y`.
 - Sem `any`. Sem `console.log` esquecido. Sem dependências desnecessárias.
 - O gancho `window.__jogo` existe para testes automatizados; mantenha.
 
 ## Regras de arte
 
+- Personagens do criador: camadas 512x768 com origem (256,736) e tint conforme `docs/ARTE-CAMADAS.md`.
 - Estilo chibi profissional, cabeça grande, contorno suave, cores pastel, paleta lilás (`#b58cf5`, `#8b55e6`, `#5a2fa8`) com rosa (`#f27ab3`) como cor de destaque. Fonte Fredoka.
 - PNG com fundo transparente, sem borda branca, recortado rente. Nomes em minúsculas, com hífen, sem acento: `laura-frente-liso.png`.
 - Não copie personagens, logos, telas ou artes de jogos existentes (Avatar World, Toca Boca etc.). Inspiração sim, cópia não.
-- Se faltar um asset, use um placeholder simples desenhado com `Graphics` (formas lilases) e registre a falta em `docs/ARTE.md` na seção "Assets que faltam". Nunca baixe imagens da internet.
+- Se faltar um asset, siga a REGRA DE OURO: use um asset aprovado existente e registre o pedido em `docs/ARTE-NECESSARIA.md`. Nunca desenhe placeholder com `Graphics` nem baixe imagens da internet.
 - **Nenhum emoji** em código, textos do jogo, docs, commits ou PRs. Use ícones desenhados ou PNG. O script `npm run check:emojis` falha se encontrar algum.
 
 ## Segurança infantil (obrigatório)
@@ -70,7 +86,7 @@ tests/                 testes Vitest (*.test.ts)
 2. `npm run build` (inclui `tsc --noEmit`) sem erros
 3. `npm test` passando, com testes novos para toda lógica nova
 4. `npm run check:emojis` passando
-5. Rodar `npm run dev`, abrir `http://localhost:5173/avatar-laura/` e conferir a tela mexida; se possível, anexar screenshot ao PR em `docs/screenshots/`
+5. Rodar `npm run dev`, abrir `http://localhost:5173/avatar-laura/`, conferir a tela mexida contra `docs/referencias/` (checklist de `docs/PADRAO-VISUAL.md`) e anexar o screenshot ao PR em `docs/screenshots/` (obrigatório quando houver arte ou UI)
 6. Atualizar a documentação afetada (`docs/*.md`, `README.md`)
 
 Não entregue com build quebrado ou teste falhando. Se algo não puder ser feito, explique no PR o quê e por quê.
